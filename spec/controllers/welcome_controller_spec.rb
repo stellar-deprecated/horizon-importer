@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe WelcomeController, type: :controller do
+RSpec.describe WelcomeController do
 
   describe "GET index" do
     before(:each){ get :index, format: :json }

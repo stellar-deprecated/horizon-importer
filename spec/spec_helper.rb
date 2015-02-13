@@ -1,8 +1,6 @@
 
 SPEC_ROOT = File.dirname(__FILE__)
 
-Dir["#{SPEC_ROOT}/support/**/*.rb"].each { |f| require f }
-
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
