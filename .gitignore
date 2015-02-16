@@ -15,4 +15,5 @@
 /log/*
 !/log/.keep
 /tmp
-stellard-hayashi-api.jar
+/stellard-hayashi-api.jar
+/doc/app
