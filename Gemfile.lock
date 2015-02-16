@@ -40,7 +40,7 @@ GEM
     jbuilder (2.2.6)
       activesupport (>= 3.0.0, < 5)
       multi_json (~> 1.2)
-    jdbc-postgres (9.3.1103)
+    jdbc-postgres (9.4.1200)
     jdbc-sqlite3 (3.8.7)
     json (1.8.2)
     json (1.8.2-java)
