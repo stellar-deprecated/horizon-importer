@@ -18,4 +18,6 @@ group :test, :development do
   gem 'rspec-rails'
   gem 'pry-rails'
   gem 'shoulda-matchers'
+  gem 'guard'
+  gem 'guard-rspec'
 end
