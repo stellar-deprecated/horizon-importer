@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    aasm (4.0.8)
     actionmailer (4.1.0)
       actionpack (= 4.1.0)
       actionview (= 4.1.0)
@@ -135,6 +136,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  aasm (~> 4.0.8)
   activerecord-jdbc-adapter
   jbuilder (~> 2.0)
   jdbc-postgres
@@ -145,4 +147,4 @@ DEPENDENCIES
   rspec-rails
   sdoc (~> 0.4.0)
   sqlite3
-  torquebox-web (= 4.0.0.alpha1)
+  torquebox-web (>= 4.0.0.alpha1)
