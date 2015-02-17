@@ -12,7 +12,7 @@ RSpec.describe PendingTransaction, type: :model do
 
     it "validates the tx_envelope is a valid xdr-encoded Stellar::TransactionEnvelope"
     it "validates the tx_hash is a hex-encoded 32-byte hash"
-    it "validates the sending_address is a hex-encoded 32-byte hash"
+    it "validates the sending_address is a base58 encoded address"
     it "validates the sending_sequence is not in the past"
     it "validates the signature contained in the envelope is valid"
   end
