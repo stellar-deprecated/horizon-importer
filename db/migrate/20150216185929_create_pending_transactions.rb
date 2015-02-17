@@ -15,7 +15,7 @@ class CreatePendingTransactions < ActiveRecord::Migration
       t.timestamps
 
       t.index :state
-      t.index [:sending_address, :sending_sequence]
+      t.index [:sending_address, :sending_sequence], :name => "by_sequence"
     end
   end
 end
