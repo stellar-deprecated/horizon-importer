@@ -7,6 +7,8 @@ Bundler.require(*Rails.groups)
 module StellardHayashiApi
   class Application < Rails::Application
 
+    config.autoload_paths += ["#{config.root}/lib"]
+
     config.generators do |g|
       g.orm             :active_record
       g.test_framework  :rspec, fixture: false

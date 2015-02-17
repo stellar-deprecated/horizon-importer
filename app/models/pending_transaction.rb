@@ -1,5 +1,8 @@
 class PendingTransaction < ActiveRecord::Base
   include AASM
+  include Instrumentation
+
+  instrument :perform_submit
 
   enum state: { 
     pending:   0, 
@@ -15,7 +18,7 @@ class PendingTransaction < ActiveRecord::Base
 
     # after submission to a stellard node, a pending tx is `:submitted` meaning we
     # will revisit your state at each ledger close
-    state :submitted
+    state :submitted, :before_enter => :perform_submit
 
     # after we see a transaction in a validated ledger, it transitions to `:confirmed`
     # and we can the safely report to requesters that the transaction was successfully
@@ -32,6 +35,17 @@ class PendingTransaction < ActiveRecord::Base
     # an error transaction will be retried in the future.
     # 
     state :errored
+
+    # This submit event will 
+    event :submit do
+      transitions to: :submitted, from: [:errored, :pending]
+    end
   end
+
+  private
+  def perform_submit
+    # TODO
+  end
+
 
 end
