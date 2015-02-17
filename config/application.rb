@@ -11,7 +11,7 @@ module StellardHayashiApi
 
     config.generators do |g|
       g.orm             :active_record
-      g.test_framework  :rspec, fixture: false
+      g.test_framework  :rspec, fixture: false, views: false
       g.template_engine :jbuilder
       g.stylesheets     false
       g.javascripts     false
