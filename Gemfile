@@ -5,6 +5,7 @@ gem 'jbuilder', '~> 2.0'
 gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'torquebox-web', ">= 4.0.0.alpha1"
 gem 'aasm', '~> 4.0.8'
+gem 'metriks', '~> 0.9.9.7'
 
 gem 'pg', platform: :ruby
 gem 'sqlite3', platform: :ruby
