@@ -16,5 +16,5 @@ gem 'activerecord-jdbc-adapter', platform: :jruby
 
 group :test, :development do
   gem 'rspec-rails'
-  gem 'pry'
+  gem 'pry-rails'
 end
