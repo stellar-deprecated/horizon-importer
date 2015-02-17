@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
+  get 'metrics/index'
+
   root 'welcome#index'
+  get 'metrics' => 'metrics#index'
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
