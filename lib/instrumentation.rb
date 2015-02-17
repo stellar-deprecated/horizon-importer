@@ -15,12 +15,8 @@ module Instrumentation
   included do |base|
     cattr_accessor :instrumented_methods
     self.instrumented_methods = {}
-  end
 
-  private
-  def timer_for(method_name)
-    name = "#{self.class.name}##{method_name}"
-    Metriks.timer(name)
+    delegate :instrument_for, to: :class
   end
 
   module ClassMethods
@@ -32,6 +28,12 @@ module Instrumentation
         create_instrumented_method(method_name, options) if method_exists?(method_name)
       end
     end
+
+    def instrument_for(method_name)
+      timer_name = "#{name}##{method_name}"
+      Metriks.timer(timer_name)
+    end
+
 
     def method_added(method_name)
       # short circuits when we are prior the `included` block having run
@@ -56,7 +58,7 @@ module Instrumentation
       return if method_exists?(instrumented_name)
 
       define_method instrumented_name do |*args, &block|
-        timer_for(method_name).time do
+        instrument_for(method_name).time do
           __send__ :"#{method_name}_without_instrumentation", *args, &block
         end
       end
