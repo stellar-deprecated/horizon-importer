@@ -12,6 +12,13 @@ class PendingTransaction < ActiveRecord::Base
     errored:   4,
   }
 
+  before_validation :populate_from_xdr
+  validates :state,             presence: true
+  validates :sending_address,   presence: true
+  validates :sending_sequence,  presence: true, numericality: true
+  validates :tx_envelope,       presence: true
+  validates :tx_hash,           presence: true
+
   aasm :column => :state do
     # upon initial submission to the api server, a PendingTransaction is `:pending`
     state :pending, :initial => true
@@ -42,10 +49,23 @@ class PendingTransaction < ActiveRecord::Base
     end
   end
 
-  private
-  def perform_submit
+
+  # 
+  # Deserializes tx_envelope and populates the various model fields
+  # from the data contained within.
+  # 
+  def populate_from_xdr
     # TODO
   end
 
+  private
+
+  # 
+  # Performs an actual submission of this pending transaction to the core
+  # server
+  # 
+  def perform_submit
+    # TODO
+  end
 
 end
