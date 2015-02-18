@@ -8,6 +8,7 @@ gem 'aasm', '~> 4.0.8'
 gem 'metriks', '~> 0.9.9.7'
 gem 'xdr', git: "git@github.com:stellar/ruby-xdr"
 gem 'stellar-core', git: "git@github.com:stellar/ruby-stellar-core.git"
+gem 'faraday'
 
 # sql gems
 gem 'pg', platform: :ruby

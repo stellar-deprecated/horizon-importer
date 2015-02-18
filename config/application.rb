@@ -7,6 +7,13 @@ Bundler.require(*Rails.groups)
 module StellardHayashiApi
   class Application < Rails::Application
 
+    # custom configs
+
+    config.stellard_url = ENV["STELLARD_URL"] || "http://localhost:39132"
+
+    #
+
+
     config.autoload_paths += ["#{config.root}/lib"]
 
     config.generators do |g|

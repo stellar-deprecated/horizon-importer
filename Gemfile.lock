@@ -59,6 +59,8 @@ GEM
     coderay (1.1.0)
     diff-lcs (1.2.5)
     erubis (2.7.0)
+    faraday (0.9.1)
+      multipart-post (>= 1.2, < 3)
     ffi (1.9.6)
     ffi (1.9.6-java)
     formatador (0.2.5)
@@ -103,6 +105,7 @@ GEM
     mime-types (1.25.1)
     minitest (5.5.1)
     multi_json (1.10.1)
+    multipart-post (2.0.0)
     nenv (0.2.0)
     notiffany (0.0.5)
       nenv (~> 0.1)
@@ -209,6 +212,7 @@ PLATFORMS
 DEPENDENCIES
   aasm (~> 4.0.8)
   activerecord-jdbc-adapter
+  faraday
   guard
   guard-rspec
   jbuilder (~> 2.0)

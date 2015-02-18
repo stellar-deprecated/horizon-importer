@@ -55,7 +55,19 @@ class PendingTransaction < ActiveRecord::Base
   # from the data contained within.
   # 
   def populate_from_xdr
-    # TODO
+    return if tx_envelope.blank?
+    self.sending_address     = parsed_envelope.tx.account.unpack("H*").first #TODO: base58 encode
+    self.sending_sequence    = parsed_envelope.tx.seq_num
+    self.max_ledger_sequence = parsed_envelope.tx.max_ledger
+    self.min_ledger_sequence = parsed_envelope.tx.min_ledger
+    self.tx_hash             = parsed_envelope.tx.hash
+  end
+
+  def parsed_envelope
+    return @parsed_envelope if defined? @parsed_envelope
+    raw = [tx_envelope].pack("H*")
+
+    @parsed_envelope = Stellar::TransactionEnvelope.from_xdr(raw)
   end
 
   private
@@ -65,7 +77,7 @@ class PendingTransaction < ActiveRecord::Base
   # server
   # 
   def perform_submit
-    # TODO
+    $stellard.get("tx", blob: tx_envelope)
   end
 
 end
