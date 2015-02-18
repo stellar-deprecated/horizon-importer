@@ -1,3 +1,20 @@
+GIT
+  remote: git@github.com:stellar/ruby-stellar-core.git
+  revision: 5bbc0177b8db5f53c55902706389cff6c3f62f91
+  specs:
+    stellar-core (0.0.1)
+      rbnacl
+      xdr
+
+GIT
+  remote: git@github.com:stellar/ruby-xdr
+  revision: 53e221d95560ea302607aae5e897ef5c206d6280
+  specs:
+    xdr (0.0.1)
+      activemodel (~> 4)
+      activesupport (~> 4)
+      backports (~> 3.6)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -35,6 +52,7 @@ GEM
     atomic (1.1.99-java)
     avl_tree (1.2.1)
       atomic (~> 1.1)
+    backports (3.6.4)
     builder (3.2.2)
     celluloid (0.16.0)
       timers (~> 4.0.0)
@@ -124,6 +142,8 @@ GEM
     rb-fsevent (0.9.4)
     rb-inotify (0.9.5)
       ffi (>= 0.5.0)
+    rbnacl (3.1.2)
+      ffi
     rdoc (4.2.0)
       json (~> 1.4)
     rspec (3.2.0)
@@ -202,4 +222,6 @@ DEPENDENCIES
   sdoc (~> 0.4.0)
   shoulda-matchers
   sqlite3
+  stellar-core!
   torquebox-web (>= 4.0.0.alpha1)
+  xdr!
