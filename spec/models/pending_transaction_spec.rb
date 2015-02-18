@@ -10,11 +10,18 @@ RSpec.describe PendingTransaction, type: :model do
     it { should validate_presence_of(:tx_envelope) }
     it { should validate_presence_of(:tx_hash) }
 
-    it "validates the tx_envelope is a valid xdr-encoded Stellar::TransactionEnvelope"
-    it "validates the tx_hash is a hex-encoded 32-byte hash"
-    it "validates the sending_address is a base58 encoded address"
-    it "validates the sending_sequence is not in the past"
-    it "validates the signature contained in the envelope is valid"
+    it "validates the `tx_envelope` is a valid xdr-encoded Stellar::TransactionEnvelope"
+    it "validates the `tx_hash` is a hex-encoded 32-byte hash"
+    it "validates the `sending_address` is a base58 encoded address"
+    it "validates the `sending_sequence` is not in the past"
+    it "validates the `signature` contained in the envelope is valid"
+  end
+
+  describe "#submit" do
+
+    it "should not submit a transaction that is invalid"
+    it "should transition `state` to 'submitted'"
+
   end
 
 
