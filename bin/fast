@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+export RBENV_VERSION=${FAST_RUBY-"2.1.3"}
+exec $@
