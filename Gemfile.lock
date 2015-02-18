@@ -1,4 +1,12 @@
 GIT
+  remote: git://github.com/bkeepers/dotenv.git
+  revision: 434713e930199c0107d66b956b23304df21edafb
+  specs:
+    dotenv (1.0.2)
+    dotenv-rails (1.0.2)
+      dotenv (= 1.0.2)
+
+GIT
   remote: git@github.com:stellar/ruby-stellar-core.git
   revision: 5bbc0177b8db5f53c55902706389cff6c3f62f91
   specs:
@@ -212,6 +220,7 @@ PLATFORMS
 DEPENDENCIES
   aasm (~> 4.0.8)
   activerecord-jdbc-adapter
+  dotenv-rails!
   faraday
   guard
   guard-rspec

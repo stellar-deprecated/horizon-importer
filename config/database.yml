@@ -1,16 +1,21 @@
 default: &default
-  adapter: sqlite3
   pool: 5
+  encoding: utf8
   timeout: 5000
+
+hayashi: &hayashi
+  <<: *default
+  url: <%= ENV["HAYASHI_DATABASE_URL"] %>
 
 development:
   <<: *default
-  database: db/development.sqlite3
+  url: <%= ENV["DATABASE_URL"] %>
 
 test:
   <<: *default
-  database: db/test.sqlite3
+  adapter: postgresql
+  database: hayashi-api_test
 
 production:
   <<: *default
-  database: db/production.sqlite3
+  url: <%= ENV["DATABASE_URL"] %>

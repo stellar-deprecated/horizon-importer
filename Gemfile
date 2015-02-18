@@ -20,6 +20,7 @@ gem 'activerecord-jdbc-adapter', platform: :jruby
 
 
 group :test, :development do
+  gem 'dotenv-rails', github: "bkeepers/dotenv"
   gem 'rspec-rails'
   gem 'pry-rails'
   gem 'shoulda-matchers'

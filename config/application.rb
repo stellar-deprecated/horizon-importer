@@ -4,13 +4,15 @@ require 'rails/all'
 
 Bundler.require(*Rails.groups)
 
+Dotenv::Railtie.load
+
 module StellardHayashiApi
   class Application < Rails::Application
 
     # custom configs
 
-    config.stellard_url = ENV["STELLARD_URL"] || "http://localhost:39132"
-
+    config.stellard_url = ENV["STELLARD_URL"]
+    raise "STELLARD_URL environment variable unset" if config.stellard_url.blank?
     #
 
 
