@@ -4,6 +4,13 @@ class PendingTransaction < ActiveRecord::Base
 
   instrument :perform_submit
 
+  before_validation :populate_from_xdr
+  validates :state,             presence: true
+  validates :sending_address,   presence: true
+  validates :sending_sequence,  presence: true, numericality: true
+  validates :tx_envelope,       presence: true
+  validates :tx_hash,           presence: true
+  
   enum state: { 
     pending:   0, 
     submitted: 1,
@@ -12,12 +19,6 @@ class PendingTransaction < ActiveRecord::Base
     errored:   4,
   }
 
-  before_validation :populate_from_xdr
-  validates :state,             presence: true
-  validates :sending_address,   presence: true
-  validates :sending_sequence,  presence: true, numericality: true
-  validates :tx_envelope,       presence: true
-  validates :tx_hash,           presence: true
 
   aasm :column => :state do
     # upon initial submission to the api server, a PendingTransaction is `:pending`
