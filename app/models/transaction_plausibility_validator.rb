@@ -15,8 +15,12 @@ class TransactionPlausibilityValidator < ActiveModel::Validator
     return if pending_tx.tx_envelope.blank?
     env = pending_tx.parsed_envelope
 
+    if env.nil?
+      pending_tx.errors[:tx_envelope] = "is not parseable"
+    end
+
     if invalid_sending_address?(pending_tx)
-      pending_tx.errors[:sending_address] = "Invalid base58 encoding"
+      pending_tx.errors[:sending_address] = "is not base58 encoded"
     end
 
     account = pending_tx.sending_account
@@ -25,9 +29,9 @@ class TransactionPlausibilityValidator < ActiveModel::Validator
     # the transaction sequence is 1 (i.e. we may have simply closed the ledger
     # that funds the account)
     if account.blank?
-      pending_tx.errors[:sending_address] = "Unknown account"
+      pending_tx.errors[:sending_address] = "is unknown"
     elsif account.sequence > pending_tx.sending_sequence
-      pending_tx.errors[:sending_sequence] = "Invalid sequence"
+      pending_tx.errors[:sending_sequence] = "is greater than account's sequence"
     end
     
   end

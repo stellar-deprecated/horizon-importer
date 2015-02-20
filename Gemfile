@@ -10,6 +10,7 @@ gem 'xdr', git: "git@github.com:stellar/ruby-xdr"
 gem 'stellar-core', git: "git@github.com:stellar/ruby-stellar-core.git"
 gem 'faraday'
 gem 'composite_primary_keys', '~> 7.0.13'
+gem 'memoist'
 
 # sql gems
 gem 'pg', platform: :ruby

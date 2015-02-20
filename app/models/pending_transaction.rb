@@ -1,4 +1,5 @@
 class PendingTransaction < ActiveRecord::Base
+  extend Memoist
   include AASM
   include Instrumentation
 
@@ -6,12 +7,16 @@ class PendingTransaction < ActiveRecord::Base
 
   has_one :sending_account, class_name: "Hayashi::Account", foreign_key: :sending_address
 
+  before_validation :flush_cache
   before_validation :populate_from_xdr
-  validates :state,             presence: true
-  validates :sending_address,   presence: true
-  validates :sending_sequence,  presence: true, numericality: true
-  validates :tx_envelope,       presence: true
-  validates :tx_hash,           presence: true
+  validates :state,               presence: true
+  validates :sending_address,     presence: true
+  validates :sending_sequence,    presence: true, numericality: true
+  validates :tx_envelope,         presence: true
+  validates :tx_hash,             presence: true, length: {is: 64 }, hex: true
+  validates :min_ledger_sequence, inclusion: 0..(2**63 - 1), allow_nil: true
+  validates :max_ledger_sequence, inclusion: 0..(2**63 - 1), allow_nil: true
+
   validates_with TransactionPlausibilityValidator, :if => :validate_plausibility
 
   enum state: { 
@@ -60,7 +65,7 @@ class PendingTransaction < ActiveRecord::Base
   # from the data contained within.
   # 
   def populate_from_xdr
-    return if tx_envelope.blank?
+    return if parsed_envelope.nil?
     self.sending_address     = Convert.base58.check_encode(:account_id, parsed_envelope.tx.account)
     self.sending_sequence    = parsed_envelope.tx.seq_num
     self.max_ledger_sequence = parsed_envelope.tx.max_ledger
@@ -68,12 +73,13 @@ class PendingTransaction < ActiveRecord::Base
     self.tx_hash             = Convert.to_hex(parsed_envelope.tx.hash)
   end
 
-  def parsed_envelope
-    return @parsed_envelope if defined? @parsed_envelope
-    raw = [tx_envelope].pack("H*")
-
-    @parsed_envelope = Stellar::TransactionEnvelope.from_xdr(raw)
+  memoize def parsed_envelope
+    raw = Convert.from_hex(tx_envelope)
+    Stellar::TransactionEnvelope.from_xdr(raw)
+  rescue EOFError
+    nil
   end
+
 
   private
 
