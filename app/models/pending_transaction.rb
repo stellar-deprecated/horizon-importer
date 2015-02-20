@@ -12,7 +12,8 @@ class PendingTransaction < ActiveRecord::Base
   validates :sending_sequence,  presence: true, numericality: true
   validates :tx_envelope,       presence: true
   validates :tx_hash,           presence: true
-  
+  validates_with TransactionPlausibilityValidator, :if => :validate_plausibility
+
   enum state: { 
     pending:   0, 
     submitted: 1,
@@ -52,6 +53,7 @@ class PendingTransaction < ActiveRecord::Base
     end
   end
 
+  attr_accessor :validate_plausibility
 
   # 
   # Deserializes tx_envelope and populates the various model fields
@@ -59,11 +61,11 @@ class PendingTransaction < ActiveRecord::Base
   # 
   def populate_from_xdr
     return if tx_envelope.blank?
-    self.sending_address     = parsed_envelope.tx.account.unpack("H*").first #TODO: base58 encode
+    self.sending_address     = Convert.base58.check_encode(:account_id, parsed_envelope.tx.account)
     self.sending_sequence    = parsed_envelope.tx.seq_num
     self.max_ledger_sequence = parsed_envelope.tx.max_ledger
     self.min_ledger_sequence = parsed_envelope.tx.min_ledger
-    self.tx_hash             = parsed_envelope.tx.hash
+    self.tx_hash             = Convert.to_hex(parsed_envelope.tx.hash)
   end
 
   def parsed_envelope

@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: git@github.com:stellar/ruby-stellar-core.git
-  revision: ada7bdb63caa85706d7141b681861df64b2441c1
+  revision: 6f12563753ac88901b445983d17ab19c5aec3cd8
   specs:
     stellar-core (0.0.1)
       activesupport (~> 4)
@@ -81,7 +81,7 @@ GEM
     ffi (1.9.6)
     ffi (1.9.6-java)
     formatador (0.2.5)
-    guard (2.12.2)
+    guard (2.12.3)
       formatador (>= 0.2.4)
       listen (~> 2.7)
       lumberjack (~> 1.0)

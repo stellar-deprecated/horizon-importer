@@ -3,14 +3,14 @@ class CreatePendingTransactions < ActiveRecord::Migration
     create_table :pending_transactions do |t|
       t.integer   :state, default: 0, null: false
 
-      t.string    :sending_address, limit: 64, null: false
-      t.integer   :sending_sequence, null: false
-      
-      t.integer   :max_ledger_sequence
-      t.integer   :min_ledger_sequence
+      t.string    :sending_address,  limit: 64, null: false
 
-      t.text      :tx_envelope, null: false
-      t.string    :tx_hash, null: false, limit: 64
+      t.integer   :sending_sequence,    limit: 4,  null: false
+      t.integer   :max_ledger_sequence, limit: 8
+      t.integer   :min_ledger_sequence, limit: 8
+
+      t.text      :tx_envelope, limit: 4.kilobytes, null: false
+      t.string    :tx_hash,     limit: 64,          null: false
 
       t.timestamps
 

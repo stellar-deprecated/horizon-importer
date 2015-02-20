@@ -20,8 +20,8 @@ ActiveRecord::Schema.define(version: 20150216185929) do
     t.integer  "state",                          default: 0, null: false
     t.string   "sending_address",     limit: 64,             null: false
     t.integer  "sending_sequence",                           null: false
-    t.integer  "max_ledger_sequence"
-    t.integer  "min_ledger_sequence"
+    t.integer  "max_ledger_sequence", limit: 8
+    t.integer  "min_ledger_sequence", limit: 8
     t.text     "tx_envelope",                                null: false
     t.string   "tx_hash",             limit: 64,             null: false
     t.datetime "created_at"
