@@ -68,8 +68,14 @@ GEM
     coderay (1.1.0)
     composite_primary_keys (7.0.13)
       activerecord (~> 4.1.7)
+    database_cleaner (1.4.0)
     diff-lcs (1.2.5)
     erubis (2.7.0)
+    factory_girl (4.5.0)
+      activesupport (>= 3.0.0)
+    factory_girl_rails (4.5.0)
+      factory_girl (~> 4.5.0)
+      railties (>= 3.0.0)
     faraday (0.9.1)
       multipart-post (>= 1.2, < 3)
     ffi (1.9.6)
@@ -219,7 +225,9 @@ DEPENDENCIES
   aasm (~> 4.0.8)
   activerecord-jdbc-adapter
   composite_primary_keys (~> 7.0.13)
+  database_cleaner
   dotenv-rails!
+  factory_girl_rails
   faraday
   guard
   guard-rspec
