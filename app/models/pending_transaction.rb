@@ -9,16 +9,24 @@ class PendingTransaction < ActiveRecord::Base
 
   before_validation :flush_cache
   before_validation :populate_from_xdr
-  validates :state,               presence: true
-  validates :sending_address,     presence: true
-  validates :sending_sequence,    presence: true, numericality: true
-  validates :tx_envelope,         presence: true
-  validates :tx_hash,             presence: true, length: {is: 64 }, hex: true
-  validates :min_ledger_sequence, inclusion: 0..(2**63 - 1), allow_nil: true
-  validates :max_ledger_sequence, inclusion: 0..(2**63 - 1), allow_nil: true
+
+  # validations
+  with_options presence: true do |opt|
+    opt.validates :state
+    opt.validates :sending_address,   base58: { check: :account_id }
+    opt.validates :sending_sequence,  numericality: true
+    opt.validates :tx_envelope
+    opt.validates :tx_hash,           length: { is: 64 }, hex: true
+  end
+
+  with_options inclusion: 0..(2**63 - 1), allow_nil: true do |opt|
+    opt.validates :min_ledger_sequence
+    opt.validates :max_ledger_sequence
+  end
 
   validates_with TransactionPlausibilityValidator, :if => :validate_plausibility
 
+  # states
   enum state: { 
     pending:   0, 
     submitted: 1,

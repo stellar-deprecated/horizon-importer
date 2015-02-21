@@ -16,28 +16,21 @@ RSpec.describe PendingTransaction, type: :model do
 
     it "validates the `tx_envelope` is a valid xdr-encoded Stellar::TransactionEnvelope" do
       subject.validate_plausibility = true
-      subject.tx_envelope = envelope_hex
-      subject.valid?
-      expect(subject.errors).to_not have_key(:tx_envelope)
-      subject.tx_envelope = "foo" * 3
-      subject.valid?
-      expect(subject.errors).to have_key(:tx_envelope)
+      expect{ subject.tx_envelope = envelope_hex }.to_not add_error(:tx_envelope)
+      expect{ subject.tx_envelope = "foo" * 3 }.to add_error(:tx_envelope)
     end
 
     it "validates the `tx_hash` is a hex-encoded 32-byte hash" do
-      subject.tx_hash = "FF" * 32
-      subject.valid?
-      expect(subject.errors).to_not have_key(:tx_hash)
-      subject.tx_hash = "FF" * 31
-      subject.valid?
-      expect(subject.errors).to have_key(:tx_hash)
-      subject.tx_hash = "I'm totally not hex encoded, but I am 64-bytes".rjust(64)
-      subject.valid?
-      expect(subject.errors).to have_key(:tx_hash)
+      expect{ subject.tx_hash = "FF" * 32 }.to_not add_error(:tx_hash)
+      expect{ subject.tx_hash = "FF" * 31 }.to add_error(:tx_hash)
+      expect{ subject.tx_hash = "I'm totally not hex encoded, but I am 64-bytes".rjust(64) }.to add_error(:tx_hash)
     end
 
     it "validates the `sending_address` is a base58 encoded address" do
-
+      expect{ subject.sending_address = "gsYRSEQhTffqA9opPepAENCr2WG6z5iBHHubxxbRzWaHf8FBWcu"  }.to_not add_error(:sending_address)
+      expect{ subject.sending_address = nil  }.to add_error(:sending_address)
+      expect{ subject.sending_address = "f0o"  }.to add_error(:sending_address)
+      expect{ subject.sending_address = "s9aaUNPaT9t1x7vCeDzQYvLZDm5XxSUKkwnqQowV6D3kMr678uZ"  }.to add_error(:sending_address)
     end
 
     it "validates the `sending_sequence` is not in the past"
