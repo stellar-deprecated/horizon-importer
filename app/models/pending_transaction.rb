@@ -7,7 +7,6 @@ class PendingTransaction < ActiveRecord::Base
 
   has_one :sending_account, class_name: "Hayashi::Account", foreign_key: :sending_address
 
-  before_validation :flush_cache
   before_validation :populate_from_xdr
 
   # validations
@@ -73,7 +72,10 @@ class PendingTransaction < ActiveRecord::Base
   # from the data contained within.
   # 
   def populate_from_xdr
+    flush_cache(:parsed_envelope) if tx_envelope_changed?
+
     return if parsed_envelope.nil?
+
     self.sending_address     = Convert.base58.check_encode(:account_id, parsed_envelope.tx.account)
     self.sending_sequence    = parsed_envelope.tx.seq_num
     self.max_ledger_sequence = parsed_envelope.tx.max_ledger
@@ -88,8 +90,10 @@ class PendingTransaction < ActiveRecord::Base
     nil
   end
 
-
-  private
+  def reload(*args)
+    flush_cache
+    super(*args)
+  end
 
   # 
   # Performs an actual submission of this pending transaction to the core
