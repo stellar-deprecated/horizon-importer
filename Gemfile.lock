@@ -56,6 +56,7 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.1)
       tzinfo (~> 1.1)
+    addressable (2.3.7)
     arel (5.0.1.20140414130214)
     atomic (1.1.99)
     atomic (1.1.99-java)
@@ -68,6 +69,8 @@ GEM
     coderay (1.1.0)
     composite_primary_keys (7.0.13)
       activerecord (~> 4.1.7)
+    crack (0.4.2)
+      safe_yaml (~> 1.0.0)
     database_cleaner (1.4.0)
     diff-lcs (1.2.5)
     docile (1.1.5)
@@ -189,6 +192,7 @@ GEM
       rspec-mocks (~> 3.2.0)
       rspec-support (~> 3.2.0)
     rspec-support (3.2.1)
+    safe_yaml (1.0.4)
     sdoc (0.4.1)
       json (~> 1.7, >= 1.7.7)
       rdoc (~> 4.0)
@@ -225,6 +229,10 @@ GEM
       torquebox-core (= 4.0.0.alpha1)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
+    vcr (2.9.3)
+    webmock (1.20.4)
+      addressable (>= 2.3.6)
+      crack (>= 0.3.2)
 
 PLATFORMS
   java
@@ -256,4 +264,6 @@ DEPENDENCIES
   sqlite3
   stellar-core!
   torquebox-web (>= 4.0.0.alpha1)
+  vcr
+  webmock
   xdr!

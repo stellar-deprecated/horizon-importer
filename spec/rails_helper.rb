@@ -1,5 +1,8 @@
 ENV['RAILS_ENV'] ||= 'test'
 
+# See `doc/rerecord.md` for explanation
+RERECORD = ENV['RERECORD'] == "true"
+
 require 'spec_helper'
 require File.expand_path('../../config/environment', __FILE__)
 require 'rspec/rails'
