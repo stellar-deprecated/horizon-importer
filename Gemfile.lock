@@ -79,6 +79,8 @@ GEM
       railties (>= 3.0.0)
     faraday (0.9.1)
       multipart-post (>= 1.2, < 3)
+    faraday_middleware (0.9.1)
+      faraday (>= 0.7.4, < 0.10)
     ffi (1.9.6)
     ffi (1.9.6-java)
     formatador (0.2.5)
@@ -236,6 +238,7 @@ DEPENDENCIES
   dotenv-rails!
   factory_girl_rails
   faraday
+  faraday_middleware
   guard
   guard-rspec
   jbuilder (~> 2.0)
