@@ -1,6 +1,6 @@
 RSpec.configure do |c|
   c.before(:suite) do
-    next unless RERECORD
+    next unless RECORD
     # confirm empty ledger state
     # play transactions, confirming success
     Recorder::TransactionSeeder.new.run
