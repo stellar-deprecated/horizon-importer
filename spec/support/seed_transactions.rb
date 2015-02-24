@@ -4,8 +4,8 @@ RSpec.configure do |c|
 
     raise "Hayashi Accounts table not at default state" if Hayashi::Account.count > 1
     raise "Hayashi TxHistory table not at default state" if Hayashi::Transaction.any?
-
-    # play transactions, confirming success
+    
+    # play transactions, TODO:confirm success
     Recorder::TransactionSeeder.new.run
     Recorder::HayashiDumper.new.dump
   end

@@ -1,7 +1,7 @@
-account :master, Stellar::KeyPair.from_raw_seed("masterpassphrasemasterpassphrase")
-account :scott,  Stellar::KeyPair.from_seed("s3QvCFTAqdizR5smxCqHXehZzSMyfqFHwKKXACGjkCz2dZGTmMp")
-account :bartek, Stellar::KeyPair.from_seed("sfxFjhCU4rbNtC7ujbwFmZiz8CfarCkCT4zizk6MeYf9DU5X5pH")
-account :andrew, Stellar::KeyPair.from_seed("sfv8H5a8rbLZNVr6pY8a6quMYXiientGotxxe3cGjvX2VnkYaHG")
+account :master, FactoryGirl.create(:master_key_pair)
+account :scott,  FactoryGirl.create(:scott_key_pair)
+account :bartek, FactoryGirl.create(:bartek_key_pair)
+account :andrew, FactoryGirl.create(:andrew_key_pair)
 
 payment :master, :scott,  [:native, 1000_000000]
 payment :master, :bartek, [:native, 1000_000000]
