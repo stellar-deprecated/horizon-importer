@@ -5,7 +5,7 @@ class PendingTransaction < ActiveRecord::Base
 
   instrument :perform_submit
 
-  has_one :sending_account, class_name: "Hayashi::Account", foreign_key: :sending_address
+  belongs_to :sending_account, class_name: "Hayashi::Account", foreign_key: :sending_address
 
   before_validation :populate_from_xdr
 

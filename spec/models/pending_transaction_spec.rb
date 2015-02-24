@@ -33,7 +33,20 @@ RSpec.describe PendingTransaction, type: :model do
       expect{ subject.sending_address = "s9aaUNPaT9t1x7vCeDzQYvLZDm5XxSUKkwnqQowV6D3kMr678uZ"  }.to add_error(:sending_address)
     end
 
-    it "validates the `sending_sequence` is not in the past"
+    it "validates the `sending_sequence` is not in the past" do
+      subject.validate_plausibility = true
+
+      # test presence of error
+      payment.seq_num = 1
+      envelope_hex = payment.to_envelope(master_key_pair).to_xdr(:hex)
+      expect{ subject.tx_envelope = envelope_hex }.to add_error(:sending_sequence)
+
+      # test abscence of error
+      payment.seq_num = 4
+      envelope_hex = payment.to_envelope(master_key_pair).to_xdr(:hex)
+      expect{ subject.tx_envelope = envelope_hex}.to_not add_error(:sending_sequence)
+    end
+
     it "validates the `signature` contained in the envelope is valid"
   end
 
