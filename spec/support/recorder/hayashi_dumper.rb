@@ -1,23 +1,20 @@
-require 'yaml_db'
-
 module Recorder
   class HayashiDumper
-    def initialize()
-      @helper = SerializationHelper::Base.new(YamlDb::Helper)
+    def initialize
     end
 
     # 
     # Dumps data from the hayashi core database into the file at path `data_path`,
     # overwriting it if it already exists.  When running the test suite with
-    # RECORD=true, the TransacitonSeeder will run prior to this, populating a
+    # RECORD=true, the TransactionSeeder will run prior to this, populating a
     # new ledger.  This method will then dump that populated core db state into
-    # a yaml file that subsequent test runs (i.e. with RECORD=false) will use
+    # a sql file that subsequent test runs (i.e. with RECORD=false) will use
     # as fixture data
     # 
     def dump
-      on_hayashi{ @helper.dump(data_path) }
+      hayashi_db = Hayashi::Base.connection_config[:database]
+      system("pg_dump #{hayashi_db} --clean --no-owner", out: data_path)
     end
-
 
     # 
     # Load data from `data_path` into the hayashi core database.  Normal test
@@ -25,31 +22,20 @@ module Recorder
     # a baseline state for the hayashi core system
     # 
     def load
-      return unless File.exist?(data_path)
-      on_hayashi{ @helper.load(data_path) }
+      hayashi_db = Hayashi::Base.connection_config[:database]
+      system("psql #{hayashi_db}", in: data_path, out: "/dev/null", err: "/dev/null")
     end
 
     private
+
 
     # 
     # The path where hayashi core db data is dumped/loaded
     # 
     # @return [String] the path
     def data_path
-      "#{SPEC_ROOT}/fixtures/hayashi.yml"
+      "#{SPEC_ROOT}/fixtures/hayashi.sql"
     end
 
-    # 
-    # Sets the base activerecord database connection to the hayashi core
-    # database.  YamlDb does not provide a facility to work with any connection
-    # other than `ActiveRecord::Base.connection`, so we're forced for the time
-    # being to use this method.
-    # 
-    def on_hayashi
-      ActiveRecord::Base.establish_connection :hayashi  
-      yield
-    ensure
-      ActiveRecord::Base.establish_connection 
-    end
   end
 end
