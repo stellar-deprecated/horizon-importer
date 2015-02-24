@@ -2,20 +2,12 @@ default: &default
   pool: 5
   encoding: utf8
   timeout: 5000
+  url: <%= ENV["DATABASE_URL"] %>
 
 hayashi: &hayashi
   <<: *default
   url: <%= ENV["HAYASHI_DATABASE_URL"] %>
 
-development:
-  <<: *default
-  url: <%= ENV["DATABASE_URL"] %>
-
-test:
-  <<: *default
-  adapter: postgresql
-  database: hayashi-api_test
-
-production:
+default_env:
   <<: *default
   url: <%= ENV["DATABASE_URL"] %>
