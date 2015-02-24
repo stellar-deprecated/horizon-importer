@@ -49,22 +49,17 @@ module Recorder
 
     private
     def wait_for_account(account, timeout=5.seconds)
-      txs   = Arel::Table.new("accounts");
-      query = txs.where(txs[:accountid].eq(account)).project(Arel.star)
-      wait_for_query(query, timeout)
+      wait_for(timeout){ Hayashi::Account.where(accountid: account).any?  }
     end
 
     def wait_for_transaction(hash, timeout=5.seconds)
-      txs   = Arel::Table.new("txhistory");
-      query = txs.where(txs[:txid].eq(hash)).project(Arel.star)
-      wait_for_query(query, timeout)
+      wait_for(timeout){ Hayashi::Transaction.where(txid: hash).any?  }
     end
 
-    def wait_for_query(query, timeout)
+    def wait_for(timeout)
       Timeout.timeout(timeout) do
         loop do
-          result = Hayashi::Base.connection.select_value(query)
-          break if result
+          break if yield
           sleep 0.01 # wait atleast 10ms
         end
       end

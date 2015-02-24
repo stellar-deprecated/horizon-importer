@@ -1,9 +1,19 @@
 RSpec.configure do |c|
   c.before(:suite) do
     next unless RECORD
-    # confirm empty ledger state
+
+    raise "Hayashi Accounts table not at default state" if Hayashi::Account.count > 1
+    raise "Hayashi TxHistory table not at default state" if Hayashi::Transaction.any?
+
     # play transactions, confirming success
     Recorder::TransactionSeeder.new.run
-    # dump database state
+    Recorder::HayashiDumper.new.dump
+  end
+end
+
+RSpec.configure do |c|
+  c.before(:suite) do
+    next if RECORD # if we're recording, don't load the database
+    Recorder::HayashiDumper.new.load
   end
 end
