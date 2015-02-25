@@ -47,7 +47,22 @@ RSpec.describe PendingTransaction, type: :model do
       expect{ subject.tx_envelope = envelope_hex}.to_not add_error(:sending_sequence)
     end
 
-    it "validates the `signature` contained in the envelope is valid"
+    it "validates the `signature` contained in the envelope is valid", :focus do
+      subject.validate_plausibility = true
+
+      other        = create(:key_pair)
+      envelope     = payment.to_envelope(other)
+
+      # signed by wrong account
+      expect{ subject.tx_envelope = envelope.to_xdr(:hex) }.to add_error(:tx_envelope)
+
+      # not signed
+      envelope.signatures = []
+      expect{ subject.tx_envelope = envelope.to_xdr(:hex) }.to add_error(:tx_envelope)
+
+      # correctly signed
+      expect{ subject.tx_envelope = envelope_hex }.to_not add_error(:tx_envelope)
+    end
   end
 
   describe "#submit" do

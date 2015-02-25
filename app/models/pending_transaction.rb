@@ -1,5 +1,5 @@
 class PendingTransaction < ActiveRecord::Base
-  extend Memoist
+  include Memoizes
   include AASM
   include Instrumentation
 
@@ -67,6 +67,8 @@ class PendingTransaction < ActiveRecord::Base
 
   attr_accessor :validate_plausibility
 
+  delegate :signatures, to: :parsed_envelope
+
   # 
   # Deserializes tx_envelope and populates the various model fields
   # from the data contained within.
@@ -88,11 +90,6 @@ class PendingTransaction < ActiveRecord::Base
     Stellar::TransactionEnvelope.from_xdr(raw)
   rescue EOFError
     nil
-  end
-
-  def reload(*args)
-    flush_cache
-    super(*args)
   end
 
   # 

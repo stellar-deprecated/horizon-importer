@@ -33,7 +33,10 @@ class TransactionPlausibilityValidator < ActiveModel::Validator
     elsif account.sequence > pending_tx.sending_sequence
       pending_tx.errors[:sending_sequence] = "is greater than account's sequence"
     end
-    
+
+    if env && !env.signed_correctly?(*account.all_signer_key_pairs)
+      pending_tx.errors[:tx_envelope] = "is not signed correctly"
+    end   
   end
 
   def invalid_sending_address?(pending_tx)

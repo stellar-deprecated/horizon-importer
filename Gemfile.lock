@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: git@github.com:stellar/ruby-stellar-core.git
-  revision: 6f12563753ac88901b445983d17ab19c5aec3cd8
+  revision: 2585e1e924de9a88ce9f541222edd1a1a2cc68dc
   specs:
     stellar-core (0.0.1)
       activesupport (~> 4)
