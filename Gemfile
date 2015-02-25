@@ -7,7 +7,7 @@ gem 'torquebox-web', ">= 4.0.0.alpha1"
 gem 'aasm', '~> 4.0.8'
 gem 'metriks', '~> 0.9.9.7'
 gem 'xdr', git: "git@github.com:stellar/ruby-xdr"
-gem 'stellar-core', git: "git@github.com:stellar/ruby-stellar-core.git"
+gem 'stellar-core', git: "git@github.com:stellar/ruby-stellar-core.git", require: false
 gem 'faraday'
 gem 'faraday_middleware'
 gem 'composite_primary_keys', '~> 7.0.13'
