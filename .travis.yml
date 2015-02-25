@@ -1,0 +1,17 @@
+language: ruby
+rvm:
+- 2.2.0
+- 2.1.5
+- 2.0.0
+- 1.9.3
+- jruby-1.7.9
+- jruby-head
+addons:
+  postgresql: "9.3"
+script: "LD_LIBRARY_PATH=lib bundle exec rake travis"
+before_script:
+  - psql -c 'create database hayashi-api_test;'
+  - psql -c 'create database hayashi_test;'
+notifications:
+  slack:
+    secure: Vjq1o6O3TQ+gnKmKm3an+/YICoSDoDeCq/0TU51ykQGHy9bApwtW4K0WPAfYf/Yrkw9xBjVvB1Spv7MU4I/GgMWRpMkU4sUEaRIZ/8SP0c9XgPjTRBUskzEch/PwqZmjS4MWdeGeBkww67o/uPcoox1K/OS3ys8mPwPoNX2YzuI=
