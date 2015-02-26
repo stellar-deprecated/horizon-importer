@@ -4,9 +4,10 @@ class Hayashi::Account < Hayashi::Base
   
   has_many :signers, class_name: "Hayashi::Signer", foreign_key: [:accountid]
 
-  memoize def all_signer_key_pairs
+  def all_signer_key_pairs
     signers.map(&:key_pair) + [key_pair]
   end
+  memoize :all_signer_key_pairs
 
   def key_pair
     Stellar::KeyPair.from_address(accountid)

@@ -85,12 +85,13 @@ class PendingTransaction < ActiveRecord::Base
     self.tx_hash             = Convert.to_hex(parsed_envelope.tx.hash)
   end
 
-  memoize def parsed_envelope
+  def parsed_envelope
     raw = Convert.from_hex(tx_envelope)
     Stellar::TransactionEnvelope.from_xdr(raw)
   rescue EOFError
     nil
   end
+  memoize :parsed_envelope
 
   # 
   # Performs an actual submission of this pending transaction to the core

@@ -13,7 +13,7 @@ module Recorder
     # 
     def dump
       hayashi_db = Hayashi::Base.connection_config[:database]
-      system("pg_dump #{hayashi_db} --clean --no-owner", out: data_path)
+      `pg_dump #{hayashi_db} --clean --no-owner > #{data_path}`
     end
 
     # 
@@ -23,7 +23,7 @@ module Recorder
     # 
     def load
       hayashi_db = Hayashi::Base.connection_config[:database]
-      system("psql #{hayashi_db}", in: data_path, out: "/dev/null", err: "/dev/null")
+      `psql #{hayashi_db} < #{data_path}`
     end
 
     private
