@@ -4,6 +4,8 @@ Rails.application.routes.draw do
   root 'welcome#index'
   get 'metrics' => 'metrics#index'
 
+  resources :accounts
+
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 
