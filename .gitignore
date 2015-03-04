@@ -19,3 +19,5 @@
 /doc/app
 coverage/
 test.rb
+doc/generated/
+.yardoc/

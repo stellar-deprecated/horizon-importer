@@ -1,0 +1,10 @@
+--output-dir doc/generated
+--protected
+--tag blueprint:"API Blueprint"
+-hide-tag blueprint
+--no-private
+--embed-mixin ClassMethods
+lib/**/*.rb
+app/**/*.rb
+-
+doc/*.md
