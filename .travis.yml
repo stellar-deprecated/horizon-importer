@@ -3,6 +3,7 @@ rvm:
 - 2.2.0
 - 2.1.5
 - jruby-9.0.0.0.pre1
+- jruby-1.7.19
 env:
   - DATABASE_USER="postgres" NOCOVERAGE="true" JRUBY_OPTS="-J-Xmx2048m"
 addons:
