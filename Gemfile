@@ -14,6 +14,7 @@ gem 'composite_primary_keys', '~> 7.0.13'
 gem 'memoist'
 gem 'backports'
 gem 'json_expressions'
+gem 'rack-attack'
 
 # sql gems
 gem 'pg', platform: :ruby
@@ -22,6 +23,10 @@ gem 'sqlite3', platform: :ruby
 gem 'jdbc-postgres', platform: :jruby
 gem 'jdbc-sqlite3', platform: :jruby
 gem 'activerecord-jdbc-adapter', platform: :jruby
+
+#memcached
+gem 'memcached', platform: :ruby, require: 'memcached'
+gem 'jruby-memcached', platform: :jruby, require: 'memcached'
 
 
 group :test, :development do

@@ -110,6 +110,7 @@ GEM
       multi_json (~> 1.2)
     jdbc-postgres (9.4.1200)
     jdbc-sqlite3 (3.8.7)
+    jruby-memcached (0.5.5)
     json (1.8.2)
     json (1.8.2-java)
     json_expressions (0.8.3)
@@ -120,6 +121,7 @@ GEM
     lumberjack (1.0.9)
     mail (2.6.3)
       mime-types (>= 1.16, < 3)
+    memcached (1.8.0)
     memoist (0.11.0)
     method_source (0.8.2)
     metriks (0.9.9.7)
@@ -147,6 +149,8 @@ GEM
     pry-rails (0.3.3)
       pry (>= 0.9.10)
     rack (1.5.2)
+    rack-attack (4.2.0)
+      rack
     rack-test (0.6.3)
       rack (>= 1.0)
     rails (4.1.9)
@@ -255,11 +259,14 @@ DEPENDENCIES
   jbuilder (~> 2.0)
   jdbc-postgres
   jdbc-sqlite3
+  jruby-memcached
   json_expressions
+  memcached
   memoist
   metriks (~> 0.9.9.7)
   pg
   pry-rails
+  rack-attack
   rails (~> 4.1.0)
   rspec-rails
   sdoc (~> 0.4.0)
