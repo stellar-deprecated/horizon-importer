@@ -13,6 +13,7 @@ gem 'faraday_middleware'
 gem 'composite_primary_keys', '~> 7.0.13'
 gem 'memoist'
 gem 'backports'
+gem 'json_expressions'
 
 # sql gems
 gem 'pg', platform: :ruby

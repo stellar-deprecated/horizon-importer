@@ -16,7 +16,10 @@ RSpec.describe "Account Requests", type: :request do
     context "with a single known account" do
       let(:addresses){[create(:master_key_pair).address]}
       it{ should have_status(:ok) }
-      it "should return the account's details"
+      
+      it{ should match_json({
+        id: addresses.first 
+      })}
     end
 
     context "with multiple known accounts", :pending do

@@ -1,0 +1,3 @@
+class ApplicationError < StandardError
+
+end

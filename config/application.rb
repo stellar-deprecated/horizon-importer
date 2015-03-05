@@ -16,7 +16,8 @@ module StellardHayashiApi
     #
 
 
-    config.autoload_paths += ["#{config.root}/lib"]
+    config.autoload_paths << "#{config.root}/lib"
+    config.autoload_paths << "#{config.root}/app/errors"
 
     config.generators do |g|
       g.orm             :active_record

@@ -112,6 +112,7 @@ GEM
     jdbc-sqlite3 (3.8.7)
     json (1.8.2)
     json (1.8.2-java)
+    json_expressions (0.8.3)
     listen (2.8.5)
       celluloid (>= 0.15.2)
       rb-fsevent (>= 0.9.3)
@@ -254,6 +255,7 @@ DEPENDENCIES
   jbuilder (~> 2.0)
   jdbc-postgres
   jdbc-sqlite3
+  json_expressions
   memoist
   metriks (~> 0.9.9.7)
   pg
