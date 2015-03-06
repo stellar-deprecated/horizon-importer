@@ -11,7 +11,8 @@ module StellardHayashiApi
 
     # middlewarezez
     config.middleware.use Rack::Attack
-
+    require "#{config.root}/lib/problem_renderer"
+    config.exceptions_app = ProblemRenderer
 
     # custom configs
 
