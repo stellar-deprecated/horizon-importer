@@ -41,7 +41,10 @@ module Recorder
         WebMock.allow_net_connect!
         @transactions.each do |tx|
           wait_for_account tx.account.keypair.address
-          $stellard.get("tx", blob: tx.envelope.to_xdr(:hex))
+          response  = $stellard.get("tx", blob: tx.envelope.to_xdr(:hex))
+          raw       = [response.body["result"]].pack("H*")
+          tx_result = Stellar::TransactionResult.from_xdr(raw)
+          # TODO: break if a non-success response is returned
         end
         WebMock.disable_net_connect!
       end

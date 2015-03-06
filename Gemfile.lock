@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: git@github.com:stellar/ruby-stellar-core.git
-  revision: 4fb2c25d158a9344fc77eac590b8e17b1f417738
+  revision: 3102d8db2702bdef4e549f77cf483d538ee0b37e
   specs:
     stellar-core (0.0.1)
       activesupport (~> 4)
@@ -17,7 +17,7 @@ GIT
 
 GIT
   remote: git@github.com:stellar/ruby-xdr
-  revision: 8ba8888af0cc1ade4fcd73d295b425e0c0f7431d
+  revision: ee6c7574c9620b5340b31f2ec8f3493a151caa04
   specs:
     xdr (0.0.1)
       activemodel (~> 4)
@@ -150,6 +150,8 @@ GEM
       spoon (~> 0.0)
     pry-rails (0.3.3)
       pry (>= 0.9.10)
+    puma (2.11.1)
+      rack (>= 1.1, < 2.0)
     rack (1.5.2)
     rack-attack (4.2.0)
       rack
@@ -269,6 +271,7 @@ DEPENDENCIES
   oat
   pg
   pry-rails
+  puma
   rack-attack
   rails (~> 4.1.0)
   rspec-rails

@@ -3,11 +3,12 @@ source 'https://rubygems.org'
 gem 'rails', '~> 4.1.0'
 gem 'jbuilder', '~> 2.0'
 gem 'sdoc', '~> 0.4.0', group: :doc
-gem 'torquebox-web', ">= 4.0.0.alpha1"
 gem 'aasm', '~> 4.0.8'
 gem 'metriks', '~> 0.9.9.7'
 gem 'xdr', git: "git@github.com:stellar/ruby-xdr"
+# gem 'xdr', path: "../ruby-xdr", require: false
 gem 'stellar-core', git: "git@github.com:stellar/ruby-stellar-core.git", require: false
+# gem 'stellar-core', path: "../ruby-stellar-core", require: false
 gem 'faraday'
 gem 'faraday_middleware'
 gem 'composite_primary_keys', '~> 7.0.13'
@@ -28,6 +29,10 @@ gem 'activerecord-jdbc-adapter', platform: :jruby
 #memcached
 gem 'memcached', platform: :ruby, require: 'memcached'
 gem 'jruby-memcached', platform: :jruby, require: 'memcached'
+
+#webservers
+gem 'puma', platform: :ruby
+gem 'torquebox-web', ">= 4.0.0.alpha1", platform: :jruby
 
 
 group :test, :development do
