@@ -136,6 +136,8 @@ GEM
     notiffany (0.0.6)
       nenv (~> 0.1)
       shellany (~> 0.0)
+    oat (0.4.6)
+      activesupport
     pg (0.18.1)
     pry (0.10.1)
       coderay (~> 1.1.0)
@@ -264,6 +266,7 @@ DEPENDENCIES
   memcached
   memoist
   metriks (~> 0.9.9.7)
+  oat
   pg
   pry-rails
   rack-attack

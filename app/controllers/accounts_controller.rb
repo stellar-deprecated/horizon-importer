@@ -10,6 +10,10 @@ class AccountsController < ApplicationController
   def show
     @account = Hayashi::Account.where(accountid: params[:id]).first
 
-    render problem: :not_found unless @account.present?
+    if @account.present?
+      render oat: @account
+    else
+      render problem: :not_found
+    end
   end
 end

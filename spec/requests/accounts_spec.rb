@@ -19,11 +19,17 @@ RSpec.describe "Account Requests", type: :request do
 
     context "with a single known account" do
       let(:addresses){[create(:master_key_pair).address]}
+      let(:address){ addresses.first }
       it{ should have_status(:ok) }
       
       it{ should match_json({
-        id: addresses.first 
-      })}
+        id: address,
+        :_links => {
+          :self => {
+            :href => "http://www.example.com/accounts/#{address}"
+          }
+        }
+      }, strict: true)}
     end
 
     context "with multiple known accounts", :pending do
@@ -47,10 +53,10 @@ RSpec.describe "Account Requests", type: :request do
       it "should return nil for each unknown account"
     end
 
-    context "with multiple unknown accounts", :pending do
+    context "with multiple unknown accounts" do
       let(:addresses){[
         "not_real",
-        "also not real",
+        "also_not_real",
       ]}
 
       it{ should have_status(:not_found) }

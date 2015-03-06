@@ -15,6 +15,7 @@ gem 'memoist'
 gem 'backports'
 gem 'json_expressions'
 gem 'rack-attack'
+gem 'oat'
 
 # sql gems
 gem 'pg', platform: :ruby
