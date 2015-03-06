@@ -18,7 +18,7 @@ ActionController::Renderers.add :problem do |obj, options|
               COMMON_PROBLEMS[obj]
             when obj.respond_to?(:to_problem)
               obj.to_problem
-            when Exception
+            when obj.is_a?(Exception)
               COMMON_PROBLEMS[:generic]
             else
               obj
