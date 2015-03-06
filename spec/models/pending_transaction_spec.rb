@@ -11,6 +11,8 @@ RSpec.describe PendingTransaction, type: :model do
     it { should validate_presence_of(:sending_address) }
     it { should validate_presence_of(:sending_sequence) }
     it { should validate_numericality_of(:sending_sequence) }
+    it { should validate_presence_of(:sending_sequence_slot) }
+    it { should validate_numericality_of(:sending_sequence_slot) }
     it { should validate_presence_of(:tx_envelope) }
     it { should validate_presence_of(:tx_hash) }
 

@@ -23,15 +23,21 @@ class TransactionPlausibilityValidator < ActiveModel::Validator
       pending_tx.errors[:sending_address] = "is not base58 encoded"
     end
 
-    account = pending_tx.sending_account
+    account      = pending_tx.sending_account
 
     # TODO: perhaps we shouldn't fail the transaction from unknown accounts where
     # the transaction sequence is 1 (i.e. we may have simply closed the ledger
     # that funds the account)
     if account.blank?
       pending_tx.errors[:sending_address] = "is unknown"
-    elsif account.sequence > pending_tx.sending_sequence
-      pending_tx.errors[:sending_sequence] = "is greater than account's sequence"
+    end
+
+    sequence_slot = account.try(:sequence_slot_for, pending_tx.sending_sequence_slot)
+
+    if sequence_slot.blank?
+      pending_tx.errors[:sending_sequence_slot] = "is invalid"
+    elsif sequence_slot.sequence > pending_tx.sending_sequence
+      pending_tx.errors[:sending_sequence] = "is greater than slot [#{sequence_slot.slot}]'s sequence: #{sequence_slot.sequence}"
     end
 
     if env && !env.signed_correctly?(*account.all_signer_key_pairs)

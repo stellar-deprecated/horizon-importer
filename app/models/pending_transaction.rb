@@ -12,10 +12,11 @@ class PendingTransaction < ActiveRecord::Base
   # validations
   with_options presence: true do |opt|
     opt.validates :state
-    opt.validates :sending_address,   base58: { check: :account_id }
-    opt.validates :sending_sequence,  numericality: true
+    opt.validates :sending_address,       base58: { check: :account_id }
+    opt.validates :sending_sequence,      numericality: true
+    opt.validates :sending_sequence_slot, numericality: true
     opt.validates :tx_envelope
-    opt.validates :tx_hash,           length: { is: 64 }, hex: true
+    opt.validates :tx_hash,               length: { is: 64 }, hex: true
   end
 
   with_options inclusion: 0..(2**63 - 1), allow_nil: true do |opt|
@@ -78,11 +79,12 @@ class PendingTransaction < ActiveRecord::Base
 
     return if parsed_envelope.nil?
 
-    self.sending_address     = Convert.base58.check_encode(:account_id, parsed_envelope.tx.account)
-    self.sending_sequence    = parsed_envelope.tx.seq_num
-    self.max_ledger_sequence = parsed_envelope.tx.max_ledger
-    self.min_ledger_sequence = parsed_envelope.tx.min_ledger
-    self.tx_hash             = Convert.to_hex(parsed_envelope.tx.hash)
+    self.sending_address       = Convert.base58.check_encode(:account_id, parsed_envelope.tx.account)
+    self.sending_sequence_slot = parsed_envelope.tx.seq_slot
+    self.sending_sequence      = parsed_envelope.tx.seq_num
+    self.max_ledger_sequence   = parsed_envelope.tx.max_ledger
+    self.min_ledger_sequence   = parsed_envelope.tx.min_ledger
+    self.tx_hash               = Convert.to_hex(parsed_envelope.tx.hash)
   end
 
   def parsed_envelope
