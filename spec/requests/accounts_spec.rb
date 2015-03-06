@@ -9,8 +9,12 @@ RSpec.describe "Account Requests", type: :request do
     context "with a single unknown account" do
       let(:addresses){["not_real"]}
       
-      it{ should have_status(:missing) }
-      it "should have an appropriate missing error body"
+      it{ should have_status(:not_found) }
+      it{ should match_json({
+        type:   "not_found",
+        status: 404,
+        title:  "Resource Missing",
+      })}
     end
 
     context "with a single known account" do
@@ -49,8 +53,12 @@ RSpec.describe "Account Requests", type: :request do
         "also not real",
       ]}
 
-      it{ should have_status(:missing) }
-      it "should have an appropriate missing error body"
+      it{ should have_status(:not_found) }
+      it{ should match_json({
+        type:   "not_found",
+        status: 404,
+        title:  "Resource Missing",
+      })}
     end
   end
 end
