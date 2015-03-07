@@ -8,10 +8,31 @@ class AccountsController < ApplicationController
 
 
   def show
-    @account = Hayashi::Account.where(accountid: params[:id]).first
+    ids = params[:id].split(",")
 
-    if @account.present?
-      render oat: @account
+    if id = ids.single
+      show_single(id)
+    else
+      show_batch(ids)
+    end
+  end
+
+  private
+  def show_batch(ids)
+    accounts = MultiFind.new(Hayashi::Account, ids)
+
+    if accounts.present?
+      render oat: accounts
+    else
+      render problem: :not_found
+    end
+  end
+
+  def show_single(id)
+    account = Hayashi::Account.where(accountid: params[:id]).first
+
+    if account.present?
+      render oat: account
     else
       render problem: :not_found
     end
