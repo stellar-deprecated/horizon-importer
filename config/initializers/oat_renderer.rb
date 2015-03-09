@@ -3,13 +3,18 @@ require 'oat/adapters/hal'
 module OatRenderer
 
   def render(controller, obj, options)
-    serializer_klass = options[:serializer] || serializer_for(obj)
-    serializer = serializer_klass.new(obj, controller:controller)
+    serializer =  if obj.is_a? Oat::Serializer
+                    obj
+                  else
+                    serializer_klass = options[:serializer_klass] || serializer_klass_for(obj)
+                    serializer_klass.new(obj)
+                  end
+
+    serializer.context[:controller] = controller
+    serializer
   end
 
-  def serializer_for(obj)
-    return obj.to_oat_serializer if obj.respond_to?(:to_oat_serializer)
-
+  def serializer_klass_for(obj)
     potential_serializer = "#{obj.class.name}Serializer"
     potential_serializer.constantize
   end

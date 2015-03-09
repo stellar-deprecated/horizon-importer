@@ -19,10 +19,11 @@ class AccountsController < ApplicationController
 
   private
   def show_batch(ids)
-    accounts = MultiFind.new(Hayashi::Account, ids)
+    accounts = FindBatch.new(Hayashi::Account, ids)
 
     if accounts.present?
-      render oat: accounts
+      serializer = FindBatchSerializer.new(accounts, child_serializer: Hayashi::AccountSerializer)
+      render oat: serializer
     else
       render problem: :not_found
     end

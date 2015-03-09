@@ -2,12 +2,12 @@
 # Represents a "find by id" query with multiple ids.  An instance
 # can be serialized with Oat for direct rendering to API client
 # 
-class MultiFind
+class FindBatch
   extend Memoist
 
 
   # 
-  # Created a new MultiFind
+  # Creates a new FindBatch
   # 
   # @param scope [ActiveRecord::Scope] The scope to find from
   # @param ids [Array<Object>] An array of id objects to query

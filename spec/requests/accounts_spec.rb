@@ -29,28 +29,44 @@ RSpec.describe "Account Requests", type: :request do
             :href => "http://www.example.com/accounts/#{address}"
           }
         }
-      }, strict: true)}
+      }.strict!)}
     end
 
-    context "with multiple known accounts", :pending do
+    context "with multiple known accounts" do
       let(:addresses){[
         create(:master_key_pair), 
         create(:scott_key_pair),
       ].map(&:address)}
       
       it{ should have_status(:ok) }
-      it "should return each account's details, mapped by account id"
+      it{ should match_json({
+        _embedded: {
+          addresses[0] => {
+            id: addresses[0],
+          },
+          addresses[1] => {
+            id: addresses[1],
+          },
+        }
+      })}
+
     end
 
-    context "with a mix of known and unknown accounts", :pending do
+    context "with a mix of known and unknown accounts" do
       let(:addresses){[
         create(:master_key_pair).address,
         "not_real",
       ]}
 
       it{ should have_status(:ok) }
-      it "should return each found account's details, mapped by account id"
-      it "should return nil for each unknown account"
+      it{ should match_json({
+        _embedded: {
+          addresses[0] => {
+            id: addresses[0],
+          },
+          addresses[1] => nil,
+        }
+      })}
     end
 
     context "with multiple unknown accounts" do

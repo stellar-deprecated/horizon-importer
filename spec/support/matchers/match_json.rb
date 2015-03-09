@@ -1,9 +1,11 @@
+
+# Default to sparse specifications.
+# use `strict!` calls to make matching strict where needed
+JsonExpressions::Matcher.assume_strict_arrays = false
+JsonExpressions::Matcher.assume_strict_hashes = false
+
 RSpec::Matchers.define :match_json do |json_spec_hash, options={}|
   json_spec_hash.deep_stringify_keys!
-  
-  unless options[:strict]
-    json_spec_hash.ignore_extra_keys!
-  end
 
   json_matcher = JsonExpressions::Matcher.new(json_spec_hash)
   
