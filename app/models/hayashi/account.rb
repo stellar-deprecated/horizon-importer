@@ -3,7 +3,8 @@ class Hayashi::Account < Hayashi::Base
   self.primary_key = "accountid"
   
   has_many :signers,        class_name: "Hayashi::Signer",       foreign_key: [:accountid]
-  has_many :sequence_slots, class_name: "Hayashi::SequenceSlot", foreign_key: [:accountid]
+
+  alias_attribute :sequence, :seqnum
 
   def all_signer_key_pairs
     signers.map(&:key_pair) + [key_pair]
@@ -14,7 +15,5 @@ class Hayashi::Account < Hayashi::Base
     Stellar::KeyPair.from_address(accountid)
   end
 
-  def sequence_slot_for(slot)
-    sequence_slots.for_slot(slot).first
-  end
+
 end

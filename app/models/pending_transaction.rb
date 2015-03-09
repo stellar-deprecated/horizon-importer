@@ -14,7 +14,6 @@ class PendingTransaction < ActiveRecord::Base
     opt.validates :state
     opt.validates :sending_address,       base58: { check: :account_id }
     opt.validates :sending_sequence,      numericality: true
-    opt.validates :sending_sequence_slot, numericality: true
     opt.validates :tx_envelope
     opt.validates :tx_hash,               length: { is: 64 }, hex: true
   end
@@ -80,7 +79,6 @@ class PendingTransaction < ActiveRecord::Base
     return if parsed_envelope.nil?
 
     self.sending_address       = Convert.base58.check_encode(:account_id, parsed_envelope.tx.account)
-    self.sending_sequence_slot = parsed_envelope.tx.seq_slot
     self.sending_sequence      = parsed_envelope.tx.seq_num
     self.max_ledger_sequence   = parsed_envelope.tx.max_ledger
     self.min_ledger_sequence   = parsed_envelope.tx.min_ledger
