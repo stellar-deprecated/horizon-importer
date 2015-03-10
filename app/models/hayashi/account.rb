@@ -2,7 +2,8 @@ class Hayashi::Account < Hayashi::Base
   self.table_name  = "accounts"
   self.primary_key = "accountid"
   
-  has_many :signers,        class_name: "Hayashi::Signer",       foreign_key: [:accountid]
+  has_many :signers,     class_name: "Hayashi::Signer",    foreign_key: [:accountid]
+  has_many :trust_lines, class_name: "Hayashi::TrustLine", foreign_key: [:accountid]
 
   alias_attribute :sequence, :seqnum
   alias_attribute :address,  :accountid
@@ -16,5 +17,19 @@ class Hayashi::Account < Hayashi::Base
     Stellar::KeyPair.from_address(accountid)
   end
 
+  def balances
+    [].tap do |balances|
+      balances << {currency: {type: :native}, balance: self.balance}
+
+      trust_lines.each do |tl|
+        balances << {
+          currency: {type: :iso4217, issuer: tl.issuer, code: tl.currency_code},
+          balance:  tl.balance,
+          limit:    tl.limit
+        }
+      end
+    end
+  end
+  memoize :balances
 
 end

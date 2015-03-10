@@ -5,7 +5,7 @@ class Hayashi::AccountSerializer < ApplicationSerializer
     type "account"
     link :self, href: context[:controller].account_url(item)
 
-    map_properties :id, :address, :sequence
+    map_properties :id, :address, :sequence, :balances
 
   end
 end

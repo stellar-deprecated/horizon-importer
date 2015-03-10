@@ -27,6 +27,9 @@ RSpec.describe "Account Requests", type: :request do
         id:address,
         address: address,
         sequence: account.sequence,
+        balances: [
+          {currency: {type: :native}, balance: account.balance }
+        ],
         :_links => {
           :self => {
             :href => "http://www.example.com/accounts/#{address}"
