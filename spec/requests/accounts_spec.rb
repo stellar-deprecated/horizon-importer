@@ -20,10 +20,13 @@ RSpec.describe "Account Requests", type: :request do
     context "with a single known account" do
       let(:addresses){[create(:master_key_pair).address]}
       let(:address){ addresses.first }
+      let(:account){ Hayashi::Account.find(address)}
       it{ should have_status(:ok) }
       
       it{ should match_json({
-        id: address,
+        id:address,
+        address: address,
+        sequence: account.sequence,
         :_links => {
           :self => {
             :href => "http://www.example.com/accounts/#{address}"

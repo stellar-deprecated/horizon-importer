@@ -5,9 +5,7 @@ class Hayashi::AccountSerializer < ApplicationSerializer
     type "account"
     link :self, href: context[:controller].account_url(item)
 
-    properties do |props|
-      props.id item.id
-    end
-  end
+    map_properties :id, :address, :sequence
 
+  end
 end

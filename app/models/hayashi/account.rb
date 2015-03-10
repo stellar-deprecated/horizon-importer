@@ -5,6 +5,7 @@ class Hayashi::Account < Hayashi::Base
   has_many :signers,        class_name: "Hayashi::Signer",       foreign_key: [:accountid]
 
   alias_attribute :sequence, :seqnum
+  alias_attribute :address,  :accountid
 
   def all_signer_key_pairs
     signers.map(&:key_pair) + [key_pair]
