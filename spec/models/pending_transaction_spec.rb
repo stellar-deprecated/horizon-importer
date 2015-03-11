@@ -21,8 +21,8 @@ RSpec.describe PendingTransaction, type: :model do
     end
 
     it "validates the `tx_hash` is a hex-encoded 32-byte hash" do
-      expect{ subject.tx_hash = "FF" * 32 }.to_not add_error(:tx_hash)
-      expect{ subject.tx_hash = "FF" * 31 }.to add_error(:tx_hash)
+      expect{ subject.tx_hash = "ff" * 32 }.to_not add_error(:tx_hash)
+      expect{ subject.tx_hash = "ff" * 31 }.to add_error(:tx_hash)
       expect{ subject.tx_hash = "I'm totally not hex encoded, but I am 64-bytes".rjust(64) }.to add_error(:tx_hash)
     end
 
