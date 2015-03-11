@@ -11,10 +11,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150309202934) do
+ActiveRecord::Schema.define(version: 20150310224849) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "history_ledgers", force: true do |t|
+    t.integer  "sequence",                                    null: false
+    t.string   "ledger_hash",          limit: 64,             null: false
+    t.string   "previous_ledger_hash", limit: 64
+    t.integer  "transaction_count",               default: 0, null: false
+    t.integer  "operation_count",                 default: 0, null: false
+    t.datetime "closed_at",                                   null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "history_ledgers", ["closed_at"], name: "index_history_ledgers_on_closed_at", using: :btree
+  add_index "history_ledgers", ["ledger_hash"], name: "index_history_ledgers_on_ledger_hash", unique: true, using: :btree
+  add_index "history_ledgers", ["previous_ledger_hash"], name: "index_history_ledgers_on_previous_ledger_hash", unique: true, using: :btree
+  add_index "history_ledgers", ["sequence"], name: "index_history_ledgers_on_sequence", unique: true, using: :btree
 
   create_table "pending_transactions", force: true do |t|
     t.integer  "state",                          default: 0, null: false
