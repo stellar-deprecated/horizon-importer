@@ -18,6 +18,13 @@ gem 'json_expressions'
 gem 'rack-attack'
 gem 'oat'
 
+# note: the following celluloid and sucker_punch gems are require: false
+# so that the rspec system can bootup the system manually.  
+# See config/initializers/celluloid.rb for where we include these files in
+# non-test scenarios
+gem 'celluloid', require: false
+gem 'sucker_punch', require: false
+
 # sql gems
 gem 'pg', platform: :ruby
 gem 'sqlite3', platform: :ruby

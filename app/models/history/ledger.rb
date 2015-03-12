@@ -33,4 +33,32 @@ class History::Ledger < History::Base
   }
 
 
+  # 
+  # Validates that the previous hash `previous_hash` for a ledger to be imported
+  # at sequence number `sequence` is allowed.
+  # 
+  # This method contributes to ensure that no forks occur within the history system.  
+  # Any attempt to import a ledger that does not follow a previously seen ledger
+  # will raise `History::BrokenHistoryChainError`
+  # 
+  # @param previous_hash [String] The hash 
+  # @param sequence [type] the sequence number to validate for 
+  # 
+  # @raises History::BrokenHistoryChainError
+  # 
+  def self.validate_previous_ledger_hash!(previous_hash, sequence)
+    expected_sequence = sequence - 1
+    ledger = where(sequence:expected_sequence).first
+
+    if ledger.blank?
+      raise History::BrokenHistoryChainError, "Ledger #{expected_sequence} not found"
+    end
+
+    if ledger.ledger_hash != previous_hash
+      raise History::BrokenHistoryChainError, 
+        "Ledger #{expected_sequence} is not expected hash: #{previous_hash}\n" +
+        "it actually is: #{ledger.ledger_hash}"
+    end
+  end
+
 end
