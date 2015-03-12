@@ -1,3 +1,7 @@
+# 
+# Takes the ledger header and transaction set of the requested sequence from the 
+# hayashi database and imports them into the history database.
+# 
 class History::LedgerImporterJob < ApplicationJob
   EMPTY_HASH = "0" * 64
 
@@ -23,6 +27,8 @@ class History::LedgerImporterJob < ApplicationJob
           previous_ledger_hash: (hayashi_ledger.prevhash unless first_ledger),
           closed_at:            Time.at(hayashi_ledger.closetime),
         })
+
+        #TODO: import all transactions from the imported ledger
         
       end
     end

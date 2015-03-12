@@ -9,4 +9,8 @@ class ApplicationJob
 
     result
   end
+
+  def logger
+    Rails.logger
+  end
 end
