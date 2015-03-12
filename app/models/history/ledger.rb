@@ -61,4 +61,8 @@ class History::Ledger < History::Base
     end
   end
 
+  def self.last_imported_ledger
+    order(:sequence).last
+  end
+
 end
