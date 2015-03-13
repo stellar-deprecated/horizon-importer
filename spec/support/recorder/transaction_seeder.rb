@@ -4,13 +4,12 @@ module Recorder
       @recipe = IO.read("#{SPEC_ROOT}/fixtures/transactions.rb")
       @accounts = {}
       @transactions = []
-      instance_eval @recipe
     end
 
     def run
       play_transactions
 
-      last_tx = @transactions.last
+      last_tx = @transactions.last[:tx]
       last_hash = Convert.to_hex(last_tx.envelope.tx.hash)
       wait_for_transaction last_hash
     end
@@ -20,7 +19,14 @@ module Recorder
       raise "base keypair" unless keypair.is_a?(Stellar::KeyPair)
       raise "duplicate name: #{name}" if @accounts.has_key?(name)
 
-      @accounts[name] = Account.new(name, keypair)
+      @accounts[name] = Account.new(self, name, keypair)
+    end
+
+    def sequence_for(name)
+      account = @accounts[name]
+      raise "unknown account: #{name}" if account.blank?
+      hayashi_account = wait_for_account account.keypair.address
+      hayashi_account.seqnum
     end
 
     def payment(from, to, amount)
@@ -33,45 +39,58 @@ module Recorder
         amount:      amount
       }).to_envelope(from.keypair)
 
-      @transactions.push Transaction.new(from, envelope)
+      submit_transaction Transaction.new(from, envelope)
     end
 
     def play_transactions
       VCR.turned_off do
         WebMock.allow_net_connect!
-        @transactions.each do |tx|
-          wait_for_account tx.account.keypair.address
-          response  = $stellard.get("tx", blob: tx.envelope.to_xdr(:hex))
-          raw       = [response.body["result"]].pack("H*")
-          tx_result = Stellar::TransactionResult.from_xdr(raw)
-          # TODO: break if a non-success response is returned
-        end
+        instance_eval @recipe
         WebMock.disable_net_connect!
       end
     end
 
     private
+    def submit_transaction(tx)
+      begin
+        wait_for_account tx.account.keypair.address
+        response  = $stellard.get("tx", blob: tx.envelope.to_xdr(:hex))
+        raw       = [response.body["result"]].pack("H*")
+        tx_result = Stellar::TransactionResult.from_xdr(raw)
+
+        # TODO: break if a non-success response is returned
+
+        p tx_result
+        @transactions << {tx: tx, result: tx_result}
+      rescue
+        puts "Error when playing tx: #{tx.inspect}"
+        raise
+      end
+    end
+
+
     def wait_for_account(account, timeout=5.seconds)
-      wait_for(timeout){ Hayashi::Account.where(accountid: account).any?  }
+      wait_for(timeout){ Hayashi::Account.where(accountid: account).first  }
     end
 
     def wait_for_transaction(hash, timeout=5.seconds)
-      wait_for(timeout){ Hayashi::Transaction.where(txid: hash).any?  }
+      wait_for(timeout){ Hayashi::Transaction.where(txid: hash).first  }
     end
 
     def wait_for(timeout)
       Timeout.timeout(timeout) do
         loop do
-          break if yield
+          result = yield
+          break result if result.present?
           sleep 0.01 # wait atleast 10ms
         end
       end
     end
   end
 
-  Account = Struct.new(:name, :keypair) do
+  Account = Struct.new(:seeder, :name, :keypair) do
     def next_sequence
-      @seq ||= 0
+      @seq ||= self.seeder.sequence_for(name)
       @seq += 1
     end
   end
