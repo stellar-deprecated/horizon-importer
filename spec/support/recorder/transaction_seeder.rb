@@ -10,7 +10,7 @@ module Recorder
       play_transactions
 
       last_tx = @transactions.last[:tx]
-      last_hash = Convert.to_hex(last_tx.envelope.tx.hash)
+      last_hash = Convert.to_hex(last_tx.envelope.hash)
       wait_for_transaction last_hash
     end
 
