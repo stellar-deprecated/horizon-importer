@@ -7,6 +7,9 @@ FactoryGirl.define do
     operation_count   0
     closed_at         { Time.now }
 
+    # TODO: add ability to specify transactions
+    # and random transaction defaults
+
     after(:build) do |l| 
       prev_ledger = History::Ledger.where(sequence:l.sequence - 1).first
       l.previous_ledger_hash = prev_ledger.try(:ledger_hash)

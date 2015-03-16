@@ -59,3 +59,27 @@ RSpec.describe History::LedgerImporterJob, type: :job do
   end
 
 end
+
+# This block of specifications below don't follow the normal flow of specs
+# They are written more like normal tests (i.e. many assertions, larger size)
+# to work around the fact that our transaction seeder system does not yet 
+# produce deterministic results.
+# 
+# This is better than nothing, though
+RSpec.describe History::LedgerImporterJob, "importing all fixture data", type: :job do
+  let(:ledger_count){ Hayashi::LedgerHeader.count }
+
+  before(:each) do
+    ledger_indexes = ledger_count.times.map{|i| i + 1} 
+    ledger_indexes.each{|idx| subject.perform(idx) }
+  end
+
+  it "properly imports all ledgers" do
+    expect(History::Ledger.count).to eq(Hayashi::LedgerHeader.count)
+  end
+
+  it "properly imports all transactions", :pending do
+    expect(History::Transaction.count).to eq(Hayashi::Transaction.count)
+  end
+end
+
