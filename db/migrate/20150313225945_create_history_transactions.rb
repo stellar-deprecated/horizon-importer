@@ -6,7 +6,7 @@ class CreateHistoryTransactions < ActiveRecord::Migration
       t.integer :ledger_sequence,   null: false
       t.integer :application_order, null: false
       t.string  :account,           limit: 64, null: false
-      t.integer :account_sequence,  null: false
+      t.integer :account_sequence,  limit: 8, null: false
 
       # attributes
       t.integer :max_fee,         null: false

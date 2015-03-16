@@ -24,15 +24,32 @@ class History::LedgerImporterJob < ApplicationJob
 
         #TODO: don't error out when uniqueness validation fails, 
         # instead emit a warning with the error summary
-        History::Ledger.create!({
+        result = History::Ledger.create!({
           sequence:             hayashi_ledger.ledgerseq,
           ledger_hash:          hayashi_ledger.ledgerhash,
           previous_ledger_hash: (hayashi_ledger.prevhash unless first_ledger),
           closed_at:            Time.at(hayashi_ledger.closetime),
         })
-
-        #TODO: import all transactions from the imported ledger
         
+        hayashi_transactions.each do |htx|
+          History::Transaction.create!({
+            transaction_hash:  htx.txid, 
+            ledger_sequence:   htx.ledgerseq,
+            application_order: htx.txindex,
+            account:           htx.submitting_address,
+            account_sequence:  htx.submitting_sequence,
+            max_fee:           htx.max_fee,
+            fee_paid:          htx.fee_paid,
+            operation_count:   htx.operations.size,
+            # TODO: uncomment when low card system is fixed
+            # result_code:       htx.result_code.value,
+            # result_code_s:     htx.result_code_s,
+            # TODO: remove the below when low card system is fixed
+            transaction_status_id: -1,
+          })
+        end
+        
+        result
       end
     end
   end

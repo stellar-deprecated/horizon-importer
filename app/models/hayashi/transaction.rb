@@ -2,7 +2,18 @@ class Hayashi::Transaction < Hayashi::Base
   self.table_name  = "txhistory"
   self.primary_key = "txid"
 
-  delegate :result, to: :result_pair
+  belongs_to :ledger_header, {
+    class_name: "Hayashi::LedgerHeader", 
+    foreign_key: :ledgerseq, 
+    primary_key: :ledgerseq,
+  }
+
+  delegate :tx,          to: :envelope
+  delegate :result,      to: :result_pair
+  delegate :max_fee,     to: :tx
+  delegate :min_ledger,  to: :tx
+  delegate :max_ledger,  to: :tx
+  delegate :operations,  to: :tx
 
   def envelope
     raw_envelope = Convert.from_base64(self.txbody)
@@ -22,5 +33,29 @@ class Hayashi::Transaction < Hayashi::Base
     Stellar::TransactionMeta.from_xdr(raw_meta)
   end
   memoize :meta
+
+  def submitting_account
+    self.envelope.tx.account
+  end
+
+  def submitting_address
+    Convert.base58.check_encode(:account_id, submitting_account)
+  end
+
+  def submitting_sequence
+    tx.seq_num
+  end
+
+  def fee_paid
+    result.fee_charged
+  end
+
+  def result_code
+    result.result.switch
+  end
+
+  def result_code_s
+    result_code.name
+  end
 
 end

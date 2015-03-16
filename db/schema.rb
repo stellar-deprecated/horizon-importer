@@ -54,7 +54,7 @@ ActiveRecord::Schema.define(version: 20150313225955) do
     t.integer  "ledger_sequence",                  null: false
     t.integer  "application_order",                null: false
     t.string   "account",               limit: 64, null: false
-    t.integer  "account_sequence",                 null: false
+    t.integer  "account_sequence",      limit: 8,  null: false
     t.integer  "max_fee",                          null: false
     t.integer  "fee_paid",                         null: false
     t.integer  "operation_count",                  null: false

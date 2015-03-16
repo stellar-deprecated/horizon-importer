@@ -78,7 +78,7 @@ RSpec.describe History::LedgerImporterJob, "importing all fixture data", type: :
     expect(History::Ledger.count).to eq(Hayashi::LedgerHeader.count)
   end
 
-  it "properly imports all transactions", :pending do
+  it "properly imports all transactions" do
     expect(History::Transaction.count).to eq(Hayashi::Transaction.count)
   end
 end
