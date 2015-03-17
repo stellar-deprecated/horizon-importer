@@ -58,4 +58,23 @@ class Hayashi::Transaction < Hayashi::Base
     result_code.name
   end
 
+  def participants
+    # get all entries with type of "account"
+    account_entries = meta.entries.
+      select{|e| e.value.type == Stellar::LedgerEntryType.account }
+      
+    # extract the account id from each (both live and dead 
+    # entries expose it through `account_id`)
+    account_entries
+      .map{|e| e.value.account!.account_id}
+      .uniq
+  end
+  memoize :participants
+
+
+  def participant_addresses
+    participants.map{|a| Convert.base58.check_encode(:account_id, a)}
+  end
+  memoize :participant_addresses
+
 end

@@ -17,7 +17,7 @@ GIT
 
 GIT
   remote: git@github.com:stellar/ruby-xdr
-  revision: 2b39977fe62a93e9cd46fc87c19fa50442524c82
+  revision: 08c6dc3e472cbb6797ab99a4c133f6ece1b0305b
   specs:
     xdr (0.0.1)
       activemodel (~> 4)
