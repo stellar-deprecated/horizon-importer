@@ -47,6 +47,13 @@ class History::LedgerImporterJob < ApplicationJob
             # TODO: remove the below when low card system is fixed
             transaction_status_id: -1,
           })
+
+          htx.participant_addresses.each do |addr|
+            History::TransactionParticipant.create!({
+              transaction_hash:  htx.txid,
+              account: addr
+            })
+          end
         end
         
         result
