@@ -1,8 +1,22 @@
 class TransactionsController < ApplicationController
-  def index
-    # load what page, etc.
 
-    txs  = History::Transaction.application_order.all
+  DEFAULT_PAGE_SIZE = 10
+  MAX_PAGE_SIZE     = 100
+
+  def index
+    # TODO: load what page, etc.
+    
+
+    # process limit
+    limit = Integer(params[:limit]) if params[:limit].present?
+    limit ||= DEFAULT_PAGE_SIZE
+    limit = MAX_PAGE_SIZE if limit > MAX_PAGE_SIZE
+    limit = 1 if limit < 1
+
+    txs  = History::Transaction.
+      application_order.
+      limit(limit)
+
     page = CollectionPage.new(txs)
 
     render oat: History::TransactionSerializer.as_page(page)
