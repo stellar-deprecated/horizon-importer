@@ -22,8 +22,7 @@ class AccountsController < ApplicationController
     accounts = FindBatch.new(Hayashi::Account, ids)
 
     if accounts.present?
-      serializer = FindBatchSerializer.new(accounts, child_serializer: Hayashi::AccountSerializer)
-      render oat: serializer
+      render oat: Hayashi::AccountSerializer.as_find_batch(accounts)
     else
       render problem: :not_found
     end

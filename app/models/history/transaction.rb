@@ -8,4 +8,10 @@ class History::Transaction < History::Base
     primary_key: :transaction_hash, 
   }
 
+  scope :application_order, ->(){ order("ledger_sequence ASC, application_order ASC") }
+
+  def to_param
+    transaction_hash
+  end
+
 end
