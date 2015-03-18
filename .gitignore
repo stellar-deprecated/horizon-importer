@@ -15,7 +15,7 @@
 /log/*
 !/log/.keep
 /tmp
-/stellard-hayashi-api.jar
+/horizon.jar
 /doc/app
 coverage/
 test.rb
