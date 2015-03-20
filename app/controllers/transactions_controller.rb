@@ -13,7 +13,10 @@ class TransactionsController < ApplicationController
     limit = MAX_PAGE_SIZE if limit > MAX_PAGE_SIZE
     limit = 1 if limit < 1
 
-    txs  = History::Transaction.
+    tx_scope = History::Transaction
+    tx_scope = tx_scope.for_account(params[:account_id]) if params[:account_id].present?
+
+    txs  = tx_scope.
       application_order.
       limit(limit)
 
@@ -30,5 +33,9 @@ class TransactionsController < ApplicationController
     else
       render problem: :not_found
     end
+  end
+
+  def create
+    # TODO
   end
 end

@@ -8,7 +8,14 @@ class History::Transaction < History::Base
     primary_key: :transaction_hash, 
   }
 
-  scope :application_order, ->(){ order("ledger_sequence ASC, application_order ASC") }
+  scope :for_account, ->(account_id) {
+    joins(:participants).
+    where(history_transaction_participants: {account: account_id})
+  }
+
+  scope :application_order, ->(){ 
+    order("ledger_sequence ASC, application_order ASC") 
+  }
 
   def to_param
     transaction_hash
