@@ -15,3 +15,6 @@ before_script:
 notifications:
   slack:
     secure: Vjq1o6O3TQ+gnKmKm3an+/YICoSDoDeCq/0TU51ykQGHy9bApwtW4K0WPAfYf/Yrkw9xBjVvB1Spv7MU4I/GgMWRpMkU4sUEaRIZ/8SP0c9XgPjTRBUskzEch/PwqZmjS4MWdeGeBkww67o/uPcoox1K/OS3ys8mPwPoNX2YzuI=
+matrix:
+  allow_failures:
+    - rvm: jruby-9.0.0.0.pre1

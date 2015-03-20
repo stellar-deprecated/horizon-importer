@@ -8,6 +8,10 @@ class Hayashi::Account < Hayashi::Base
   alias_attribute :sequence, :seqnum
   alias_attribute :address,  :accountid
 
+  def to_param
+    address
+  end
+
   def all_signer_key_pairs
     signers.map(&:key_pair) + [key_pair]
   end

@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: git@github.com:stellar/ruby-stellar-core.git
-  revision: c9df5200a88c7d33297b32ec105105bea72e8fd2
+  revision: fc2419d190affc121e53f987ce6680d075a691be
   specs:
     stellar-core (0.0.1)
       activesupport (~> 4)
@@ -17,7 +17,7 @@ GIT
 
 GIT
   remote: git@github.com:stellar/ruby-xdr
-  revision: 2b39977fe62a93e9cd46fc87c19fa50442524c82
+  revision: 08c6dc3e472cbb6797ab99a4c133f6ece1b0305b
   specs:
     xdr (0.0.1)
       activemodel (~> 4)
@@ -48,6 +48,8 @@ GEM
       activemodel (= 4.1.9)
       activesupport (= 4.1.9)
       arel (~> 5.0.0)
+    activerecord-import (0.7.0)
+      activerecord (>= 3.0)
     activerecord-jdbc-adapter (1.3.14)
       activerecord (>= 2.2)
     activesupport (4.1.9)
@@ -84,8 +86,8 @@ GEM
       multipart-post (>= 1.2, < 3)
     faraday_middleware (0.9.1)
       faraday (>= 0.7.4, < 0.10)
-    ffi (1.9.6)
-    ffi (1.9.6-java)
+    ffi (1.9.8)
+    ffi (1.9.8-java)
     formatador (0.2.5)
     guard (2.12.4)
       formatador (>= 0.2.4)
@@ -118,6 +120,10 @@ GEM
       celluloid (>= 0.15.2)
       rb-fsevent (>= 0.9.3)
       rb-inotify (>= 0.9)
+    low_card_tables (1.1.0)
+      activerecord (>= 3.0, <= 4.99.99)
+      activerecord-import
+      activesupport (>= 3.0, <= 4.99.99)
     lumberjack (1.0.9)
     mail (2.6.3)
       mime-types (>= 1.16, < 3)
@@ -226,6 +232,8 @@ GEM
       activesupport (>= 3.0)
       sprockets (>= 2.8, < 4.0)
     sqlite3 (1.3.10)
+    sucker_punch (1.4.0)
+      celluloid (~> 0.16.0)
     thor (0.19.1)
     thread_safe (0.3.5)
     thread_safe (0.3.5-java)
@@ -252,6 +260,7 @@ DEPENDENCIES
   aasm (~> 4.0.8)
   activerecord-jdbc-adapter
   backports
+  celluloid
   composite_primary_keys (~> 7.0.13)
   database_cleaner
   dotenv-rails!
@@ -265,6 +274,7 @@ DEPENDENCIES
   jdbc-sqlite3
   jruby-memcached
   json_expressions
+  low_card_tables
   memcached
   memoist
   metriks (~> 0.9.9.7)
@@ -280,6 +290,7 @@ DEPENDENCIES
   simplecov
   sqlite3
   stellar-core!
+  sucker_punch
   torquebox-web (>= 4.0.0.alpha1)
   vcr
   webmock
