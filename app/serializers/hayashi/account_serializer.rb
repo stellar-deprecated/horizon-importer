@@ -4,9 +4,9 @@ class Hayashi::AccountSerializer < ApplicationSerializer
   schema do
     type "account"
     link :self, 
-      href: context[:controller].account_url(item)
+      href: "/accounts/#{item.to_param}"
     link :transactions, 
-      href: context[:controller].account_transactions_url(item)
+      href: "/accounts/#{item.to_param}/transactions{?order}{?limit}{?after}{?before}"
 
     map_properties :id, :address, :sequence, :balances
 
