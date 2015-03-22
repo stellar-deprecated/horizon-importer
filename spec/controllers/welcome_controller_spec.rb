@@ -5,10 +5,6 @@ RSpec.describe WelcomeController do
   describe "GET index" do
     before(:each){ get :index, format: :json }
 
-    it "renders the index template" do
-      expect(response).to render_template("index")
-    end
-
     it "succeeds" do
       expect(response).to have_http_status(:ok)
     end

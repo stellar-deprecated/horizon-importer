@@ -1,3 +1,5 @@
 class WelcomeController < ApplicationController
-  def index ; end
+  def index
+    render oat: RootSerializer.new({})
+  end
 end
