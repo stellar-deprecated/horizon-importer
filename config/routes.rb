@@ -7,4 +7,7 @@ Rails.application.routes.draw do
   end
 
   resources :transactions, only: [:index, :show]
+
+
+  match '*path' => 'welcome#not_found', via: :all
 end
