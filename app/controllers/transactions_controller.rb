@@ -58,6 +58,12 @@ class TransactionsController < ApplicationController
   end
 
   def create
-    # TODO
+    tx = PendingTransaction.new(tx_envelope: params[:tx])
+    
+    if tx.save
+      render oat:tx, status: :created
+    else
+      render problem:tx
+    end
   end
 end

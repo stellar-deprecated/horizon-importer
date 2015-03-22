@@ -101,4 +101,13 @@ class PendingTransaction < ActiveRecord::Base
     $stellard.get("tx", blob: tx_envelope)
   end
 
+
+  def to_problem
+    {
+      type:   'invalid_transaction',
+      status: :unprocessable_entity,
+      title:  "Invalid Transaction",
+    }
+    #TODO: add details about what the failure was
+  end
 end

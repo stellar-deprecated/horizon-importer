@@ -6,7 +6,7 @@ Rails.application.routes.draw do
     resources :transactions, only: [:index]
   end
 
-  resources :transactions, only: [:index, :show]
+  resources :transactions, only: [:create, :index, :show]
 
 
   match '*path' => 'welcome#not_found', via: :all
