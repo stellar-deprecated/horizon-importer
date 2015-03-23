@@ -32,3 +32,26 @@ The History API provides endpoints for retrieving data about what has happened i
 ### Future additions
 
 The history API is pretty sparse at present.  Presently you can page through all transactions in application order, or page through transactions that a apply to a single account.  This is really only useful for explaining how paging and filtering works within horizon, as most useful information for transactions are related to their operations.
+
+## API Overview
+
+The following section describes a couple of important concepts for the horizon api at a high level.  Understanding these concepts will help make your overall experience integrating with horizon much easier.
+
+### Response Format
+
+Rather than using a full custom way of representing the resources we expose in Horizon, we use [HAL](http://stateless.co/hal_specification.html). HAL is a simple hypermedia format in JSON that remains simple while giving us a couple of benefits such as simpler client integration for several languages. See [this wiki page](https://github.com/mikekelly/hal_specification/wiki/Libraries) for a list of libraries.
+
+See [Responses](responses.md) for more details
+
+### Error Format
+
+HAL doesn't really have any special consideration for error responses.  To provide some standardization to our API's error messages we use the [Problem Details for HTTP APIs RFC](https://tools.ietf.org/html/draft-ietf-appsawg-http-problem-00)
+
+See [errors](errors.md) for more details
+
+### Paging
+
+TODO
+
+
+
