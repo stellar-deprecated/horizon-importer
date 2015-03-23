@@ -11,6 +11,7 @@ module OatRenderer
                   end
 
     serializer.context[:controller] = controller
+    serializer.context[:original_url] = controller.request.original_url
     serializer
   end
 

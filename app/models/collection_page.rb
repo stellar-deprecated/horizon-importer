@@ -7,9 +7,6 @@ class CollectionPage
 
   attr_reader :records, :order, :limit
 
-  def total_count
-    records.size # TODO
-  end
 
   def initialize(records, order, limit)
 
