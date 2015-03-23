@@ -31,9 +31,8 @@ RSpec.describe "Account Requests", type: :request do
           {currency: {type: :native}, balance: account.balance }
         ],
         :_links => {
-          :self => {
-            :href => "http://www.example.com/accounts/#{address}"
-          }
+          :self => Hash,
+          :transactions => Hash,
         }
       }.strict!)}
     end
