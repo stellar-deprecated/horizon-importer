@@ -43,8 +43,9 @@ gem 'puma', platform: :ruby
 gem 'torquebox-web', ">= 4.0.0.alpha1", platform: :jruby
 
 
+gem 'dotenv-rails', github: "bkeepers/dotenv"
+
 group :test, :development do
-  gem 'dotenv-rails', github: "bkeepers/dotenv"
   gem 'rspec-rails'
   gem 'pry-rails'
   gem 'shoulda-matchers'
@@ -56,4 +57,5 @@ group :test, :development do
   gem 'vcr'
   gem 'webmock'
   gem 'yard'
+  gem 'apiaryio'
 end

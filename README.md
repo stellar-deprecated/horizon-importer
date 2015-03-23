@@ -37,8 +37,8 @@ This project is a Ruby on Rails project, using jruby.
 
 jruby can be a bit slow when it comes to startup.  While this doesn't affect your running service (one jruby gets warmed up it is usually faster than MRI) it does affect things like running `rails g` or `rake routes` or running your specs with guard.
 
-While there are sevral solutions to speed up startup time, here's what this project currently does:  *(NOTE: we're definitely open to contributions to improve our startup time)*
+While there are several solutions to speed up startup time, here's what this project currently does:  *(NOTE: we're definitely open to contributions to improve our startup time)*
 
-First, we use rbenv-vars to make sure jruby is run with the --dev flag.  That gives a good percentage improvement, but the our most impactful strategy to affect development workflow speed is to use MRI for development. `./bin/fast` will execute any command provided to it using a native ruby, via rbenv.  For example `./bin/fast rails g controller coins` will run the generator using ruby 2.1.3 (provided it is installed via rbenv). Guard is configured to use `./bin/fast` for running specs, meaning you get a nice, snappy feedback loop while developing.
+First, we use rbenv-vars to make sure jruby is run with the --dev flag.  That gives a good percentage improvement, but the our most impactful strategy to affect development workflow speed is to use MRI for development. `./bin/fast` will execute any command provided to it using a native ruby, via rbenv.  For example `./bin/fast rails g controller coins` will run the generator using ruby 1.9.3 (provided it is installed via rbenv). Guard is configured to use `./bin/fast` for running specs, meaning you get a nice, snappy feedback loop while developing.
 
 TODO: add instructions for how to install all of the prereqs
