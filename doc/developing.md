@@ -102,3 +102,17 @@ ln -sfv /usr/local/opt/postgresql/*.plist ~/Library/LaunchAgents
 launchctl load ~/Library/LaunchAgents/homebrew.mxcl.postgresql.plist
 ```
 
+## Setting up Horizon
+
+Whew! That's was quite a process.  Now let's go about setting up horizon and running our test suite.  This process will involve:
+
+- Creating postgres databases
+- Installing rubygem dependencies
+- Running migrations to populate database schema
+- Running the test suite
+
+### Creating databases
+### Installing rubygem dependencies
+### Running migrations to populate database schema
+### Running the test suite
+
