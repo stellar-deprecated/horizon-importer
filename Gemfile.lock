@@ -59,6 +59,11 @@ GEM
       thread_safe (~> 0.1)
       tzinfo (~> 1.1)
     addressable (2.3.7)
+    apiaryio (0.2.0)
+      rack (>= 1.4.0, < 1.6.0)
+      rake
+      rest-client (~> 1.6.7)
+      thor
     arel (5.0.1.20140414130214)
     atomic (1.1.99)
     atomic (1.1.99-java)
@@ -186,6 +191,8 @@ GEM
       ffi
     rdoc (4.2.0)
       json (~> 1.4)
+    rest-client (1.6.7)
+      mime-types (>= 1.16)
     rspec (3.2.0)
       rspec-core (~> 3.2.0)
       rspec-expectations (~> 3.2.0)
@@ -259,6 +266,7 @@ PLATFORMS
 DEPENDENCIES
   aasm (~> 4.0.8)
   activerecord-jdbc-adapter
+  apiaryio
   backports
   celluloid
   composite_primary_keys (~> 7.0.13)

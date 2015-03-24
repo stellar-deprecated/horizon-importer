@@ -51,7 +51,15 @@ See [errors](errors.md) for more details
 
 ### Paging
 
-TODO
+Some resources in horizon represent a collection of other resources.  Almost always, loading this collection in its entirety is not feasible.  To work around this, we provide a way to page through a collection.  
+
+The paging system in horizon is known as a _token-based_ paging system.  There is no "page 3" or the like.  Paging through a collection in a token-based paging system involves three pieces of data:
+
+- the *paging token*, which is an opaque value that logically represents the last record seen by a client.
+- the *limit*, or page size, a positive integer.
+- the *order* applied to the whole collection
+
+See [paging](paging.md) for more details.
 
 
 
