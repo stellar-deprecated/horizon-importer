@@ -14,3 +14,7 @@ integrate with the stellar network.
 early planning/hacking.
 
 ## Related documents
+
+- See [doc/introduction.md](doc/introduction.md) for an introduction
+- See [doc/horizon.apib](doc/horizon.apib) for the api's blueprint
+- See [doc/developing.md](doc/developing.md) for details on how to setup a development environment for working on horizon
