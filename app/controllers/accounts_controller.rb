@@ -1,12 +1,4 @@
-# @blueprint
-#   ```markdown
-#   ## Account [/accounts/{id}]
-#   A single account
-# 
-#   ```
 class AccountsController < ApplicationController
-
-
   def show
     ids = params[:id].split(",")
 
