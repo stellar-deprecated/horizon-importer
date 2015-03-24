@@ -9,9 +9,10 @@ RSpec.describe "Welcome Requests", type: :request do
     it{ should have_status(:ok) }
     it{ should match_json({
       :_links => {
-        :accounts     => Hash,
-        :transactions => Hash,
-        :metrics      => Hash,
+        :account              => Hash,
+        :account_transactions => Hash,
+        :transactions         => Hash,
+        :metrics              => Hash,
       },
     })}
 
