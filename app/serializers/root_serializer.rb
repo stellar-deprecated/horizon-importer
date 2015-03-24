@@ -2,14 +2,17 @@ class RootSerializer < ApplicationSerializer
   adapter Oat::Adapters::HAL
 
   schema do
-    link :accounts,
+    link :account,
       href: "/accounts/{address}", 
       templated: true
-    link :transactions,
-      href: "/transactions{?order}{?limit}{?after}{?before}", 
-      templated: true
     link :account_transactions,
-      href: "/accounts/{address}/transactions{?order}{?limit}{?after}{?before}", 
+      href: "/accounts/{address}/transactions{?after}{?limit}{?order}", 
+      templated: true
+    link :transaction,
+      href: "/transactions/{hash}", 
+      templated: true
+    link :transactions,
+      href: "/transactions{?after}{?limit}{?order}", 
       templated: true
     link :metrics,
       href: "/metrics", 
