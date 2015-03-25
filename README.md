@@ -1,8 +1,8 @@
-# Stellard API
+# Horizon
 
-This rails app is the "sidekick" api server for the stellard core (hayashi).  This
-project is intended to be the main interface for software that wishes to 
-integrate with the stellar network.  
+*NOTE: Horizon is in very active development*
+
+Horizon is the client facing API server for the Stellar ecosystem.  See [an overview of the Stellar ecosystem](TODO) for more details.
 
 ## Goals
 

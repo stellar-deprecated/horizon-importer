@@ -2,7 +2,7 @@
 
 *NOTE: Horizon is in very active development*
 
-Horizon is the client facing API server for the Stellar network ecosystem.  See [an overview of the Stellar ecosystem](TODO) for more details.
+Horizon is the client facing API server for the Stellar ecosystem.  See [an overview of the Stellar ecosystem](TODO) for more details.
 
 Horizon provides (well, intends to provide when complete) two significant portions of functionality:  The Transactions API and the History API.
 
