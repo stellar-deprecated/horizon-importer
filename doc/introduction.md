@@ -65,5 +65,12 @@ The paging system in horizon is known as a _token-based_ paging system.  There i
 
 See [paging](paging.md) for more details.
 
+## API Reference
+
+While horizon is lightly self-documenting through use of hyperlinks in responses (such that you should be able to navigate through the dataset without too much trouble), we also have reference documentation available.
+
+We document our api using [API Blueprint](https://apiblueprint.org/), and you can see the raw file [here](horizon.apib).
+
+We host the documentation for our API presently with apiary.  You can find this documentation at (http://docs.stellarhorizon.apiary.io/)
 
 

@@ -106,13 +106,96 @@ launchctl load ~/Library/LaunchAgents/homebrew.mxcl.postgresql.plist
 
 Whew! That's was quite a process.  Now let's go about setting up horizon and running our test suite.  This process will involve:
 
-- Creating postgres databases
 - Installing rubygem dependencies
+- Creating postgres databases
 - Running migrations to populate database schema
 - Running the test suite
 
-### Creating databases
 ### Installing rubygem dependencies
+
+The first step to setting up a rails application locally is to install its rubygem dependencies.  To do this, we will use bundler, which we installed earlier:
+
+```bash
+bundle install
+```
+
+If all was successful, you should see something to the tune of:
+
+```bash
+Bundle complete! 40 Gemfile dependencies, 101 gems now installed.
+Use `bundle show [gemname]` to see where a bundled gem is installed.
+```
+
+NOTE: You'll be running bundle install often.  It's good practice to run it everytime you pull code from github.
+
+### Creating databases
+
+We installed postgres earlier, and now we need to create the databases on the server to house our data.
+
+```bash
+rake db:create && RAILS_ENV=test rake db:create
+```
+
+If you see a message such as `horizon_development already exists` in the output, that's alright.  Most likely, you'll simply see no output, indicating success.
+
 ### Running migrations to populate database schema
+
+Now we have our databases, lets build our tables in those databases.
+
+```bash
+rake db:migrate && RAILS_ENV=test rake db:migrate
+```
+
+This command runs "migration files", a series of step by step instructions that will setup the schema correctly.  You can [read more about migrations here](http://edgeguides.rubyonrails.org/active_record_migrations.html). Long story short, you should run migrations using `rake db:migrate` everytime you update your local copy of the code from github.
+
+If successful, you should see output that looks like this (but longer):
+
+```bash
+== 20150216185929 CreatePendingTransactions: migrating ========================
+-- create_table(:pending_transactions)
+   -> 0.3000s
+== 20150216185929 CreatePendingTransactions: migrated (0.3000s) ===============
+
+== 20150306215845 AddSequenceSlotToPendingTransaction: migrating ==============
+-- change_table(:pending_transactions)
+   -> 0.0200s
+== 20150306215845 AddSequenceSlotToPendingTransaction: migrated (0.0200s) =====
+
+...
+```
+### Pulling up an interactive console
+
+We should now be able to launch an interactive rails console, into which we can type ruby code to inspect the running system:
+
+```bash
+rails console
+```
+
+If all goes well, you'll be at a ruby prompt that probably looks like:
+
+```bash
+Loading development environment (Rails 4.1.9)
+[1] pry(main)>
+```
+
+We can test our connection to the database using by typing `History::Transaction.count` into the console and pressing enter.  you should see the a result similar to:
+
+```bash
+[1] pry(main)> History::Transaction.count
+   (18.0ms)  SELECT COUNT(*) FROM "history_transactions"
+=> 0
+[2] pry(main)>
+```
+
+You can exit the console by typing `exit` at the prompt and pressing enter.
+
 ### Running the test suite
+
+TODO
+
+
+## Packaging Horizon
+
+TODO
+
 
