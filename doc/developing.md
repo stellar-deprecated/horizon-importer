@@ -191,11 +191,22 @@ You can exit the console by typing `exit` at the prompt and pressing enter.
 
 ### Running the test suite
 
-TODO
+Now that we have confirmed we have can run a development console, we should be able to run the test suite.  To run it, enter:
 
+```bash
+bundle exec rspec
+```
 
-## Packaging Horizon
+You should see output that eventually looks like:
 
-TODO
+```bash
+Finished in 6.34 seconds (files took 12.39 seconds to load)
+74 examples, 0 failures, 15 pending
+
+Randomized with seed 27966
+``` 
+
+Tada! You are now setup.
+
 
 
