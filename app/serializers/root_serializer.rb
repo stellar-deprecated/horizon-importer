@@ -17,5 +17,9 @@ class RootSerializer < ApplicationSerializer
     link :metrics,
       href: "/metrics", 
       templated: true
+
+    link :friendbot,
+      href: "/friendbot{?addr}", 
+      templated: true
   end
 end

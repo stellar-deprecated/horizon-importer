@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
   root 'welcome#index'
+  post 'friendbot' => 'welcome#friendbot'
+
   get 'metrics' => 'metrics#index'
 
   resources :accounts, only: [:show] do
