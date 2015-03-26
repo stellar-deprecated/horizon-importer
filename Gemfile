@@ -54,8 +54,8 @@ group :test, :development do
   gem 'factory_girl_rails'
   gem 'database_cleaner'
   gem 'simplecov', require: false
-  gem 'vcr'
-  gem 'webmock'
+  gem 'vcr', require: false
+  gem 'webmock', require: false
   gem 'yard'
   gem 'apiaryio'
 end
