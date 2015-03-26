@@ -58,12 +58,18 @@ class TransactionsController < ApplicationController
   end
 
   def create
-    tx = PendingTransaction.new(tx_envelope: params[:tx])
+    tx_sub = TransactionSubmission.new(params[:tx])
+    tx_sub.process
     
-    if tx.save
-      render oat:tx, status: :created
+    case tx_sub.result
+    when :malformed, :failed ;
+      render oat:tx_sub, status: :unprocessible_entity
+    when :received, :already_finished ;
+      render oat:tx_sub, status: :created
+    when :connection_failed ;
+      render oat:tx_sub, status: :internal_server_error
     else
-      render problem:tx
+      raise "Unexpected submission result: #{tx_sub.result}"
     end
   end
 end

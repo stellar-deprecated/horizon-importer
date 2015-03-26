@@ -68,19 +68,4 @@ ActiveRecord::Schema.define(version: 20150313225955) do
   add_index "history_transactions", ["transaction_hash"], name: "by_hash", using: :btree
   add_index "history_transactions", ["transaction_status_id"], name: "by_status", using: :btree
 
-  create_table "pending_transactions", force: true do |t|
-    t.integer  "state",                          default: 0, null: false
-    t.string   "sending_address",     limit: 64,             null: false
-    t.integer  "sending_sequence",                           null: false
-    t.integer  "max_ledger_sequence", limit: 8
-    t.integer  "min_ledger_sequence", limit: 8
-    t.text     "tx_envelope",                                null: false
-    t.string   "tx_hash",             limit: 64,             null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "pending_transactions", ["sending_address", "sending_sequence"], name: "by_sequence", using: :btree
-  add_index "pending_transactions", ["state"], name: "index_pending_transactions_on_state", using: :btree
-
 end
