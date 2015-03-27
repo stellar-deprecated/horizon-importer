@@ -77,8 +77,10 @@ class TransactionsController < ApplicationController
     case tx_sub.result
     when :malformed, :failed ;
       render oat:tx_sub, status: :unprocessible_entity
-    when :received, :already_finished ;
+    when :received ;
       render oat:tx_sub, status: :created
+    when :already_finished ;
+      render oat:tx_sub, status: :ok
     when :connection_failed ;
       render oat:tx_sub, status: :internal_server_error
     else
