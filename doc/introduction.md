@@ -8,7 +8,7 @@ Horizon provides (well, intends to provide when complete) two significant portio
 
 ## Transactions API
 
-The Transactions API exists to help you make transactions against the stellar network.  It provides ways to help you create valid transactions, such as providing an account's sequence number or latest known balances. 
+The Transactions API exists to help you make transactions against the Stellar network.  It provides ways to help you create valid transactions, such as providing an account's sequence number or latest known balances. 
 
 In addition to the read endpoints, the Transactions API also provides the endpoint to submit transactions.
 
@@ -21,7 +21,7 @@ The current capabilities of the Transactions API does not represent what will be
 
 ## History API
 
-The History API provides endpoints for retrieving data about what has happened in the past on the stellar network.  It provides (or will provide) a endpoints that let you:
+The History API provides endpoints for retrieving data about what has happened in the past on the Stellar network.  It provides (or will provide) endpoints that let you:
 
 - Retrieve transaction details
 - Load transactions that effect a given account
@@ -31,7 +31,7 @@ The History API provides endpoints for retrieving data about what has happened i
 
 ### Future additions
 
-The history API is pretty sparse at present.  Presently you can page through all transactions in application order, or page through transactions that a apply to a single account.  This is really only useful for explaining how paging and filtering works within horizon, as most useful information for transactions are related to their operations.
+The history API is pretty sparse at present.  Presently you can page through all transactions in application order, or page through transactions that a apply to a single account.  This is really only useful for explaining how paging and filtering works within Horizon, as most useful information for transactions are related to their operations.
 
 ## Relationship to stellar-core
 
@@ -39,11 +39,11 @@ TODO
 
 ## API Overview
 
-The following section describes a couple of important concepts for the horizon api at a high level.  Understanding these concepts will help make your overall experience integrating with horizon much easier.
+The following section describes a couple of important concepts for the Horizon API at a high level.  Understanding these concepts will help make your overall experience integrating with Horizon much easier.
 
 ### Response Format
 
-Rather than using a full custom way of representing the resources we expose in Horizon, we use [HAL](http://stateless.co/hal_specification.html). HAL is a simple hypermedia format in JSON that remains simple while giving us a couple of benefits such as simpler client integration for several languages. See [this wiki page](https://github.com/mikekelly/hal_specification/wiki/Libraries) for a list of libraries.
+Rather than using a fully custom way of representing the resources we expose in Horizon, we use [HAL](http://stateless.co/hal_specification.html). HAL is a hypermedia format in JSON that remains simple while giving us a couple of benefits such as simpler client integration for several languages. See [this wiki page](https://github.com/mikekelly/hal_specification/wiki/Libraries) for a list of libraries.
 
 See [Responses](responses.md) for more details
 
@@ -55,9 +55,9 @@ See [errors](errors.md) for more details
 
 ### Paging
 
-Some resources in horizon represent a collection of other resources.  Almost always, loading this collection in its entirety is not feasible.  To work around this, we provide a way to page through a collection.  
+Some resources in Horizon represent a collection of other resources.  Almost always, loading this collection in its entirety is not feasible.  To work around this, we provide a way to page through a collection.  
 
-The paging system in horizon is known as a _token-based_ paging system.  There is no "page 3" or the like.  Paging through a collection in a token-based paging system involves three pieces of data:
+The paging system in Horizon is known as a _token-based_ paging system.  There is no "page 3" or the like.  Paging through a collection in a token-based paging system involves three pieces of data:
 
 - the *paging token*, which is an opaque value that logically represents the last record seen by a client.
 - the *limit*, or page size, a positive integer.
@@ -67,9 +67,9 @@ See [paging](paging.md) for more details.
 
 ## API Reference
 
-While horizon is lightly self-documenting through use of hyperlinks in responses (such that you should be able to navigate through the dataset without too much trouble), we also have reference documentation available.
+While Horizon is lightly self-documenting through use of hyperlinks in responses (such that you should be able to navigate through the dataset without too much trouble), we also have reference documentation available.
 
-We document our api using [API Blueprint](https://apiblueprint.org/), and you can see the raw file [here](horizon.apib).
+We document our API using [API Blueprint](https://apiblueprint.org/), and you can see the raw file [here](horizon.apib).
 
 We host the documentation for our API presently with apiary.  You can find this documentation at (http://docs.stellarhorizon.apiary.io/)
 
