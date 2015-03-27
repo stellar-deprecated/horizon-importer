@@ -154,16 +154,48 @@ Represents a single transaction that has been submitted and validated by the ste
 
   + Response 200 (application/hal+json)
 
-        {}
+        {
+          "hash": "67071d24b1859ea5f2f5315961ab84accebea8f6ec907aed728d172ba7058acf",
+          "result": "already_finished",
+          "submission_result": null,
+          "_links": {
+            "transaction": {
+              "href": "/transactions/67071d24b1859ea5f2f5315961ab84accebea8f6ec907aed728d172ba7058acf"
+            }
+          }
+        }
 
+  + Response 201 (application/hal+json)
+        {
+          "hash": "64672a11e41f1e0530e49dcf6aedd3cf00ba4314ed240f18dfaad6730d1a9afc",
+          "result": "received",
+          "submission_result": "000000000000000a0000000000000001000000000000000000000000"
+        }
 
+## Friendbot (Currency Faucet) [/friendbot]
 
+When configured with a secret key, horizon can fund accounts to help you test your applications.  Friendbot gives them out.
 
+### Fund Account [POST]
 
+  + Request (application/x-www-form-urlencoded)
 
+        addr=gsaKhsFcxHmo3PMeCHrvHJAcqJrLhy11WexgUiwRMmz7cpKV55w
 
+  + Response 200 (application/hal+json)
+        {
+          "hash": "64672a11e41f1e0530e49dcf6aedd3cf00ba4314ed240f18dfaad6730d1a9afc",
+          "result": "received",
+          "submission_result": "000000000000000a0000000000000001000000000000000000000000"
+        }
 
-
+  + Response 404 (application/hal+json)
+        {
+          "type": "not_found",
+          "status": 404,
+          "title": "Resource Missing",
+          "instance": "request://08a9edea-a20c-4b93-95b5-fdfff985b4c9"
+        }
 
 
 
