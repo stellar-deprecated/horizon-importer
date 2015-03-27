@@ -58,12 +58,15 @@ class TransactionsController < ApplicationController
   end
 
   def create
+    Metriks.meter("submissions").mark
     tx_sub = TransactionSubmission.new(params[:tx])
     tx_sub.process
     render_submission_response tx_sub
   end
 
   def friendbot
+    Metriks.meter("friendbot").mark
+
     if $friendbot
       tx_sub = $friendbot.pay(params[:addr])
       render_submission_response tx_sub

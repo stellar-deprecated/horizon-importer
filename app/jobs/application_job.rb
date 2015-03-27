@@ -1,5 +1,9 @@
 class ApplicationJob
   include SuckerPunch::Job
+  include Instrumentation
+
+  instrument :perform
+
 
   private
   def with_db(mod=:active_record)
