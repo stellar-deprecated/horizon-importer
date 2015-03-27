@@ -60,7 +60,20 @@ class TransactionsController < ApplicationController
   def create
     tx_sub = TransactionSubmission.new(params[:tx])
     tx_sub.process
-    
+    render_submission_response tx_sub
+  end
+
+  def friendbot
+    if $friendbot
+      tx_sub = $friendbot.pay(params[:addr])
+      render_submission_response tx_sub
+    else
+      render problem: :not_found
+    end
+  end
+
+  private
+  def render_submission_response(tx_sub)
     case tx_sub.result
     when :malformed, :failed ;
       render oat:tx_sub, status: :unprocessible_entity

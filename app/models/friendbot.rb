@@ -19,15 +19,22 @@ class Friendbot
     tx = Stellar::Transaction.payment({
       account:     @keypair,
       destination: destination,
-      sequence:    @sequence,
+      sequence:    @sequence + 1,
       amount:      [:native, 100_000000]
     })
 
     hex = tx.to_envelope(@keypair).to_xdr(:hex)
-    ptx = PendingTransaction.create!(tx_envelope: hex)
-    ptx.submit
-    @sequence += 1
-    # return submission 
+
+    tx_sub = TransactionSubmission.new(hex)
+    tx_sub.process
+
+    if tx_sub.received?
+      @sequence += 1
+    else
+      refresh_sequence_number
+    end
+
+    tx_sub
   end
 
   private
