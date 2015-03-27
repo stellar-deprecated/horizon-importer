@@ -5,7 +5,7 @@
 ---
 
 
-In this document we will discuss several issues around getting your transactions into the stellar network.  We will dicuss:
+In this document we will discuss several issues around getting your transactions into the stellar network.  We will discuss:
 
 - the general architecture of how transactions are submitted to horizon and relayed to the stellar network.
 - How to reliably send high volumes of transactions into the stellar network from a single account
