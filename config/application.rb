@@ -11,6 +11,11 @@ module StellardHayashiApi
 
     # middlewarezez
     config.middleware.use Rack::Attack
+
+    require "#{config.root}/lib/request_metrics"
+    config.middleware.insert_before ActionDispatch::ShowExceptions, 
+      RequestMetrics, Metriks::Registry.default
+
     require "#{config.root}/lib/problem_renderer"
     config.exceptions_app = ProblemRenderer
 

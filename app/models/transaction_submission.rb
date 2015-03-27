@@ -1,6 +1,7 @@
 class TransactionSubmission
   extend Memoist
-
+  include Instrumentation
+  
   RESULTS = [
 
     # the transaction was suffiently malformed that we could not interpet it
@@ -19,6 +20,8 @@ class TransactionSubmission
     # we could not connect to stellar core and submit the transaction
     :connection_failed
   ]
+
+  instrument :process
 
   attr_reader :tx_envelope
 
