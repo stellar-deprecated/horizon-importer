@@ -10,7 +10,9 @@ module StellardHayashiApi
   class Application < Rails::Application
 
     # middlewarezez
-    config.middleware.use Rack::Attack
+    unless ENV["DISABLE_RATE_LIMIT"] == "true"
+      config.middleware.use Rack::Attack
+    end
 
     require "#{config.root}/lib/request_metrics"
     config.middleware.insert_before ActionDispatch::ShowExceptions, 
