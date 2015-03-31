@@ -10,4 +10,4 @@
 # By moving the require of stellar-core into this system, I'm hoping we will
 # be able to initialize rails to the point where rake tasks can run.
 # 
-require 'stellar-core'
+require 'stellar-base'

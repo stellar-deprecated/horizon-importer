@@ -7,8 +7,8 @@ gem 'aasm', '~> 4.0.8'
 gem 'metriks', '~> 0.9.9.7'
 gem 'xdr', git: "git@github.com:stellar/ruby-xdr"
 # gem 'xdr', path: "../ruby-xdr", require: false
-gem 'stellar-core', git: "git@github.com:stellar/ruby-stellar-core.git", require: false
-# gem 'stellar-core', path: "../ruby-stellar-core", require: false
+gem 'stellar-base', git: "git@github.com:stellar/ruby-stellar-base.git", require: false
+# gem 'stellar-base', path: "../ruby-stellar-base", require: false
 gem 'faraday'
 gem 'faraday_middleware'
 gem 'composite_primary_keys', '~> 7.0.13'

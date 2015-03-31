@@ -7,10 +7,10 @@ GIT
       dotenv (= 1.0.2)
 
 GIT
-  remote: git@github.com:stellar/ruby-stellar-core.git
-  revision: b5cd4a9cf2f6b4af50692fb74b66919cbac0d4ae
+  remote: git@github.com:stellar/ruby-stellar-base.git
+  revision: d1b43bd4044495636bda782c4e7354d0423ec982
   specs:
-    stellar-core (0.0.1)
+    stellar-base (0.0.1)
       activesupport (~> 4)
       rbnacl
       xdr
@@ -297,7 +297,7 @@ DEPENDENCIES
   shoulda-matchers
   simplecov
   sqlite3
-  stellar-core!
+  stellar-base!
   sucker_punch
   torquebox-web (>= 4.0.0.alpha1)
   vcr
