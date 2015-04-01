@@ -1,7 +1,8 @@
 Rails.application.routes.draw do
   root 'welcome#index'
-  
+
   post 'friendbot' => 'transactions#friendbot'
+  get 'friendbot' => 'transactions#friendbot'
 
   get 'metrics' => 'metrics#index'
 

@@ -3,8 +3,8 @@ class Hayashi::Transaction < Hayashi::Base
   self.primary_key = "txid"
 
   belongs_to :ledger_header, {
-    class_name: "Hayashi::LedgerHeader", 
-    foreign_key: :ledgerseq, 
+    class_name: "Hayashi::LedgerHeader",
+    foreign_key: :ledgerseq,
     primary_key: :ledgerseq,
   }
 
@@ -35,7 +35,7 @@ class Hayashi::Transaction < Hayashi::Base
   memoize :meta
 
   def submitting_account
-    self.envelope.tx.account
+    self.envelope.tx.source_account
   end
 
   def submitting_address
@@ -62,8 +62,8 @@ class Hayashi::Transaction < Hayashi::Base
     # get all entries with type of "account"
     account_entries = meta.entries.
       select{|e| e.value.type == Stellar::LedgerEntryType.account }
-      
-    # extract the account id from each (both live and dead 
+
+    # extract the account id from each (both live and dead
     # entries expose it through `account_id`)
     account_entries
       .map{|e| e.value.account!.account_id}
