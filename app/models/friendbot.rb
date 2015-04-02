@@ -8,12 +8,31 @@
 class Friendbot
   include Celluloid
 
+  def self.boot
+    if ENV["FRIENDBOT_SECRET"].present?
+      supervise_as :friendbot, ENV["FRIENDBOT_SECRET"]
+    end
+  end
+
+  def self.terminate
+    Celluloid::Actor[:friendbot].terminate if Celluloid::Actor[:friendbot]
+  end
+
+  def self.available?
+    !Celluloid::Actor[:friendbot].nil?
+  end
+
+  def self.pay(address)
+    Celluloid::Actor[:friendbot].pay(address)
+  end
+
   def initialize(seed)
     @keypair = Stellar::KeyPair.from_seed seed
-    refresh_sequence_number
   end
 
   def pay(address)
+    refresh_sequence_number if @sequence.blank?
+
     destination = Stellar::KeyPair.from_address address
 
     tx = Stellar::Transaction.payment({
@@ -31,10 +50,10 @@ class Friendbot
     if tx_sub.received?
       @sequence += 1
     else
-      refresh_sequence_number
+      @sequence = nil # reset the sequence so we reload the next payment
     end
 
-    tx_sub
+    tx_sub    
   end
 
   private

@@ -67,8 +67,8 @@ class TransactionsController < ApplicationController
   def friendbot
     Metriks.meter("friendbot").mark
 
-    if $friendbot
-      tx_sub = $friendbot.pay(params[:addr])
+    if Friendbot.available?
+      tx_sub = Friendbot.pay(params[:addr])
       render_submission_response tx_sub
     else
       render problem: :not_found
