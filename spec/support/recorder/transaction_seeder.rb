@@ -1,5 +1,7 @@
 module Recorder
   class TransactionSeeder
+    DEFAULT_TIMEOUT=10.seconds
+    
     def initialize()
       @recipe = IO.read("#{SPEC_ROOT}/fixtures/transactions.rb")
       @accounts = {}
@@ -10,7 +12,8 @@ module Recorder
       play_transactions
 
       last_tx = @transactions.last[:tx]
-      last_hash = Convert.to_hex(last_tx.envelope.hash)
+      last_hash = Convert.to_hex(last_tx.envelope.tx.hash)
+      puts "done playing txs, waiting for last hash:#{last_hash}"
       wait_for_transaction last_hash
     end
 
@@ -60,7 +63,6 @@ module Recorder
 
         # TODO: break if a non-success response is returned
 
-        p tx_result
         @transactions << {tx: tx, result: tx_result}
       rescue
         puts "Error when playing tx: #{tx.inspect}"
@@ -69,11 +71,11 @@ module Recorder
     end
 
 
-    def wait_for_account(account, timeout=5.seconds)
+    def wait_for_account(account, timeout=DEFAULT_TIMEOUT)
       wait_for(timeout){ Hayashi::Account.where(accountid: account).first  }
     end
 
-    def wait_for_transaction(hash, timeout=5.seconds)
+    def wait_for_transaction(hash, timeout=DEFAULT_TIMEOUT)
       wait_for(timeout){ Hayashi::Transaction.where(txid: hash).first  }
     end
 

@@ -29,13 +29,12 @@ class Hayashi::Transaction < Hayashi::Base
 
   def meta
     raw_meta = Convert.from_base64(self.txmeta)
-    raw_meta = raw_meta[4..-1]# strip off rfc5531 record marking TODO: remove when txmeta is a bare xdr object
     Stellar::TransactionMeta.from_xdr(raw_meta)
   end
   memoize :meta
 
   def submitting_account
-    self.envelope.tx.account
+    self.envelope.tx.source_account
   end
 
   def submitting_address
