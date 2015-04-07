@@ -45,6 +45,7 @@ class Friendbot
     hex = tx.to_envelope(@keypair).to_xdr(:hex)
 
     tx_sub = TransactionSubmission.new(hex)
+    tx_sub.skip_finished_check!
     tx_sub.process
 
     if tx_sub.received?

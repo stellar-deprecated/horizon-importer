@@ -86,7 +86,13 @@ class TransactionSubmission
   end
 
   def finished?
+    return false if @skip_finished_check
+    
     history_transaction.present? || core_transaction.present?
+  end
+
+  def skip_finished_check!
+    @skip_finished_check = true
   end
 
   def parsed_envelope
