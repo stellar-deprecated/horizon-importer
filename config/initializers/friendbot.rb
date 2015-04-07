@@ -1,13 +1,10 @@
-
-puts "in friendbot initializer"
-
-if Rails.configuration.cache_classes
-  Friendbot.boot
-else
-  ActionDispatch::Reloader.to_prepare do
+class FriendbotRailtie < ::Rails::Railtie
+  config.to_prepare do
     Friendbot.boot
   end
+end
 
+unless Rails.configuration.cache_classes
   ActionDispatch::Reloader.to_cleanup do
     Friendbot.terminate
   end
