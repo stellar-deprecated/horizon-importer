@@ -9,6 +9,8 @@ class Hayashi::LedgerHeader < Hayashi::Base
     foreign_key: :ledgerseq, 
     primary_key: :ledgerseq,
   }
+
+  scope :latest, ->(){ order("ledgerseq DESC").first }
   
   def self.at_sequence(sequence)
     where(ledgerseq:sequence).first

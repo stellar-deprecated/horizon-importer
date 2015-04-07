@@ -21,3 +21,4 @@ coverage/
 test.rb
 doc/generated/
 .yardoc/
+app/.DS_Store

@@ -15,3 +15,7 @@ else
     $ledger_poller.terminate if $ledger_poller
   end
 end
+
+
+Metriks.gauge("history.latest_ledger"){ History::Ledger.last_imported_ledger.sequence rescue -1 }
+Metriks.gauge("stellar-core.latest_ledger"){ Hayashi::LedgerHeader.latest.sequence rescue -1 }
