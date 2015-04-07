@@ -14,8 +14,15 @@ module StellardHayashiApi
       config.middleware.use Rack::Attack
     end
 
+    config.middleware.insert_before 0, "Rack::Cors" do
+      allow do
+        origins '*'
+        resource '*', :headers => :any, :methods => [:get, :post, :options]
+      end
+    end
+
     require "#{config.root}/lib/request_metrics"
-    config.middleware.insert_before ActionDispatch::ShowExceptions, 
+    config.middleware.insert_before ActionDispatch::ShowExceptions,
       RequestMetrics, Metriks::Registry.default
 
     require "#{config.root}/lib/problem_renderer"
