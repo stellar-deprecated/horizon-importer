@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: git@github.com:stellar/ruby-stellar-base.git
-  revision: d1b43bd4044495636bda782c4e7354d0423ec982
+  revision: b0f023560c0a2474c627d669a586449799549100
   specs:
     stellar-base (0.0.1)
       activesupport (~> 4)
@@ -17,7 +17,7 @@ GIT
 
 GIT
   remote: git@github.com:stellar/ruby-xdr
-  revision: 75c110124deacc8d68274f64421b0dd2df09f95b
+  revision: a3795af5f481bf8597f070ef0f720ab18f322f74
   specs:
     xdr (0.0.1)
       activemodel (~> 4)
