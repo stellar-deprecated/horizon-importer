@@ -1,4 +1,5 @@
 
+puts "in friendbot initializer"
 
 if Rails.configuration.cache_classes
   Friendbot.boot

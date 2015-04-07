@@ -9,7 +9,10 @@ class Friendbot
   include Celluloid
 
   def self.boot
+    puts "seeing if we should boot friendbot"
     if ENV["FRIENDBOT_SECRET"].present?
+      puts "booting friendbot"
+
       supervise_as :friendbot, ENV["FRIENDBOT_SECRET"]
     end
   end
