@@ -8,7 +8,7 @@ FactoryGirl.define do
   end
 
   factory :master_key_pair, parent: :key_pair do
-    seed "masterpassphrasemasterpassphrase"
+    seed "allmylifemyhearthasbeensearching"
   end
 
   factory(:scott_key_pair,        parent: :key_pair){ seed "scott" }
