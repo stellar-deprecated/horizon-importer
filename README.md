@@ -20,3 +20,8 @@ early planning/hacking.
 - See [doc/developing.md](doc/developing.md) for details on how to setup a development environment for working on horizon.
 - See [doc/horizon.apib](doc/horizon.apib) for the [API Blueprint](https://apiblueprint.org/) of the API.
 
+## Contributing
+
+Please [see CONTRIBUTING.md for details](CONTRIBUTING.md).
+
+
