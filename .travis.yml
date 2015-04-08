@@ -5,16 +5,16 @@ rvm:
 - jruby-9.0.0.0.pre1
 - jruby-1.7.19
 env:
-  - DATABASE_USER="postgres" NOCOVERAGE="true" JRUBY_OPTS="-J-Xmx2048m"
+- DATABASE_USER="postgres" NOCOVERAGE="true" JRUBY_OPTS="-J-Xmx2048m"
 addons:
-  postgresql: "9.3"
-script: "LD_LIBRARY_PATH=lib bundle exec rake travis --trace"
+  postgresql: '9.3'
+script: LD_LIBRARY_PATH=lib bundle exec rake travis --trace
 before_script:
-  - psql -c 'create database "horizon_test";' -U postgres
-  - psql -c 'create database "hayashi_test";' -U postgres
+- psql -c 'create database "horizon_test";' -U postgres
+- psql -c 'create database "hayashi_test";' -U postgres
 notifications:
   slack:
-    secure: Vjq1o6O3TQ+gnKmKm3an+/YICoSDoDeCq/0TU51ykQGHy9bApwtW4K0WPAfYf/Yrkw9xBjVvB1Spv7MU4I/GgMWRpMkU4sUEaRIZ/8SP0c9XgPjTRBUskzEch/PwqZmjS4MWdeGeBkww67o/uPcoox1K/OS3ys8mPwPoNX2YzuI=
+    secure: Dgq+CT78IlxqXByWWzUmc72/Qvw7HpxzzWIUIR7AyE9yO6w2Fr6rfLjotql75pMXtfTCPjxDK2u9mUT2MehgSWGeXssSzy/QM/pxCINZfzTNhhcAjKq5WEwQ2oVdSxcXv4ukp9K0wFsT3ca3wEtaOHBT5wDXvW/qI6ru+dhaJvI=
 matrix:
   allow_failures:
-    - rvm: jruby-9.0.0.0.pre1
+  - rvm: jruby-9.0.0.0.pre1
