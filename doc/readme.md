@@ -33,10 +33,6 @@ The History API provides endpoints for retrieving data about what has happened i
 
 The history API is pretty sparse at present.  Presently you can page through all transactions in application order, or page through transactions that a apply to a single account.  This is really only useful for explaining how paging and filtering works within Horizon, as most useful information for transactions are related to their operations.
 
-## Relationship to stellar-core
-
-TODO
-
 ## API Overview
 
 The following section describes a couple of important concepts for the Horizon API at a high level.  Understanding these concepts will help make your overall experience integrating with Horizon much easier.
