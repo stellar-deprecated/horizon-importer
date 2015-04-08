@@ -5,9 +5,9 @@ gem 'jbuilder', '~> 2.0'
 gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'aasm', '~> 4.0.8'
 gem 'metriks', '~> 0.9.9.7'
-gem 'xdr', git: "git@github.com:stellar/ruby-xdr"
+gem 'xdr'
 # gem 'xdr', path: "../ruby-xdr", require: false
-gem 'stellar-base', git: "git@github.com:stellar/ruby-stellar-base.git", require: false
+gem 'stellar-base', require: false
 # gem 'stellar-base', path: "../ruby-stellar-base", require: false
 gem 'faraday'
 gem 'faraday_middleware'
