@@ -51,6 +51,7 @@ GEM
     atomic (1.1.99-java)
     avl_tree (1.2.1)
       atomic (~> 1.1)
+    awesome_print (1.6.1)
     backports (3.6.4)
     builder (3.2.2)
     celluloid (0.16.0)
@@ -259,6 +260,7 @@ DEPENDENCIES
   aasm (~> 4.0.8)
   activerecord-jdbc-adapter
   apiaryio
+  awesome_print
   backports
   celluloid
   composite_primary_keys (~> 7.0.13)
