@@ -39,7 +39,7 @@ class Friendbot
       account:     @keypair,
       destination: destination,
       sequence:    @sequence + 1,
-      amount:      [:native, 100_000000]
+      amount:      [:native, 1000_000000]
     })
 
     hex = tx.to_envelope(@keypair).to_xdr(:hex)
