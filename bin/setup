@@ -12,18 +12,13 @@ Dir.chdir APP_ROOT do
   system "gem install bundler --conservative"
   system "bundle check || bundle install"
 
-  # puts "\n== Copying sample files =="
-  # unless File.exist?("config/database.yml")
-  #   system "cp config/database.yml.sample config/database.yml"
-  # end
+  puts "\n== Creating and migrating databases =="
+  system "rake db:create && rake db:migrate"
+  system "RAILS_ENV=test rake db:create && rake db:migrate"
+  system <<-SH
+    psql -c 'create database "hayashi_test";' -U postgres
+  SH
 
-  puts "\n== Preparing database =="
-  system "bin/rake db:setup"
-
-  puts "\n== Removing old logs and tempfiles =="
-  system "rm -f log/*"
-  system "rm -rf tmp/cache"
-
-  puts "\n== Restarting application server =="
-  system "touch tmp/restart.txt"
+  puts "\n== Running tests =="
+  system "bundle exec rspec"
 end
