@@ -61,4 +61,5 @@ group :test, :development do
   gem 'webmock', require: false
   gem 'yard'
   gem 'apiaryio'
+  gem 'timecop'
 end
