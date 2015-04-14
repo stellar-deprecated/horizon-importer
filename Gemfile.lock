@@ -234,6 +234,7 @@ GEM
     thread_safe (0.3.5)
     thread_safe (0.3.5-java)
     tilt (1.4.1)
+    timecop (0.7.3)
     timers (4.0.1)
       hitimes
     torquebox-core (4.0.0.alpha1-java)
@@ -295,6 +296,7 @@ DEPENDENCIES
   sqlite3
   stellar-base
   sucker_punch
+  timecop
   torquebox-web (>= 4.0.0.alpha1)
   vcr
   webmock
