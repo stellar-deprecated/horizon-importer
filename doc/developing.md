@@ -104,12 +104,15 @@ launchctl load ~/Library/LaunchAgents/homebrew.mxcl.postgresql.plist
 
 ## Setting up Horizon
 
-Whew! That's was quite a process.  Now let's go about setting up horizon and running our test suite.  This process will involve:
+Whew! That's was quite a process.  Now let's go about setting up horizon and running our test suite.
 
-- Installing rubygem dependencies
-- Creating postgres databases
-- Running migrations to populate database schema
-- Running the test suite
+Run the setup script to install dependencies, set up your local databases, and run the tests:
+
+```
+$ bin/setup
+```
+
+Let's take a closer look at what's going on under the hood in `bin/setup`:
 
 ### Installing rubygem dependencies
 
@@ -134,6 +137,7 @@ We installed postgres earlier, and now we need to create the databases on the se
 
 ```bash
 rake db:create && RAILS_ENV=test rake db:create
+psql -c 'create database "hayashi_test";' -U postgres
 ```
 
 If you see a message such as `horizon_development already exists` in the output, that's alright.  Most likely, you'll simply see no output, indicating success.
@@ -204,7 +208,7 @@ Finished in 6.34 seconds (files took 12.39 seconds to load)
 74 examples, 0 failures, 15 pending
 
 Randomized with seed 27966
-``` 
+```
 
 Tada! You are now setup.
 
