@@ -1,7 +1,7 @@
 class TransactionSubmission
   extend Memoist
   include Instrumentation
-  
+
   RESULTS = [
 
     # the transaction was suffiently malformed that we could not interpet it
@@ -25,23 +25,23 @@ class TransactionSubmission
 
   attr_reader :tx_envelope
 
-  # 
-  # Create a new submission from a provided xdr-serialized, hex-encoded 
+  #
+  # Create a new submission from a provided xdr-serialized, hex-encoded
   # transaction envelope.
-  # 
+  #
   # @param tx_envelope [String] the transaction envelope
-  # 
+  #
   def initialize(tx_envelope)
     @tx_envelope = tx_envelope
   end
 
-  # 
+  #
   # Process this submission:
-  # 
+  #
   # - pre-validate it
   # - submit it to stellar core if needed
   # - interpret the submission to stellar-core to populate the "submission result"
-  # 
+  #
   def process
 
     if malformed?
@@ -53,7 +53,7 @@ class TransactionSubmission
       @result = :already_finished
       return
     end
-    
+
     @submission_response = $stellard.get("tx", blob: tx_envelope)
 
     if received?
@@ -61,15 +61,16 @@ class TransactionSubmission
     else
       @result = :failed
     end
-  rescue Faraday::ConnectionFailed
+  rescue Faraday::ConnectionFailed => e
+    ExceptionReporter.capture(e)
     @result = :connection_failed
   end
 
-  # 
+  #
   # Represents the result of this submission, and not necessarily that of the
-  # transaction that this submission contains.  See `TransactionSubmission::RESULTS` 
+  # transaction that this submission contains.  See `TransactionSubmission::RESULTS`
   # for a list of valid results along with explanations for each scenario.
-  # 
+  #
   # @return [Symbol] the result of this submission
   def result
     @result
@@ -87,7 +88,7 @@ class TransactionSubmission
 
   def finished?
     return false if @skip_finished_check
-    
+
     history_transaction.present? || core_transaction.present?
   end
 
@@ -122,6 +123,4 @@ class TransactionSubmission
 
     @submission_response.body["result"]
   end
-
-
 end
