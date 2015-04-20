@@ -1,10 +1,10 @@
 require "rails_helper"
 
-RSpec.describe TransactionSubmission do
+RSpec.describe ExceptionReporter do
   describe ".capture" do
-    it "reports exception to Sentry" do
+    it "captures exception" do
       error = "error"
-      allow(Raven).to receive(:capture_exception)
+      allow(ExceptionReporter::CLIENT).to receive(:capture_exception)
 
       ExceptionReporter.capture(error)
 
