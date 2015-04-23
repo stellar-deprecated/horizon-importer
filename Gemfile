@@ -21,6 +21,7 @@ gem 'low_card_tables'
 gem 'rack-cors', :require => 'rack/cors'
 gem 'rails_stdout_logging'
 gem 'awesome_print'
+gem 'sentry-raven'
 
 # note: the following celluloid and sucker_punch gems are require: false
 # so that the rspec system can bootup the system manually.
