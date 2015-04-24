@@ -7,13 +7,13 @@ RSpec.configure do |c|
     
     # play transactions, TODO:confirm success
     Recorder::TransactionSeeder.new.run
-    Recorder::HayashiDumper.new.dump
+    Recorder::StellarCoreDumper.new.dump
   end
 end
 
 RSpec.configure do |c|
   c.before(:suite) do
     next if RECORD # if we're recording, don't load the database
-    Recorder::HayashiDumper.new.load
+    Recorder::StellarCoreDumper.new.load
   end
 end

@@ -1,7 +1,7 @@
 module Recorder
-  class HayashiDumper
+  class StellarCoreDumper
     def initialize
-      @pg_dump = PgDump.new(Hayashi::Base, "#{SPEC_ROOT}/fixtures/hayashi.sql")
+      @pg_dump = PgDump.new(Hayashi::Base, "#{SPEC_ROOT}/fixtures/stellar-core.sql")
     end
 
     # 
