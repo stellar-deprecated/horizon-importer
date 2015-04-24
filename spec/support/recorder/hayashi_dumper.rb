@@ -1,10 +1,11 @@
 module Recorder
   class HayashiDumper
     def initialize
+      @pg_dump = PgDump.new(Hayashi::Base, "#{SPEC_ROOT}/fixtures/hayashi.sql")
     end
 
     # 
-    # Dumps data from the hayashi core database into the file at path `data_path`,
+    # Dumps data from the stellar core database into the file at path `fixtures/hayashi.sql`,
     # overwriting it if it already exists.  When running the test suite with
     # RECORD=true, the TransactionSeeder will run prior to this, populating a
     # new ledger.  This method will then dump that populated core db state into
@@ -12,30 +13,16 @@ module Recorder
     # as fixture data
     # 
     def dump
-      hayashi_db = Hayashi::Base.connection_config[:database]
-      `pg_dump #{hayashi_db} --clean --no-owner > #{data_path}`
+      @pg_dump.dump
     end
 
     # 
-    # Load data from `data_path` into the hayashi core database.  Normal test
+    # Load data from `fixtures/hayashi.sql` into the stellar core database.  Normal test
     # runs will perform this prior to the suite being started, to establish
     # a baseline state for the hayashi core system
     # 
     def load
-      hayashi_db = Hayashi::Base.connection_config[:database]
-      `psql #{hayashi_db} < #{data_path}`
+      @pg_dump.load
     end
-
-    private
-
-
-    # 
-    # The path where hayashi core db data is dumped/loaded
-    # 
-    # @return [String] the path
-    def data_path
-      "#{SPEC_ROOT}/fixtures/hayashi.sql"
-    end
-
   end
 end
