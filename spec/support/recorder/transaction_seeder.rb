@@ -28,6 +28,9 @@ module Recorder
           # dump results
           IO.write(@output_path, process.dump_database)
 
+          # cleanup tmpdir/db/etc.
+          process.cleanup
+
         ensure
           WebMock.disable_net_connect!
         end
