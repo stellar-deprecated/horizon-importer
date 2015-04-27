@@ -63,4 +63,5 @@ group :test, :development do
   gem 'yard'
   gem 'apiaryio'
   gem 'timecop'
+  gem 'stellar_core_commander', platform: :ruby, require: false
 end

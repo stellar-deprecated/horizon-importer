@@ -1,19 +1,10 @@
 RSpec.configure do |c|
   c.before(:suite) do
-    next unless RECORD
+    if RECORD
+      Recorder::TransactionSeeder.new.run
+    end
 
-    raise "Hayashi Accounts table not at default state" if Hayashi::Account.count > 1
-    raise "Hayashi TxHistory table not at default state" if Hayashi::Transaction.any?
-    
-    # play transactions, TODO:confirm success
-    Recorder::TransactionSeeder.new.run
-    Recorder::StellarCoreDumper.new.dump
-  end
-end
-
-RSpec.configure do |c|
-  c.before(:suite) do
-    next if RECORD # if we're recording, don't load the database
-    Recorder::StellarCoreDumper.new.load
+    pg_dump = PgDump.new(Hayashi::Base, "#{SPEC_ROOT}/fixtures/stellar-core.sql")
+    pg_dump.load
   end
 end

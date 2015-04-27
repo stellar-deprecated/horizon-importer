@@ -59,6 +59,7 @@ GEM
     coderay (1.1.0)
     composite_primary_keys (7.0.13)
       activerecord (~> 4.1.7)
+    contracts (0.9)
     crack (0.4.2)
       safe_yaml (~> 1.0.0)
     database_cleaner (1.4.0)
@@ -205,6 +206,7 @@ GEM
       rdoc (~> 4.0)
     sentry-raven (0.13.1)
       faraday (>= 0.7.6)
+    sequel (4.21.0)
     shellany (0.0.1)
     shoulda-matchers (2.8.0)
       activesupport (>= 3.0.0)
@@ -230,6 +232,15 @@ GEM
       activesupport (~> 4)
       rbnacl
       xdr
+    stellar_core_commander (0.0.1)
+      activesupport (>= 4.0.0)
+      contracts (~> 0.9)
+      faraday (~> 0.9.1)
+      faraday_middleware (~> 0.9.1)
+      pg (~> 0.18.1)
+      sequel (~> 4.21.0)
+      slop (~> 3.6.0)
+      stellar-base (~> 0.0.1)
     sucker_punch (1.4.0)
       celluloid (~> 0.16.0)
     thor (0.19.1)
@@ -298,6 +309,7 @@ DEPENDENCIES
   simplecov
   sqlite3
   stellar-base
+  stellar_core_commander
   sucker_punch
   timecop
   torquebox-web (>= 4.0.0.alpha1)
