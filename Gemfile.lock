@@ -232,7 +232,7 @@ GEM
       activesupport (~> 4)
       rbnacl
       xdr
-    stellar_core_commander (0.0.1)
+    stellar_core_commander (0.0.2)
       activesupport (>= 4.0.0)
       contracts (~> 0.9)
       faraday (~> 0.9.1)
@@ -309,7 +309,7 @@ DEPENDENCIES
   simplecov
   sqlite3
   stellar-base
-  stellar_core_commander
+  stellar_core_commander (>= 0.0.2)
   sucker_punch
   timecop
   torquebox-web (>= 4.0.0.alpha1)
