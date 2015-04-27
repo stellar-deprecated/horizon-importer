@@ -66,16 +66,5 @@ namespace :db do
       Hayashi::Base.clear_all_connections!
     end
 
-
-    # TODO:
-    # check the scenario file
-    # clear history database
-    # launch stellar-core in manual crank mode
-    # play scenario, confirm results as expected
-    # shutdown stellar-core
-    # trigger history rebuild
-    # dump stellar-core db
-    # dump horizon db
-
   end
 end
