@@ -63,5 +63,5 @@ group :test, :development do
   gem 'yard'
   gem 'apiaryio'
   gem 'timecop'
-  gem 'stellar_core_commander', platform: :ruby, require: false
+  gem 'stellar_core_commander', ">= 0.0.2", platform: :ruby, require: false
 end
