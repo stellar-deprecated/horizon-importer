@@ -80,7 +80,8 @@ module TotalOrderId
     end
 
     txop = ((tx & TX_MASK) << TX_SHIFT) | (op & OP_MASK)
-    @value = [ledger, txop].pack("NN").unpack("Q>").first
+    
+    [ledger, txop].pack("NN").unpack("Q>").first
   end
 end
 
