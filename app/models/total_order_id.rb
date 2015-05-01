@@ -68,15 +68,15 @@ module TotalOrderId
 
   def self.make(ledger, tx=0, op=0)
     if op > OP_MASK
-      raise ArgumentError, "op to large: #{op}, max allowed: #{OP_MASK}"
+      raise ArgumentError, "op too large: #{op}, max allowed: #{OP_MASK}"
     end
 
     if tx > TX_MASK
-      raise ArgumentError, "tx to large: #{tx}, max allowed: #{TX_MASK}"
+      raise ArgumentError, "tx too large: #{tx}, max allowed: #{TX_MASK}"
     end
 
     if ledger > LEDGER_MAX
-      raise ArgumentError, "ledger to large: #{ledger}, max allowed: #{LEDGER_MAX}"
+      raise ArgumentError, "ledger too large: #{ledger}, max allowed: #{LEDGER_MAX}"
     end
 
     txop = ((tx & TX_MASK) << TX_SHIFT) | (op & OP_MASK)
