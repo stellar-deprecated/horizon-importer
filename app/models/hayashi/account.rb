@@ -1,7 +1,7 @@
 class Hayashi::Account < Hayashi::Base
   self.table_name  = "accounts"
   self.primary_key = "accountid"
-  
+
   has_many :signers,     class_name: "Hayashi::Signer",    foreign_key: [:accountid]
   has_many :trust_lines, class_name: "Hayashi::TrustLine", foreign_key: [:accountid]
 
@@ -29,7 +29,7 @@ class Hayashi::Account < Hayashi::Base
         balances << {
           currency: {type: :iso4217, issuer: tl.issuer, code: tl.currency_code},
           balance:  tl.balance,
-          limit:    tl.limit
+          limit:    tl.tlimit
         }
       end
     end
