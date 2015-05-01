@@ -32,8 +32,6 @@ GEM
       arel (~> 5.0.0)
     activerecord-import (0.7.0)
       activerecord (>= 3.0)
-    activerecord-jdbc-adapter (1.3.14)
-      activerecord (>= 2.2)
     activesupport (4.1.9)
       i18n (~> 0.6, >= 0.6.9)
       json (~> 1.7, >= 1.7.7)
@@ -99,9 +97,6 @@ GEM
     jbuilder (2.2.8)
       activesupport (>= 3.0.0, < 5)
       multi_json (~> 1.2)
-    jdbc-postgres (9.4.1200)
-    jdbc-sqlite3 (3.8.7)
-    jruby-memcached (0.5.5)
     json (1.8.2)
     json (1.8.2-java)
     json_expressions (0.8.3)
@@ -146,6 +141,8 @@ GEM
     pry-rails (0.3.3)
       pry (>= 0.9.10)
     puma (2.11.1)
+      rack (>= 1.1, < 2.0)
+    puma (2.11.1-java)
       rack (>= 1.1, < 2.0)
     rack (1.5.2)
     rack-attack (4.2.0)
@@ -250,10 +247,6 @@ GEM
     timecop (0.7.3)
     timers (4.0.1)
       hitimes
-    torquebox-core (4.0.0.alpha1-java)
-    torquebox-web (4.0.0.alpha1-java)
-      rack (>= 1.4.0, < 2.0)
-      torquebox-core (= 4.0.0.alpha1)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
     vcr (2.9.3)
@@ -272,7 +265,6 @@ PLATFORMS
 
 DEPENDENCIES
   aasm (~> 4.0.8)
-  activerecord-jdbc-adapter
   apiaryio
   awesome_print
   backports
@@ -286,9 +278,6 @@ DEPENDENCIES
   guard
   guard-rspec
   jbuilder (~> 2.0)
-  jdbc-postgres
-  jdbc-sqlite3
-  jruby-memcached
   json_expressions
   low_card_tables
   memcached
@@ -312,7 +301,6 @@ DEPENDENCIES
   stellar_core_commander (>= 0.0.2)
   sucker_punch
   timecop
-  torquebox-web (>= 4.0.0.alpha1)
   vcr
   webmock
   xdr

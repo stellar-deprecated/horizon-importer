@@ -2,8 +2,6 @@ language: ruby
 rvm:
 - 2.2.0
 - 2.1.5
-- jruby-9.0.0.0.pre1
-- jruby-1.7.19
 env:
 - DATABASE_USER="postgres" NOCOVERAGE="true" JRUBY_OPTS="-J-Xmx2048m"
 addons:
@@ -15,6 +13,3 @@ before_script:
 notifications:
   slack:
     secure: Dgq+CT78IlxqXByWWzUmc72/Qvw7HpxzzWIUIR7AyE9yO6w2Fr6rfLjotql75pMXtfTCPjxDK2u9mUT2MehgSWGeXssSzy/QM/pxCINZfzTNhhcAjKq5WEwQ2oVdSxcXv4ukp9K0wFsT3ca3wEtaOHBT5wDXvW/qI6ru+dhaJvI=
-matrix:
-  allow_failures:
-  - rvm: jruby-9.0.0.0.pre1

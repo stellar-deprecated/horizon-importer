@@ -31,20 +31,14 @@ gem 'celluloid', require: false
 gem 'sucker_punch', require: false
 
 # sql gems
-gem 'pg', platform: :ruby
-gem 'sqlite3', platform: :ruby
-
-gem 'jdbc-postgres', platform: :jruby
-gem 'jdbc-sqlite3', platform: :jruby
-gem 'activerecord-jdbc-adapter', platform: :jruby
+gem 'pg'
+gem 'sqlite3'
 
 #memcached
-gem 'memcached', platform: :ruby, require: 'memcached'
-gem 'jruby-memcached', platform: :jruby, require: 'memcached'
+gem 'memcached', require: 'memcached'
 
 #webservers
-gem 'puma', platform: :ruby
-gem 'torquebox-web', ">= 4.0.0.alpha1", platform: :jruby
+gem 'puma'
 
 
 gem 'dotenv-rails', github: "bkeepers/dotenv"
@@ -63,5 +57,5 @@ group :test, :development do
   gem 'yard'
   gem 'apiaryio'
   gem 'timecop'
-  gem 'stellar_core_commander', ">= 0.0.2", platform: :ruby, require: false
+  gem 'stellar_core_commander', ">= 0.0.2", require: false
 end
