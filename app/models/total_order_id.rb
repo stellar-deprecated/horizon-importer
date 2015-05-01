@@ -79,8 +79,13 @@ module TotalOrderId
       raise ArgumentError, "ledger too large: #{ledger}, max allowed: #{LEDGER_MAX}"
     end
 
+    # combine tx and op together, where tx is the high 20-bits
+    # and op is the low 12-bits
     txop = ((tx & TX_MASK) << TX_SHIFT) | (op & OP_MASK)
     
+    # pack ledger and txop together, each as
+    # 32-bits in network byte order ("NN"), then extract
+    # the combined 64-bits in network byte order ("Q>").
     [ledger, txop].pack("NN").unpack("Q>").first
   end
 end
