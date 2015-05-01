@@ -2,6 +2,7 @@ FactoryGirl.define do
   factory :history_ledger, :class => 'History::Ledger' do
     sequence(:sequence, 1)
 
+    order             { TotalOrderId.make(sequence) }
     ledger_hash       { Digest::SHA256.hexdigest(sequence.to_s)  }
     transaction_count 0
     operation_count   0

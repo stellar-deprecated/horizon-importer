@@ -19,7 +19,7 @@ gem 'rack-attack'
 gem 'oat'
 gem 'low_card_tables'
 gem 'rack-cors', :require => 'rack/cors'
-gem 'rails_stdout_logging'
+gem 'rails_stdout_logging', group: :production
 gem 'awesome_print'
 gem 'sentry-raven'
 

@@ -4,6 +4,13 @@ class History::Transaction < History::Base
 
   include Pageable
 
+  self.primary_key = 'order'
+
+  validates :order, presence: true
+
+  before_validation :make_order
+
+
   has_many :participants, {
     class_name: "History::TransactionParticipant", 
     foreign_key: :transaction_hash, 
@@ -16,41 +23,15 @@ class History::Transaction < History::Base
   }
 
   scope :application_order, ->(){ 
-    order("ledger_sequence ASC, application_order ASC") 
+    order(:order) 
   }
-
-  BEFORE_SQL_FRAGMENT = <<-EOS
-    ledger_sequence < :ledger_sequence
-    OR (
-          ledger_sequence = :ledger_sequence 
-      AND application_order < :application_order
-    )
-  EOS
 
   scope :before_token, ->(paging_token) {
-    ledger_sequence, application_order = *parse_paging_token(paging_token)
-
-    where(BEFORE_SQL_FRAGMENT, {
-      ledger_sequence:ledger_sequence,
-      application_order:application_order
-    })
+    where('"order" < ?', paging_token)
   }
 
-  AFTER_SQL_FRAGMENT = <<-EOS
-    ledger_sequence > :ledger_sequence
-    OR (
-          ledger_sequence = :ledger_sequence 
-      AND application_order > :application_order
-    )
-  EOS
-
   scope :after_token, ->(paging_token) {
-    ledger_sequence, application_order = *parse_paging_token(paging_token)
-
-    where(AFTER_SQL_FRAGMENT, {
-      ledger_sequence:ledger_sequence,
-      application_order:application_order
-    })
+    where('"order" > ?', paging_token)
   }
 
   def to_param
@@ -58,12 +39,14 @@ class History::Transaction < History::Base
   end
 
   def to_paging_token
-    Convert.to_hex("#{ledger_sequence}:#{application_order}")
+    order.to_s
   end
 
-  def self.parse_paging_token(paging_token)
-    decoded = Convert.from_hex(paging_token)
-    decoded.split(":", 2)
-  end
+  private
+  def make_order
+    return if self.ledger_sequence.blank?
+    return if self.application_order.blank?
 
+    self.order = TotalOrderId.make(ledger_sequence, application_order)
+  end
 end
