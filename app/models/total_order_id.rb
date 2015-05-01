@@ -5,8 +5,8 @@
 # 
 # Operations within the stellar network have a total order, expressed by three
 # pieces of information:  the ledger sequence the operation was validated in,
-# the application order within that ledger that the operation's containing
-# transaction, and the index of the operation within that parent transaction.
+# the order which the operation's containing transaction was applied in 
+# that ledger, and the index of the operation within that parent transaction.
 # 
 # We express this order by packing those three pieces of information into a
 # single signed 64-bit number (we used a signed number for SQL compatibility).
