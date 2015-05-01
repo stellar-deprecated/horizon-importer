@@ -66,6 +66,17 @@ module TotalOrderId
 
   attr_reader :value
 
+
+  # 
+  # Constructs a number representing a "TotalOrderId" for the 
+  # provided ledger/transaction/operation triplet.
+  # 
+  # @param ledger [Fixnum] the ledger sequence
+  # @param tx=0 [Fixnum] the transaction's application order within `ledger`
+  # @param op=0 [Fixnum] the operation's application order within `tx`
+  # 
+  # @return [Fixnum] the order
+  # 
   def self.make(ledger, tx=0, op=0)
     if op > OP_MASK
       raise ArgumentError, "op too large: #{op}, max allowed: #{OP_MASK}"
