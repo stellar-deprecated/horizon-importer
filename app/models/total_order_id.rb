@@ -32,13 +32,14 @@
 # Transaction Application Order: 20-bits
 # 
 #   The order that the transaction was applied within the ledger it was 
-#   validated.  Accommodates up to 1,048,576 transactions in a single ledger.
+#   validated.  Accommodates up to 1,048,575 transactions in a single ledger.
 # 
 #   Expressed in network byte order.
 # 
 # Operation Index: 10-bits
 # 
-#   The index of the operation within its parent transaction.
+#   The index of the operation within its parent transaction. Accommodates up 
+#   to 4095 operations per transaction.
 # 
 #   Expressed in network byte order.
 # 
