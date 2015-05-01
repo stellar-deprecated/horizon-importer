@@ -1,3 +1,0 @@
-# travis options
-# JRUBY_OPTS='--client -J-XX:+TieredCompilation -J-XX:TieredStopAtLevel=1 -Xcext.enabled=false -J-Xss2m -Xcompile.invokedynamic=false'
-JRUBY_OPTS='--dev'

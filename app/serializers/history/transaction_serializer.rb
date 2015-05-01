@@ -8,6 +8,8 @@ class History::TransactionSerializer < ApplicationSerializer
     
     #TODO: link :ledger, href: blah
 
+    property :id,                item.transaction_hash
+    property :paging_token,      item.to_paging_token
     property :hash,              item.transaction_hash
     property :ledger,            item.ledger_sequence
     property :application_order, [item.ledger_sequence, item.application_order]

@@ -11,12 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150313225955) do
+ActiveRecord::Schema.define(version: 20150501160031) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "history_ledgers", force: true do |t|
+  create_table "history_ledgers", id: false, force: true do |t|
     t.integer  "sequence",                                    null: false
     t.string   "ledger_hash",          limit: 64,             null: false
     t.string   "previous_ledger_hash", limit: 64
@@ -25,6 +25,7 @@ ActiveRecord::Schema.define(version: 20150313225955) do
     t.datetime "closed_at",                                   null: false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "order",                limit: 8
   end
 
   add_index "history_ledgers", ["closed_at"], name: "index_history_ledgers_on_closed_at", using: :btree
@@ -49,7 +50,7 @@ ActiveRecord::Schema.define(version: 20150313225955) do
 
   add_index "history_transaction_statuses", ["id", "result_code", "result_code_s"], name: "index_history_transaction_statuses_lc_on_all", unique: true, using: :btree
 
-  create_table "history_transactions", force: true do |t|
+  create_table "history_transactions", id: false, force: true do |t|
     t.string   "transaction_hash",      limit: 64, null: false
     t.integer  "ledger_sequence",                  null: false
     t.integer  "application_order",                null: false
@@ -61,6 +62,7 @@ ActiveRecord::Schema.define(version: 20150313225955) do
     t.integer  "transaction_status_id",            null: false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "order",                 limit: 8
   end
 
   add_index "history_transactions", ["account", "account_sequence"], name: "by_account", using: :btree
