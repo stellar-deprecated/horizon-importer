@@ -75,7 +75,7 @@ namespace :db do
     process = load_scenario cmd, path
 
     IO.write("tmp/core.sql", process.dump_database)
-    `psql #{ENV["HAYASHI_DATABASE_URL"]} < tmp/core.sql`
+    `psql #{ENV["STELLAR_CORE_DATABASE_URL"]} < tmp/core.sql`
   end
 
   def load_scenario(cmd, path)

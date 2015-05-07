@@ -6,7 +6,7 @@ default: &default
 
 stellar_core:
   <<: *default
-  url: <%= ENV["HAYASHI_DATABASE_URL"] %>
+  url: <%= ENV["STELLAR_CORE_DATABASE_URL"] || ENV["HAYASHI_DATABASE_URL"] %>
 
 default_env:
   <<: *default
