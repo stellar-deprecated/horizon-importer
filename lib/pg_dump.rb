@@ -16,7 +16,6 @@ class PgDump
   # 
   # Load data from `@output_path` into the provided database.
   def load
-    hayashi_db = Hayashi::Base.connection_config[:database]
     `psql #{@db} < #{@output_path}`
   end
 

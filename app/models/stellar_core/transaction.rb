@@ -1,9 +1,9 @@
-class Hayashi::Transaction < Hayashi::Base
+class StellarCore::Transaction < StellarCore::Base
   self.table_name  = "txhistory"
   self.primary_key = "txid"
 
   belongs_to :ledger_header, {
-    class_name: "Hayashi::LedgerHeader",
+    class_name: "StellarCore::LedgerHeader",
     foreign_key: :ledgerseq,
     primary_key: :ledgerseq,
   }

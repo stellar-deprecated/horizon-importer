@@ -6,7 +6,7 @@ Bundler.require(*Rails.groups)
 
 Dotenv::Railtie.load
 
-module StellardHayashiApi
+module Horizon
   class Application < Rails::Application
 
     # middlewarezez

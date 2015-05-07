@@ -1,4 +1,4 @@
-# Responses in the Hayashi API
+# Responses in the Horizon API
 
 tl;dr;  http://stateless.co/hal_specification.html
 

@@ -105,7 +105,7 @@ class TransactionSubmission
   memoize :parsed_envelope
 
   def core_transaction
-    Hayashi::Transaction.where(txid: transaction_hash).first
+    StellarCore::Transaction.where(txid: transaction_hash).first
   end
   memoize :core_transaction
 

@@ -1,8 +1,8 @@
-class Hayashi::Base < ActiveRecord::Base
+class StellarCore::Base < ActiveRecord::Base
   include Memoizes
 
   self.abstract_class = true
-  establish_connection :hayashi
+  establish_connection :stellar_core
   after_initialize :readonly!
 
 end

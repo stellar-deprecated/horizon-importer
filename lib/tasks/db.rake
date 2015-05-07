@@ -1,6 +1,6 @@
 
 namespace :db do
-  desc "clears all history tables and rebuilds the from the hayashi db"
+  desc "clears all history tables and rebuilds the from the stellar_core db"
   task :rebuild_history => :environment do
     Rails.application.eager_load!
 
@@ -11,7 +11,7 @@ namespace :db do
 
     # reimport
     # TODO: include activerecord-stream for better scalability
-    Hayashi::LedgerHeader.order("ledgerseq ASC").all.each do |header|
+    StellarCore::LedgerHeader.order("ledgerseq ASC").all.each do |header|
       History::LedgerImporterJob.new.perform(header.sequence)
     end
   end
@@ -44,7 +44,7 @@ namespace :db do
       d = PgDump.new(History::Base, "tmp/scenarios/#{scenario_name}-horizon.sql")
       d.dump
 
-      Hayashi::Base.clear_all_connections!
+      StellarCore::Base.clear_all_connections!
     end
   end
 
@@ -92,15 +92,15 @@ namespace :db do
     History::Base.transaction{ History::Base.descendants.each(&:delete_all) }
 
     # reimport history
-    Hayashi::Base.clear_all_connections!
+    StellarCore::Base.clear_all_connections!
     database_url = "postgres://localhost/#{process.database_name}"
-    Hayashi::Base.establish_connection database_url
+    StellarCore::Base.establish_connection database_url
 
-    Hayashi::LedgerHeader.order("ledgerseq ASC").all.each do |header|
+    StellarCore::LedgerHeader.order("ledgerseq ASC").all.each do |header|
       History::LedgerImporterJob.new.perform(header.sequence)
     end
 
-    Hayashi::Base.clear_all_connections!
+    StellarCore::Base.clear_all_connections!
 
     process
   end

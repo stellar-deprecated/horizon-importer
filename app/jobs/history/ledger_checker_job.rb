@@ -1,5 +1,5 @@
 # 
-# Looks to see if the hayashi database has the new ledger available based
+# Looks to see if the stellar core database has the new ledger available based
 # upon our latest imported ledger, triggering an import job if one is 
 # available
 # 
@@ -10,13 +10,13 @@ class History::LedgerCheckerJob < ApplicationJob
     # a separate path for bulk-loading history and catchup
     
     with_db(:history) do 
-      with_db(:hayashi) do 
+      with_db(:stellar_core) do 
         last_imported = History::Ledger.last_imported_ledger.try(:sequence) || 0
       
-        # ensure the next ledger is in the hayashi db
+        # ensure the next ledger is in the stellar_core db
         next_ledger = last_imported + 1
-        hayashi_ledger = Hayashi::LedgerHeader.at_sequence(next_ledger)
-        return if hayashi_ledger.blank?
+        core_ledger = StellarCore::LedgerHeader.at_sequence(next_ledger)
+        return if core_ledger.blank?
 
         History::LedgerImporterJob.new.async.perform(next_ledger)
       end

@@ -5,34 +5,34 @@ RSpec.describe History::LedgerImporterJob, type: :job do
 
   context "when importing the first ledger" do
     let(:sequence){ 1 }
-    let(:hayashi_ledger){ Hayashi::LedgerHeader.where(ledgerseq: sequence).first }
+    let(:stellar_core_ledger){ StellarCore::LedgerHeader.where(ledgerseq: sequence).first }
 
     it "creates a new History::Ledger record" do
       expect{ result }.to change{ History::Ledger.count }.to(1)
     end
 
-    it "correctly imports the hayashi ledger header" do
+    it "correctly imports the stellar_core ledger header" do
       expect(result.sequence).to eq(1)
       expect(result.previous_ledger_hash).to be_nil
-      expect(result.ledger_hash).to eq(hayashi_ledger.ledgerhash)
+      expect(result.ledger_hash).to eq(stellar_core_ledger.ledgerhash)
     end
   end
 
   context "when importing the correct, next ledger" do
     before(:each){ subject.perform(1) } #import the first ledger
     let(:sequence){ 2 }
-    let(:prev_hayashi_ledger){ Hayashi::LedgerHeader.where(ledgerseq: 1).first }
-    let(:hayashi_ledger){ Hayashi::LedgerHeader.where(ledgerseq: sequence).first }
+    let(:prev_stellar_core_ledger){ StellarCore::LedgerHeader.where(ledgerseq: 1).first }
+    let(:stellar_core_ledger){ StellarCore::LedgerHeader.where(ledgerseq: sequence).first }
 
     it "creates a new History::Ledger record" do
       expect{ result }.to change{ History::Ledger.count }.by(1)
     end
 
-    it "correctly imports the hayashi ledger header" do
+    it "correctly imports the stellar_core ledger header" do
       expect(result.sequence).to eq(2)
-      expect(result.previous_ledger_hash).to eq(hayashi_ledger.prevhash)
-      expect(result.previous_ledger_hash).to eq(prev_hayashi_ledger.ledgerhash)
-      expect(result.ledger_hash).to eq(hayashi_ledger.ledgerhash)
+      expect(result.previous_ledger_hash).to eq(stellar_core_ledger.prevhash)
+      expect(result.previous_ledger_hash).to eq(prev_stellar_core_ledger.ledgerhash)
+      expect(result.ledger_hash).to eq(stellar_core_ledger.ledgerhash)
     end
   end
 
@@ -47,9 +47,9 @@ RSpec.describe History::LedgerImporterJob, type: :job do
 
     # stub the prevhash of the ledger to import with a bogus value
     before(:each) do
-      header = Hayashi::LedgerHeader.at_sequence(2)
+      header = StellarCore::LedgerHeader.at_sequence(2)
       header.prevhash = Digest::SHA256.hexdigest("not the right content")
-      allow(Hayashi::LedgerHeader).to receive(:at_sequence){ header }
+      allow(StellarCore::LedgerHeader).to receive(:at_sequence){ header }
     end
 
     let(:sequence){ 2 }
@@ -67,7 +67,7 @@ end
 # 
 # This is better than nothing, though
 RSpec.describe History::LedgerImporterJob, "importing all fixture data", type: :job do
-  let(:ledger_count){ Hayashi::LedgerHeader.count }
+  let(:ledger_count){ StellarCore::LedgerHeader.count }
 
   before(:each) do
     ledger_indexes = ledger_count.times.map{|i| i + 1} 
@@ -75,11 +75,11 @@ RSpec.describe History::LedgerImporterJob, "importing all fixture data", type: :
   end
 
   it "properly imports all ledgers" do
-    expect(History::Ledger.count).to eq(Hayashi::LedgerHeader.count)
+    expect(History::Ledger.count).to eq(StellarCore::LedgerHeader.count)
   end
 
   it "properly imports all transactions" do
-    expect(History::Transaction.count).to eq(Hayashi::Transaction.count)
+    expect(History::Transaction.count).to eq(StellarCore::Transaction.count)
   end
 
   it "properly imports all participants" do

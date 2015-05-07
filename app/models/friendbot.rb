@@ -59,8 +59,8 @@ class Friendbot
 
   private
   def refresh_sequence_number
-    Hayashi::Account.connection_pool.with_connection do 
-      account = Hayashi::Account.where(accountid: @keypair.address).first
+    StellarCore::Account.connection_pool.with_connection do 
+      account = StellarCore::Account.where(accountid: @keypair.address).first
 
       raise "invalid friendbot seed: account not found" if account.blank?
 

@@ -1,9 +1,9 @@
-class Hayashi::Account < Hayashi::Base
+class StellarCore::Account < StellarCore::Base
   self.table_name  = "accounts"
   self.primary_key = "accountid"
 
-  has_many :signers,     class_name: "Hayashi::Signer",    foreign_key: [:accountid]
-  has_many :trust_lines, class_name: "Hayashi::TrustLine", foreign_key: [:accountid]
+  has_many :signers,     class_name: "StellarCore::Signer",    foreign_key: [:accountid]
+  has_many :trust_lines, class_name: "StellarCore::TrustLine", foreign_key: [:accountid]
 
   alias_attribute :sequence, :seqnum
   alias_attribute :address,  :accountid

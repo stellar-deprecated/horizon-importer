@@ -1,4 +1,4 @@
-class Hayashi::AccountSerializer < ApplicationSerializer
+class StellarCore::AccountSerializer < ApplicationSerializer
   adapter Oat::Adapters::HAL
 
   schema do

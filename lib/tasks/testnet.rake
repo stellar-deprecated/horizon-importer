@@ -8,7 +8,7 @@ namespace :testnet do
 
     source      = Stellar::KeyPair.from_raw_seed("allmylifemyhearthasbeensearching")
     destination = Stellar::KeyPair.from_seed ENV["FRIENDBOT_SECRET"]
-    sequence    = Hayashi::Account.where(accountid: source.address).first.sequence
+    sequence    = StellarCore::Account.where(accountid: source.address).first.sequence
     
     tx = Stellar::Transaction.payment({
       account:     source,

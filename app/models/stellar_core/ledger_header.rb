@@ -1,11 +1,11 @@
-class Hayashi::LedgerHeader < Hayashi::Base
+class StellarCore::LedgerHeader < StellarCore::Base
   self.table_name  = "ledgerheaders"
   self.primary_key = "ledgerhash"
 
   alias_attribute :sequence, :ledgerseq
 
   has_many :transactions, {
-    class_name: "Hayashi::Transaction", 
+    class_name: "StellarCore::Transaction", 
     foreign_key: :ledgerseq, 
     primary_key: :ledgerseq,
   }

@@ -20,7 +20,7 @@ RSpec.describe "Account Requests", type: :request do
     context "with a single known account" do
       let(:addresses){[create(:master_key_pair).address]}
       let(:address){ addresses.first }
-      let(:account){ Hayashi::Account.find(address)}
+      let(:account){ StellarCore::Account.find(address)}
       it{ should have_status(:ok) }
       
       it{ should match_json({

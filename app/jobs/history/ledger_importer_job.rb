@@ -1,37 +1,37 @@
 # 
 # Takes the ledger header and transaction set of the requested sequence from the 
-# hayashi database and imports them into the history database.
+# stellar_core database and imports them into the history database.
 # 
 class History::LedgerImporterJob < ApplicationJob
   EMPTY_HASH = "0" * 64
 
   def perform(ledger_sequence)
-    hayashi_ledger, hayashi_transactions = load_hayashi_data(ledger_sequence)
+    stellar_core_ledger, stellar_core_transactions = load_stellar_core_data(ledger_sequence)
 
-    if hayashi_ledger.blank?
+    if stellar_core_ledger.blank?
       raise ActiveRecord::RecordNotFound, 
         "Couldn't find ledger #{ledger_sequence}"
     end
 
     with_db(:history) do
-      first_ledger = hayashi_ledger.ledgerseq == 1
+      first_ledger = stellar_core_ledger.ledgerseq == 1
 
       History::Base.transaction do
         # ensure we've imported the previous header
         unless first_ledger
-          History::Ledger.validate_previous_ledger_hash!(hayashi_ledger.prevhash, hayashi_ledger.ledgerseq)
+          History::Ledger.validate_previous_ledger_hash!(stellar_core_ledger.prevhash, stellar_core_ledger.ledgerseq)
         end
 
         #TODO: don't error out when uniqueness validation fails, 
         # instead emit a warning with the error summary
         result = History::Ledger.create!({
-          sequence:             hayashi_ledger.ledgerseq,
-          ledger_hash:          hayashi_ledger.ledgerhash,
-          previous_ledger_hash: (hayashi_ledger.prevhash unless first_ledger),
-          closed_at:            Time.at(hayashi_ledger.closetime),
+          sequence:             stellar_core_ledger.ledgerseq,
+          ledger_hash:          stellar_core_ledger.ledgerhash,
+          previous_ledger_hash: (stellar_core_ledger.prevhash unless first_ledger),
+          closed_at:            Time.at(stellar_core_ledger.closetime),
         })
         
-        hayashi_transactions.each do |htx|
+        stellar_core_transactions.each do |htx|
           History::Transaction.create!({
             transaction_hash:  htx.txid, 
             ledger_sequence:   htx.ledgerseq,
@@ -61,9 +61,9 @@ class History::LedgerImporterJob < ApplicationJob
     end
   end
 
-  def load_hayashi_data(ledger_sequence)
-    with_db(:hayashi) do
-      ledger = Hayashi::LedgerHeader.at_sequence(ledger_sequence)
+  def load_stellar_core_data(ledger_sequence)
+    with_db(:stellar_core) do
+      ledger = StellarCore::LedgerHeader.at_sequence(ledger_sequence)
       
       [ledger, (ledger.transactions.to_a if ledger)]
     end
