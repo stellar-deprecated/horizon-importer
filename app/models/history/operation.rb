@@ -4,6 +4,7 @@ class History::Operation < History::Base
   # disable STI
   def self.inheritance_column ; nil ; end
 
+  self.primary_key = "id"
   validates :id, presence: true, uniqueness: true
 
   before_validation :make_id

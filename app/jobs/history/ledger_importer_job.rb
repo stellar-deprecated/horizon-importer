@@ -126,6 +126,7 @@ class History::LedgerImporterJob < ApplicationJob
       op, result = *op_and_r
     
       source_account = op.source_account || sctx.source_account
+      participant_addresses = [Convert.pk_to_address(source_account)]
     
       hop = History::Operation.new({
         transaction_id:    htx.id,
@@ -140,17 +141,19 @@ class History::LedgerImporterJob < ApplicationJob
         payment = op.body.payment_op!
 
         hop.details = {
-          from:          Convert.pk_to_address(source_account),
-          to:            Convert.pk_to_address(payment.destination),
-          amount:          payment.amount,
+          "from"   => Convert.pk_to_address(source_account),
+          "to"     => Convert.pk_to_address(payment.destination),
+          "amount" => payment.amount,
         }
+
+        participant_addresses << hop.details["to"]
 
         case payment.currency.type
         when Stellar::CurrencyType.native
-          hop.details[:currency_code] = "XLM"
+          hop.details["currency_code"] = "XLM"
         when Stellar::CurrencyType.iso4217
-          hop.details[:currency_code]   = payment.currency.iso_ci!.currency_code.strip
-          hop.details[:currency_issuer] = Convert.pk_to_address payment.currency.iso_ci!.issuer
+          hop.details["currency_code"]   = payment.currency.iso_ci!.currency_code.strip
+          hop.details["currency_issuer"] = Convert.pk_to_address payment.currency.iso_ci!.issuer
         else
           raise "Unknown currency type: #{payment.currency.type}"
         end 
@@ -158,6 +161,22 @@ class History::LedgerImporterJob < ApplicationJob
       
       hop.save!
       hops << hop
+
+
+      # now import the participants from this operation
+      participants = History::Account.where(address:participant_addresses).all
+
+      unless participants.length == participant_addresses.length
+        binding.pry
+        raise "Could not find all participants"
+      end
+
+      participants.each do |account| 
+        History::OperationParticipant.create!({
+          history_account:   account,
+          history_operation: hop,
+        })
+      end
     end
   end
 
