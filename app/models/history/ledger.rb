@@ -1,7 +1,5 @@
 class History::Ledger < History::Base
 
-  self.primary_key = 'order'
-
   validates :sequence, {
     presence: true, 
     numericality: {greater_than_or_equal_to: 1}, 
@@ -34,9 +32,9 @@ class History::Ledger < History::Base
     numericality: {greater_than_or_equal_to: 0}, 
   }
 
-  validates :order, presence: true
+  validates :id, presence: true, uniqueness: true
 
-  before_validation :make_order
+  before_validation :make_id
 
   # 
   # Validates that the previous hash `previous_hash` for a ledger to be imported
@@ -71,9 +69,9 @@ class History::Ledger < History::Base
   end
 
   private
-  def make_order
+  def make_id
     return if self.sequence.blank?
-    self.order = TotalOrderId.make(self.sequence)
+    self.id = TotalOrderId.make(self.sequence)
   end
 
 end

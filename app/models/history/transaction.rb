@@ -4,11 +4,10 @@ class History::Transaction < History::Base
 
   include Pageable
 
-  self.primary_key = 'order'
 
-  validates :order, presence: true
+  validates :id, presence: true, uniqueness: true
 
-  before_validation :make_order
+  before_validation :make_id
 
 
   has_many :participants, {
@@ -27,11 +26,11 @@ class History::Transaction < History::Base
   }
 
   scope :before_token, ->(paging_token) {
-    where('"order" < ?', paging_token)
+    where('id < ?', paging_token)
   }
 
   scope :after_token, ->(paging_token) {
-    where('"order" > ?', paging_token)
+    where('id > ?', paging_token)
   }
 
   def to_param
@@ -39,14 +38,14 @@ class History::Transaction < History::Base
   end
 
   def to_paging_token
-    order.to_s
+    id.to_s
   end
 
   private
-  def make_order
+  def make_id
     return if self.ledger_sequence.blank?
     return if self.application_order.blank?
 
-    self.order = TotalOrderId.make(ledger_sequence, application_order)
+    self.id = TotalOrderId.make(ledger_sequence, application_order)
   end
 end
