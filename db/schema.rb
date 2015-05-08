@@ -11,10 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150508175821) do
+ActiveRecord::Schema.define(version: 20150508183542) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "hstore"
 
   create_table "history_accounts", id: false, force: true do |t|
     t.integer "id",      limit: 8,  null: false
@@ -40,6 +41,18 @@ ActiveRecord::Schema.define(version: 20150508175821) do
   add_index "history_ledgers", ["ledger_hash"], name: "index_history_ledgers_on_ledger_hash", unique: true, using: :btree
   add_index "history_ledgers", ["previous_ledger_hash"], name: "index_history_ledgers_on_previous_ledger_hash", unique: true, using: :btree
   add_index "history_ledgers", ["sequence"], name: "index_history_ledgers_on_sequence", unique: true, using: :btree
+
+  create_table "history_operations", id: false, force: true do |t|
+    t.integer "id",                limit: 8, null: false
+    t.integer "transaction_id",    limit: 8, null: false
+    t.integer "application_order",           null: false
+    t.integer "type",                        null: false
+    t.hstore  "details"
+  end
+
+  add_index "history_operations", ["id"], name: "index_history_operations_on_id", unique: true, using: :btree
+  add_index "history_operations", ["transaction_id"], name: "index_history_operations_on_transaction_id", using: :btree
+  add_index "history_operations", ["type"], name: "index_history_operations_on_type", using: :btree
 
   create_table "history_transaction_participants", force: true do |t|
     t.string   "transaction_hash", limit: 64, null: false
