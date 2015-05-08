@@ -11,10 +11,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150501160031) do
+ActiveRecord::Schema.define(version: 20150508003829) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "history_accounts", id: false, force: true do |t|
+    t.integer "id",      limit: 8,  null: false
+    t.string  "address", limit: 64
+  end
+
+  add_index "history_accounts", ["id"], name: "index_history_accounts_on_id", unique: true, using: :btree
 
   create_table "history_ledgers", id: false, force: true do |t|
     t.integer  "sequence",                                    null: false

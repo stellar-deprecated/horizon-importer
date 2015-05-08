@@ -24,5 +24,9 @@ module Convert
     Stellar::Util::Base58.stellar
   end
 
+  def pk_to_address(pk)
+    base58.check_encode(:account_id, pk)
+  end
+
   extend self
 end
