@@ -22,7 +22,7 @@ class History::Transaction < History::Base
   }
 
   scope :application_order, ->(){ 
-    order(:order) 
+    order(:id) 
   }
 
   scope :before_token, ->(paging_token) {
