@@ -30,3 +30,12 @@ RSpec.describe TotalOrderId, ".make", type: :model do
 
   end
 end
+
+
+RSpec.describe TotalOrderId, ".parse", type: :model do
+  it "works" do
+    expect(TotalOrderId.parse(4294967296 + 0 + 1)).to eq([1,0,1])
+    expect(TotalOrderId.parse(4294967296 + 4096 + 1)).to eq([1,1,1])
+    expect(TotalOrderId.parse(0 + 4096 + 1)).to eq([0,1,1])
+  end
+end

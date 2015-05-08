@@ -99,6 +99,18 @@ module TotalOrderId
     # the combined 64-bits in network byte order ("Q>").
     [ledger, txop].pack("NN").unpack("Q>").first
   end
+
+
+  # 
+  # Parses a previously made total order id back into its constituent parts.
+  # 
+  def self.parse(toid)
+    ledger, txop = *[toid].pack("Q>").unpack("NN")
+    tx = (txop >> TX_SHIFT) & TX_MASK
+    op = txop & OP_MASK
+  
+    [ledger, tx, op]
+  end
 end
 
 
