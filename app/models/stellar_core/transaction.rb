@@ -10,7 +10,6 @@ class StellarCore::Transaction < StellarCore::Base
 
   delegate :tx,          to: :envelope
   delegate :result,      to: :result_pair
-  delegate :max_fee,     to: :tx
   delegate :min_ledger,  to: :tx
   delegate :max_ledger,  to: :tx
   delegate :operations,  to: :tx

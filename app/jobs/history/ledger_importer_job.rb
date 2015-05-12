@@ -63,7 +63,7 @@ class History::LedgerImporterJob < ApplicationJob
       application_order: sctx.txindex,
       account:           sctx.submitting_address,
       account_sequence:  sctx.submitting_sequence,
-      max_fee:           sctx.max_fee,
+      max_fee:           sctx.fee_paid,
       fee_paid:          sctx.fee_paid,
       operation_count:   sctx.operations.size,
       # TODO: uncomment when low card system is fixed

@@ -17,7 +17,6 @@ class History::TransactionSerializer < ApplicationSerializer
     map_properties *[
       :account, 
       :account_sequence,
-      :max_fee,
       :fee_paid,
       :operation_count,
     ]
