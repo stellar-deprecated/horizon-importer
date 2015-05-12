@@ -38,7 +38,6 @@ ActiveRecord::Schema.define(version: 20150508215546) do
 
   add_index "history_ledgers", ["closed_at"], name: "index_history_ledgers_on_closed_at", using: :btree
   add_index "history_ledgers", ["id"], name: "hs_ledger_by_id", unique: true, using: :btree
-  add_index "history_ledgers", ["id"], name: "index_history_ledgers_on_id", unique: true, using: :btree
   add_index "history_ledgers", ["ledger_hash"], name: "index_history_ledgers_on_ledger_hash", unique: true, using: :btree
   add_index "history_ledgers", ["previous_ledger_hash"], name: "index_history_ledgers_on_previous_ledger_hash", unique: true, using: :btree
   add_index "history_ledgers", ["sequence"], name: "index_history_ledgers_on_sequence", unique: true, using: :btree
@@ -96,7 +95,6 @@ ActiveRecord::Schema.define(version: 20150508215546) do
 
   add_index "history_transactions", ["account", "account_sequence"], name: "by_account", using: :btree
   add_index "history_transactions", ["id"], name: "hs_transaction_by_id", unique: true, using: :btree
-  add_index "history_transactions", ["id"], name: "index_history_transactions_on_id", unique: true, using: :btree
   add_index "history_transactions", ["ledger_sequence", "application_order"], name: "by_ledger", using: :btree
   add_index "history_transactions", ["transaction_hash"], name: "by_hash", using: :btree
   add_index "history_transactions", ["transaction_status_id"], name: "by_status", using: :btree
