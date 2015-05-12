@@ -34,8 +34,11 @@ class History::LedgerImporterJob < ApplicationJob
         })
         
         stellar_core_transactions.each do |sctx|
-          import_history_transaction sctx
-          import_history_accounts sctx
+          next unless sctx.success?
+          
+          htx   = import_history_transaction sctx
+          haccs = import_history_accounts sctx
+          hops  = import_history_operations sctx, htx
         end
 
         result
@@ -116,6 +119,66 @@ class History::LedgerImporterJob < ApplicationJob
     haccs
   end
 
+  def import_history_operations(sctx, htx)
+    hops = []
+    
+    sctx.operations_with_results.each_with_index do |op_and_r, application_order|
+      op, result = *op_and_r
+    
+      source_account = op.source_account || sctx.source_account
+      participant_addresses = [Convert.pk_to_address(source_account)]
+    
+      hop = History::Operation.new({
+        transaction_id:    htx.id,
+        application_order: application_order,
+        type:              op.body.type.value,
+      })
+    
+
+      # TODO: fill in details here
+      case op.body.type
+      when Stellar::OperationType.payment
+        payment = op.body.payment_op!
+
+        hop.details = {
+          "from"   => Convert.pk_to_address(source_account),
+          "to"     => Convert.pk_to_address(payment.destination),
+          "amount" => payment.amount,
+        }
+
+        participant_addresses << hop.details["to"]
+
+        case payment.currency.type
+        when Stellar::CurrencyType.native
+          hop.details["currency_code"] = "XLM"
+        when Stellar::CurrencyType.iso4217
+          hop.details["currency_code"]   = payment.currency.iso_ci!.currency_code.strip
+          hop.details["currency_issuer"] = Convert.pk_to_address payment.currency.iso_ci!.issuer
+        else
+          raise "Unknown currency type: #{payment.currency.type}"
+        end 
+      end
+      
+      hop.save!
+      hops << hop
+
+
+      # now import the participants from this operation
+      participants = History::Account.where(address:participant_addresses).all
+
+      unless participants.length == participant_addresses.length
+        binding.pry
+        raise "Could not find all participants"
+      end
+
+      participants.each do |account| 
+        History::OperationParticipant.create!({
+          history_account:   account,
+          history_operation: hop,
+        })
+      end
+    end
+  end
 
   # 
   # This method ensures that we create the history_account record for the

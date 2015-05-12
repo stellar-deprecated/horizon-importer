@@ -4,7 +4,7 @@ class History::Transaction < History::Base
 
   include Pageable
 
-
+  self.primary_key = "id"
   validates :id, presence: true, uniqueness: true
 
   before_validation :make_id

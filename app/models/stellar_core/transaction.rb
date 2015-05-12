@@ -15,6 +15,10 @@ class StellarCore::Transaction < StellarCore::Base
   delegate :max_ledger,  to: :tx
   delegate :operations,  to: :tx
 
+  def success?
+    result.result.code == Stellar::TransactionResultCode.tx_success
+  end
+
   def envelope
     raw_envelope = Convert.from_base64(self.txbody)
     Stellar::TransactionEnvelope.from_xdr(raw_envelope)
@@ -36,6 +40,7 @@ class StellarCore::Transaction < StellarCore::Base
   def submitting_account
     self.envelope.tx.source_account
   end
+  alias source_account submitting_account
 
   def submitting_address
     Convert.base58.check_encode(:account_id, submitting_account)
@@ -90,5 +95,14 @@ class StellarCore::Transaction < StellarCore::Base
 
   def operations_of_type(type)
     operations.select{|op| op.body.type == type }
+  end
+
+  def operation_results
+    # TransactionResult => TransactionResult::Result => Array<OperationResult>
+    result.result.results!
+  end
+  
+  memoize def operations_with_results
+    operations.zip(operation_results)
   end
 end
