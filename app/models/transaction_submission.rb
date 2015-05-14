@@ -77,9 +77,9 @@ class TransactionSubmission
   end
 
   def received?
-    return false if @submission_response.blank?
+    return false if submission_status.blank?
 
-    @submission_response.body["wasReceived"]
+    submission_status != "ERROR"
   end
 
   def malformed?
@@ -118,9 +118,15 @@ class TransactionSubmission
     Convert.to_hex(parsed_envelope.tx.hash)
   end
 
-  def submission_result
+  def submission_status
+    return nil if @submission_response.blank?
+    @submission_response.body["status"]
+  end
+
+
+  def submission_error
     return nil if @submission_response.blank?
 
-    @submission_response.body["result"]
+    @submission_response.body["error"]
   end
 end

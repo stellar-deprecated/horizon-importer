@@ -87,31 +87,13 @@ class History::LedgerImporterJob < ApplicationJob
   def import_history_accounts(sctx)
     haccs = []
 
-    addresses = sctx.
-      live_participants.
-      map{|pk| Convert.pk_to_address(pk)}
-
-    existing_addresses = History::Account.
-      where(address:addresses).
-      pluck(:address)
-
-    new_addresses = addresses - existing_addresses
-
     sctx.operations.each_with_index do |op, i|
       next unless op.body.type == Stellar::OperationType.create_account
 
       pop                 = op.body.value
       destination_pk      = pop.destination
       destination_address = Convert.pk_to_address(destination_pk)
-
-      next unless new_addresses.include? destination_address
-      id = TotalOrderId.make(sctx.ledgerseq, sctx.txindex, i)
-
-      # remove destination_address from new_addresses because
-      # we're importing it now.  This prevents multiple imports
-      # of the same account
-      new_addresses.delete(destination_address)
-      existing_addresses << destination_address
+      id                  = TotalOrderId.make(sctx.ledgerseq, sctx.txindex, i)
 
       haccs << History::Account.create!(address: destination_address, id: id)
     end

@@ -63,7 +63,7 @@ class StellarCore::Transaction < StellarCore::Base
 
   def participants
     # get all entries with type of "account"
-    account_entries = meta.entries.
+    account_entries = meta.changes.
       select{|e| e.value.type == Stellar::LedgerEntryType.account }
 
     # extract the account id from each (both live and dead
@@ -79,18 +79,6 @@ class StellarCore::Transaction < StellarCore::Base
     participants.map{|a| Convert.base58.check_encode(:account_id, a)}
   end
   memoize :participant_addresses
-
-  memoize def live_participants
-    account_entries = meta.entries.
-      select{|e| e.switch == Stellar::BucketEntryType.liveentry }.
-      select{|e| e.value.type == Stellar::LedgerEntryType.account }
-
-    # extract the account id from each (both live and dead
-    # entries expose it through `account_id`)
-    account_entries
-      .map{|e| e.value.account!.account_id}
-      .uniq
-  end
 
   def operations_of_type(type)
     operations.select{|op| op.body.type == type }

@@ -4,8 +4,8 @@ class TransactionSubmissionSerializer < ApplicationSerializer
     
     property :hash,    item.transaction_hash
 
-    property :result,            item.result
-    property :submission_result, item.submission_result
+    property :result, item.result
+    property :error,  item.submission_error
 
     if item.history_transaction.present?
       link :transaction, href: "/transactions/#{item.transaction_hash}"
