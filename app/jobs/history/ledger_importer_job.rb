@@ -140,6 +140,15 @@ class History::LedgerImporterJob < ApplicationJob
         else
           raise "Unknown currency type: #{payment.currency.type}"
         end 
+      when Stellar::OperationType.create_account
+        op = op.body.create_account_op!
+        participant_addresses << Convert.pk_to_address(op.destination)
+
+        hop.details = {
+          "funder"           => Convert.pk_to_address(source_account),
+          "account"          => Convert.pk_to_address(op.destination),
+          "starting_balance" => payment.starting_balance,
+        }
       end
       
       hop.save!
