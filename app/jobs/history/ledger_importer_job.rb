@@ -147,7 +147,7 @@ class History::LedgerImporterJob < ApplicationJob
         hop.details = {
           "funder"           => Convert.pk_to_address(source_account),
           "account"          => Convert.pk_to_address(op.destination),
-          "starting_balance" => payment.starting_balance,
+          "starting_balance" => op.starting_balance,
         }
       end
       
