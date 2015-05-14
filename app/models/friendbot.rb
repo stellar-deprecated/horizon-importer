@@ -35,11 +35,11 @@ class Friendbot
 
     destination = Stellar::KeyPair.from_address address
 
-    tx = Stellar::Transaction.payment({
-      account:     @keypair,
-      destination: destination,
-      sequence:    @sequence + 1,
-      amount:      [:native, 1000_000000]
+    tx = Stellar::Transaction.create_account({
+      account:          @keypair,
+      destination:      destination,
+      sequence:         @sequence + 1,
+      starting_balance: 1000_000000
     })
 
     hex = tx.to_envelope(@keypair).to_xdr(:hex)
