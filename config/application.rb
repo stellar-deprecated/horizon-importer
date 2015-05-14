@@ -9,20 +9,6 @@ Dotenv::Railtie.load
 module Horizon
   class Application < Rails::Application
 
-    # middlewarezez
-    unless ENV["DISABLE_RATE_LIMIT"] == "true"
-      config.middleware.use Rack::Attack
-    end
-
-    config.middleware.insert_before 0, "Rack::Cors" do
-      allow do
-        origins '*'
-        
-        resource '*',
-          :headers => :any,
-          :methods => [:get, :post, :delete, :put, :options, :head, :patch]
-      end
-    end
 
     require "#{config.root}/lib/request_metrics"
     config.middleware.insert_before ActionDispatch::ShowExceptions,
