@@ -2,9 +2,9 @@ account :usd_gateway, FactoryGirl.create(:usd_gateway_key_pair)
 account :scott,  FactoryGirl.create(:scott_key_pair)
 account :andrew, FactoryGirl.create(:andrew_key_pair)
 
-payment :master, :usd_gateway,  [:native, 1000_000000]
-payment :master, :scott,        [:native, 1000_000000]
-payment :master, :andrew,       [:native, 1000_000000]
+create_account :scott,       :master, 1000_000000
+create_account :usd_gateway, :master, 1000_000000
+create_account :andrew,      :master, 1000_000000
 
 close_ledger
 

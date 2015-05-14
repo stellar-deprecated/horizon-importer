@@ -98,7 +98,7 @@ class History::LedgerImporterJob < ApplicationJob
     new_addresses = addresses - existing_addresses
 
     sctx.operations.each_with_index do |op, i|
-      next unless op.body.type == Stellar::OperationType.payment
+      next unless op.body.type == Stellar::OperationType.create_account
 
       pop                 = op.body.value
       destination_pk      = pop.destination
@@ -162,7 +162,6 @@ class History::LedgerImporterJob < ApplicationJob
       
       hop.save!
       hops << hop
-
 
       # now import the participants from this operation
       participants = History::Account.where(address:participant_addresses).all
