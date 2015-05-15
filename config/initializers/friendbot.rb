@@ -1,8 +1,4 @@
-class FriendbotRailtie < ::Rails::Railtie
-  config.to_prepare do
-    Friendbot.boot
-  end
-end
+Friendbot.boot
 
 unless Rails.configuration.cache_classes
   ActionDispatch::Reloader.to_cleanup do
