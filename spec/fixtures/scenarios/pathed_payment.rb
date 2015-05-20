@@ -6,13 +6,12 @@ account :scott,  FactoryGirl.create(:scott_key_pair)
 account :andrew, FactoryGirl.create(:andrew_key_pair)
 account :bartek, FactoryGirl.create(:bartek_key_pair)
 
+create_account :usd_gateway, :master, 1000_000000
+create_account :eur_gateway, :master, 1000_000000
 
-payment :master, :usd_gateway, [:native, 1000_000000]
-payment :master, :eur_gateway, [:native, 1000_000000]
-
-payment :master, :scott, [:native, 1000_000000]
-payment :master, :bartek, [:native, 1000_000000]
-payment :master, :andrew, [:native, 1000_000000]
+create_account :andrew, :master, 1000_000000
+create_account :bartek, :master, 1000_000000
+create_account :scott, :master, 1000_000000
 
 close_ledger
 
@@ -34,5 +33,5 @@ offer :andrew, {buy:["USD", :usd_gateway], with:["EUR", :eur_gateway]}, 200_0000
 
 close_ledger
 
-payment :scott, :bartek, ["EUR", :eur_gateway, 10], path: [["USD", :usd_gateway]]
-
+# fix path pathment
+# payment :scott, :bartek, ["EUR", :eur_gateway, 10], path: [["USD", :usd_gateway]]
