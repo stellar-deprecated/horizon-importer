@@ -1,7 +1,7 @@
-# 
-# Takes the ledger header and transaction set of the requested sequence from the 
+#
+# Takes the ledger header and transaction set of the requested sequence from the
 # stellar_core database and imports them into the history database.
-# 
+#
 class History::LedgerImporterJob < ApplicationJob
   EMPTY_HASH = "0" * 64
 
@@ -9,7 +9,7 @@ class History::LedgerImporterJob < ApplicationJob
     stellar_core_ledger, stellar_core_transactions = load_stellar_core_data(ledger_sequence)
 
     if stellar_core_ledger.blank?
-      raise ActiveRecord::RecordNotFound, 
+      raise ActiveRecord::RecordNotFound,
         "Couldn't find ledger #{ledger_sequence}"
     end
 
@@ -24,7 +24,7 @@ class History::LedgerImporterJob < ApplicationJob
           History::Ledger.validate_previous_ledger_hash!(stellar_core_ledger.prevhash, stellar_core_ledger.ledgerseq)
         end
 
-        #TODO: don't error out when uniqueness validation fails, 
+        #TODO: don't error out when uniqueness validation fails,
         # instead emit a warning with the error summary
         result = History::Ledger.create!({
           sequence:             stellar_core_ledger.ledgerseq,
@@ -32,10 +32,10 @@ class History::LedgerImporterJob < ApplicationJob
           previous_ledger_hash: (stellar_core_ledger.prevhash unless first_ledger),
           closed_at:            Time.at(stellar_core_ledger.closetime),
         })
-        
+
         stellar_core_transactions.each do |sctx|
           next unless sctx.success?
-          
+
           htx   = import_history_transaction sctx
           haccs = import_history_accounts sctx
           hops  = import_history_operations sctx, htx
@@ -51,14 +51,14 @@ class History::LedgerImporterJob < ApplicationJob
   def load_stellar_core_data(ledger_sequence)
     with_db(:stellar_core) do
       ledger = StellarCore::LedgerHeader.at_sequence(ledger_sequence)
-      
+
       [ledger, (ledger.transactions.to_a if ledger)]
     end
   end
 
   def import_history_transaction(sctx)
     htx = History::Transaction.create!({
-      transaction_hash:  sctx.txid, 
+      transaction_hash:  sctx.txid,
       ledger_sequence:   sctx.ledgerseq,
       application_order: sctx.txindex,
       account:           sctx.submitting_address,
@@ -103,19 +103,19 @@ class History::LedgerImporterJob < ApplicationJob
 
   def import_history_operations(sctx, htx)
     hops = []
-    
+
     sctx.operations_with_results.each_with_index do |op_and_r, application_order|
       op, result = *op_and_r
-    
+
       source_account = op.source_account || sctx.source_account
       participant_addresses = [Convert.pk_to_address(source_account)]
-    
+
       hop = History::Operation.new({
         transaction_id:    htx.id,
         application_order: application_order,
         type:              op.body.type.value,
       })
-    
+
 
       # TODO: fill in details here
       case op.body.type
@@ -140,7 +140,7 @@ class History::LedgerImporterJob < ApplicationJob
           hop.details["currency_issuer"] = Convert.pk_to_address an.issuer
         else
           raise "Unknown currency type: #{payment.currency.type}"
-        end 
+        end
       when Stellar::OperationType.create_account
         op = op.body.create_account_op!
         participant_addresses << Convert.pk_to_address(op.destination)
@@ -151,7 +151,7 @@ class History::LedgerImporterJob < ApplicationJob
           "starting_balance" => op.starting_balance,
         }
       end
-      
+
       hop.save!
       hops << hop
 
@@ -163,7 +163,7 @@ class History::LedgerImporterJob < ApplicationJob
         raise "Could not find all participants"
       end
 
-      participants.each do |account| 
+      participants.each do |account|
         History::OperationParticipant.create!({
           history_account:   account,
           history_operation: hop,
@@ -172,11 +172,11 @@ class History::LedgerImporterJob < ApplicationJob
     end
   end
 
-  # 
+  #
   # This method ensures that we create the history_account record for the
   # master account, which is a special case because it never shows up as
   # a new account in some transaction's metadata.
-  # 
+  #
   def create_master_history_account!
     master_key = Stellar::KeyPair.from_raw_seed "allmylifemyhearthasbeensearching"
     History::Account.create!(address: master_key.address, id: 0)
