@@ -132,9 +132,10 @@ class History::LedgerImporterJob < ApplicationJob
 
         case payment.currency.type
         when Stellar::CurrencyType.currency_type_native
-          hop.details["currency_code"] = "XLM"
+          hop.details["currency_type"] = "native"
         when Stellar::CurrencyType.currency_type_alphanum
           an = payment.currency.alpha_num!
+          hop.details["currency_type"]   = "alphanum"
           hop.details["currency_code"]   = an.currency_code.strip
           hop.details["currency_issuer"] = Convert.pk_to_address an.issuer
         else
