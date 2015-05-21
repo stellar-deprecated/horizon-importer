@@ -129,7 +129,7 @@ GEM
       shellany (~> 0.0)
     oat (0.4.6)
       activesupport
-    pg (0.18.1)
+    pg (0.18.2)
     pry (0.10.1)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -227,7 +227,7 @@ GEM
       activesupport (~> 4)
       rbnacl
       xdr (~> 0.0.2)
-    stellar_core_commander (0.0.7)
+    stellar_core_commander (0.0.8)
       activesupport (>= 4.0.0)
       contracts (~> 0.9)
       faraday (~> 0.9.1)

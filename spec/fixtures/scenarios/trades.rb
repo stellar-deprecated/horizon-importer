@@ -29,3 +29,5 @@ offer :bartek, {buy:["USD", :usd_gateway], with:["EUR", :eur_gateway]}, 1000_000
 close_ledger
 
 offer :scott, {sell:["USD", :usd_gateway], for:["EUR", :eur_gateway]}, 500_000000, 1.0
+
+offer :scott, {sell:["USD", :usd_gateway], for: :native}, 500_000000, 1.0
