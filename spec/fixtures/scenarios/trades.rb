@@ -1,3 +1,8 @@
+require 'factory_girl'
+FactoryGirl.find_definitions
+
+use_manual_close
+
 account :usd_gateway
 account :eur_gateway
 account :scott

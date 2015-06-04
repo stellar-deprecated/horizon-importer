@@ -1,4 +1,7 @@
-# TODO: FIX ME
+require 'factory_girl'
+FactoryGirl.find_definitions
+
+use_manual_close
 
 account :usd_gateway, FactoryGirl.create(:usd_gateway_key_pair)
 account :eur_gateway, FactoryGirl.create(:eur_gateway_key_pair)

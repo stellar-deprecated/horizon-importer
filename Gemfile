@@ -57,6 +57,7 @@ group :test, :development do
   gem 'yard'
   gem 'apiaryio'
   gem 'timecop'
-  gem 'stellar_core_commander', ">= 0.0.4", require: false
+  # gem 'stellar_core_commander', ">= 0.0.4", require: false
   # gem 'stellar_core_commander', require: false, path: "../stellar_core_commander"
+  gem 'stellar_core_commander', require: false, github: "stellar/stellar_core_commander"
 end

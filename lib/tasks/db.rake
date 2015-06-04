@@ -23,26 +23,25 @@ namespace :db do
 
     raise "This should only be run from RAILS_ENV='test'" unless Rails.env.test?
 
-    scenarios = Dir["spec/fixtures/scenarios/*.rb"]
-    FileUtils.mkdir_p "tmp/scenarios"
-    require 'stellar_core_commander'
-    
-    stellar_core_path = `which stellar-core`.strip
-    raise "stellar-core is not on PATH" unless $?.success?
-
-    cmd = StellarCoreCommander::Commander.new stellar_core_path
-    cmd.cleanup_at_exit!    
+    base_path = "spec/fixtures/scenarios"
+    scenarios = Dir["#{base_path}/*.rb"]
 
     scenarios.each do |path|
-      process = load_scenario cmd, path
+      sql = run_scenario path
       scenario_name = File.basename(path, ".rb")
 
       # dump the stellar-core data
-      IO.write("tmp/scenarios/#{scenario_name}-core.sql", process.dump_database)
+      IO.write("#{base_path}/#{scenario_name}-core.sql", sql)
+
+      # load stellar-core data into test db
+      cd = PgDump.new(StellarCore::Base, "#{base_path}/#{scenario_name}-core.sql")
+      cd.load
+
+      reimport_history
 
       # dump horizon db
-      d = PgDump.new(History::Base, "tmp/scenarios/#{scenario_name}-horizon.sql")
-      d.dump
+      hd = PgDump.new(History::Base, "#{base_path}/#{scenario_name}-horizon.sql")
+      hd.dump
 
       StellarCore::Base.clear_all_connections!
     end
@@ -51,10 +50,10 @@ namespace :db do
   desc "loads a testing scenario"
   task :load_scenario => :environment do
     Rails.application.eager_load!
-    require 'stellar_core_commander'
 
     scenario_name = ENV["SCENARIO"]
-    path = "spec/fixtures/scenarios/#{scenario_name}.rb"
+    base_path     = "spec/fixtures/scenarios"
+    path          = "#{base_path}/#{scenario_name}.rb"
 
     if path.blank?
       puts "please specify SCENARIO"
@@ -66,42 +65,26 @@ namespace :db do
       puts "#{path} not found"
       exit 1
     end
-    
-    stellar_core_path = `which stellar-core`.strip
-    raise "stellar-core is not on PATH" unless $?.success?
-    cmd = StellarCoreCommander::Commander.new stellar_core_path
-    cmd.cleanup_at_exit!    
 
-    process = load_scenario cmd, path
-
-    IO.write("tmp/core.sql", process.dump_database)
-    `psql #{ENV["STELLAR_CORE_DATABASE_URL"]} < tmp/core.sql`
+    `psql #{ENV["DATABASE_URL"]} < #{base_path}/#{scenario_name}-horizon.sql`
+    `psql #{ENV["STELLAR_CORE_DATABASE_URL"]} < #{base_path}/#{scenario_name}-core.sql`
   end
 
-  def load_scenario(cmd, path)
-    process    = cmd.make_process
-    transactor = StellarCoreCommander::Transactor.new(process)
+  def run_scenario(path)
+    sql = `bundle exec scc -r #{path}`
 
-    process.run
-    process.wait_for_ready
+    exit 1 unless $?.success?
 
-    transactor.run_recipe path
-    transactor.close_ledger
+    sql
+  end
 
+  def reimport_history
     # clear horizon
     History::Base.transaction{ History::Base.descendants.each(&:delete_all) }
 
     # reimport history
-    StellarCore::Base.clear_all_connections!
-    database_url = "postgres://localhost/#{process.database_name}"
-    StellarCore::Base.establish_connection database_url
-
     StellarCore::LedgerHeader.order("ledgerseq ASC").all.each do |header|
       History::LedgerImporterJob.new.perform(header.sequence)
     end
-
-    StellarCore::Base.clear_all_connections!
-
-    process
   end
 end

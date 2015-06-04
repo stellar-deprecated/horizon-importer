@@ -6,6 +6,20 @@ GIT
     dotenv-rails (2.0.1)
       dotenv (= 2.0.1)
 
+GIT
+  remote: git://github.com/stellar/stellar_core_commander.git
+  revision: 6e1ed25b2429c8a9595f47fa45b61ee9938368de
+  specs:
+    stellar_core_commander (0.0.9)
+      activesupport (>= 4.0.0)
+      contracts (~> 0.9)
+      faraday (~> 0.9.1)
+      faraday_middleware (~> 0.9.1)
+      pg (~> 0.18.1)
+      sequel (~> 4.21.0)
+      slop (~> 3.6.0)
+      stellar-base (= 0.0.10)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -30,7 +44,7 @@ GEM
       activemodel (= 4.1.10)
       activesupport (= 4.1.10)
       arel (~> 5.0.0)
-    activerecord-import (0.7.0)
+    activerecord-import (0.8.0)
       activerecord (>= 3.0)
     activesupport (4.1.10)
       i18n (~> 0.6, >= 0.6.9)
@@ -87,18 +101,18 @@ GEM
       shellany (~> 0.0)
       thor (>= 0.18.1)
     guard-compat (1.2.1)
-    guard-rspec (4.5.0)
+    guard-rspec (4.5.2)
       guard (~> 2.1)
       guard-compat (~> 1.1)
       rspec (>= 2.99.0, < 4.0)
     hitimes (1.2.2)
     hitimes (1.2.2-java)
     i18n (0.7.0)
-    jbuilder (2.2.13)
+    jbuilder (2.2.16)
       activesupport (>= 3.0.0, < 5)
       multi_json (~> 1.2)
-    json (1.8.2)
-    json (1.8.2-java)
+    json (1.8.3)
+    json (1.8.3-java)
     json_expressions (0.8.3)
     listen (2.10.0)
       celluloid (~> 0.16.0)
@@ -118,8 +132,8 @@ GEM
       atomic (~> 1.0)
       avl_tree (~> 1.2.0)
       hitimes (~> 1.1)
-    mime-types (2.5)
-    minitest (5.6.1)
+    mime-types (2.6.1)
+    minitest (5.7.0)
     multi_json (1.11.0)
     multipart-post (2.0.0)
     nenv (0.2.0)
@@ -141,12 +155,12 @@ GEM
       spoon (~> 0.0)
     pry-rails (0.3.4)
       pry (>= 0.9.10)
-    puma (2.11.2)
+    puma (2.11.3)
       rack (>= 1.1, < 2.0)
-    puma (2.11.2-java)
+    puma (2.11.3-java)
       rack (>= 1.1, < 2.0)
     rack (1.5.3)
-    rack-attack (4.2.0)
+    rack-attack (4.3.0)
       rack
     rack-cors (0.4.0)
     rack-test (0.6.3)
@@ -168,10 +182,10 @@ GEM
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
     rake (10.3.2)
-    rb-fsevent (0.9.4)
+    rb-fsevent (0.9.5)
     rb-inotify (0.9.5)
       ffi (>= 0.5.0)
-    rbnacl (3.1.2)
+    rbnacl (3.2.0)
       ffi
     rdoc (4.2.0)
     rest-client (1.7.3)
@@ -189,7 +203,7 @@ GEM
     rspec-mocks (3.2.1)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.2.0)
-    rspec-rails (3.2.1)
+    rspec-rails (3.2.2)
       actionpack (>= 3.0, < 4.3)
       activesupport (>= 3.0, < 4.3)
       railties (>= 3.0, < 4.3)
@@ -202,7 +216,7 @@ GEM
     sdoc (0.4.1)
       json (~> 1.7, >= 1.7.7)
       rdoc (~> 4.0)
-    sentry-raven (0.13.2)
+    sentry-raven (0.13.3)
       faraday (>= 0.7.6)
     sequel (4.21.0)
     shellany (0.0.1)
@@ -216,32 +230,23 @@ GEM
     slop (3.6.0)
     spoon (0.0.4)
       ffi
-    sprockets (3.1.0)
+    sprockets (3.2.0)
       rack (~> 1.0)
-    sprockets-rails (2.3.0)
+    sprockets-rails (2.3.1)
       actionpack (>= 3.0)
       activesupport (>= 3.0)
       sprockets (>= 2.8, < 4.0)
     sqlite3 (1.3.10)
-    stellar-base (0.0.9)
+    stellar-base (0.0.10)
       activesupport (~> 4)
       rbnacl
       xdr (~> 0.0.2)
-    stellar_core_commander (0.0.8)
-      activesupport (>= 4.0.0)
-      contracts (~> 0.9)
-      faraday (~> 0.9.1)
-      faraday_middleware (~> 0.9.1)
-      pg (~> 0.18.1)
-      sequel (~> 4.21.0)
-      slop (~> 3.6.0)
-      stellar-base (= 0.0.9)
     sucker_punch (1.5.0)
       celluloid (~> 0.16.0)
     thor (0.19.1)
     thread_safe (0.3.5)
     thread_safe (0.3.5-java)
-    timecop (0.7.3)
+    timecop (0.7.4)
     timers (4.0.1)
       hitimes
     tzinfo (1.2.2)
@@ -295,7 +300,7 @@ DEPENDENCIES
   simplecov
   sqlite3
   stellar-base
-  stellar_core_commander (>= 0.0.4)
+  stellar_core_commander!
   sucker_punch
   timecop
   vcr

@@ -1,3 +1,8 @@
+require 'factory_girl'
+FactoryGirl.find_definitions
+
+use_manual_close
+
 account :usd_gateway, FactoryGirl.create(:usd_gateway_key_pair)
 account :scott,  FactoryGirl.create(:scott_key_pair)
 account :andrew, FactoryGirl.create(:andrew_key_pair)
