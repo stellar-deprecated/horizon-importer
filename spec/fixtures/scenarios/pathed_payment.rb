@@ -37,4 +37,4 @@ offer :andrew, {buy:["USD", :usd_gateway], with:["EUR", :eur_gateway]}, 200_0000
 close_ledger
 
 # fix path pathment
-# payment :scott, :bartek, ["EUR", :eur_gateway, 10], path: [["USD", :usd_gateway]]
+payment :scott, :bartek, ["EUR", :eur_gateway, 10], with: ["USD", :usd_gateway, 10], path:[]

@@ -151,7 +151,28 @@ class History::LedgerImporterJob < ApplicationJob
           raise "Unknown currency type: #{payment.currency.type}"
         end
       when Stellar::OperationType.path_payment
-        #TODO
+        payment = op.body.path_payment_op!
+
+        hop.details = {
+          "from"   => Convert.pk_to_address(source_account),
+          "to"     => Convert.pk_to_address(payment.destination),
+          "amount" => payment.dest_amount,
+        }
+
+        participant_addresses << hop.details["to"]
+
+        case payment.dest_currency.type
+        when Stellar::CurrencyType.currency_type_native
+          hop.details["currency_type"] = "native"
+        when Stellar::CurrencyType.currency_type_alphanum
+          an = payment.dest_currency.alpha_num!
+          hop.details["currency_type"]   = "alphanum"
+          hop.details["currency_code"]   = an.currency_code.strip
+          hop.details["currency_issuer"] = Convert.pk_to_address an.issuer
+        else
+          raise "Unknown currency type: #{payment.dest_currency.type}"
+        end
+
       when Stellar::OperationType.create_offer
         #TODO
       when Stellar::OperationType.set_options

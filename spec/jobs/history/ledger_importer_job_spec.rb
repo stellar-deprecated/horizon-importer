@@ -65,13 +65,36 @@ RSpec.describe History::LedgerImporterJob, "importing account_merge operations",
   load_scenario "account_merge"
   reimport_history
 
-  let(:merge_op){ History::Operation.find(17179873280)}
+  let(:op){ History::Operation.find(17179873280)}
 
-  it "sets the destination" do
-    expect(merge_op.details["account"]).to eq("gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ")
-    expect(merge_op.details["into"]).to eq("gT9jHoPKoErFwXavCrDYLkSVcVd9oyVv94ydrq6FnPMXpKHPTA")
+  it "sets `account`" do
+    expect(op.details["account"]).to eq("gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ")
+  end
+
+  it "sets `into`" do
+    expect(op.details["into"]).to eq("gT9jHoPKoErFwXavCrDYLkSVcVd9oyVv94ydrq6FnPMXpKHPTA")
   end
 end
+
+
+RSpec.describe History::LedgerImporterJob, "importing path_payment operations", type: :job do
+  load_scenario "pathed_payment"
+  reimport_history
+  let(:op){ History::Operation.find(30064775168)}
+
+  it "sets `from`" do
+    expect(op.details["from"]).to eq("gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ")
+  end
+
+  it "sets `to`" do
+    expect(op.details["to"]).to eq("gT9jHoPKoErFwXavCrDYLkSVcVd9oyVv94ydrq6FnPMXpKHPTA")
+  end
+
+  it "sets `amount`" do
+    expect(op.details["amount"]).to eq("10")
+  end
+end
+
 
 
 # This block of specifications below don't follow the normal flow of specs
