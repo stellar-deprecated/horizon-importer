@@ -3,7 +3,8 @@
 [![Build Status](https://travis-ci.org/stellar/horizon.svg)](https://travis-ci.org/stellar/horizon)
 [![Code Climate](https://codeclimate.com/github/stellar/horizon/badges/gpa.svg)](https://codeclimate.com/github/stellar/horizon)
 
-*NOTE: Horizon is in very active development*
+*NOTE: This project is being replaced by a port to the go language at http://github.com/stellar/go-horizon*
+
 
 Horizon is the [client facing API](http://docs.stellarhorizon.apiary.io) server for the Stellar ecosystem.  See [an overview of the Stellar ecosystem](https://www.stellar.org/galaxy/getting-started/) for more details.
 
@@ -26,5 +27,3 @@ early planning/hacking.
 ## Contributing
 
 Please [see CONTRIBUTING.md for details](CONTRIBUTING.md).
-
-
