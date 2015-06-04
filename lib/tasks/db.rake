@@ -16,6 +16,7 @@ namespace :db do
     end
   end
 
+  SCENARIO_BASE_PATH = "spec/fixtures/scenarios"
 
   desc "runs testing scenarios, dumping results to tmp/secenarios"
   task :build_scenarios => :environment do
@@ -23,27 +24,10 @@ namespace :db do
 
     raise "This should only be run from RAILS_ENV='test'" unless Rails.env.test?
 
-    base_path = "spec/fixtures/scenarios"
-    scenarios = Dir["#{base_path}/*.rb"]
+    scenarios = Dir["#{SCENARIO_BASE_PATH}/*.rb"]
 
     scenarios.each do |path|
-      sql = run_scenario path
-      scenario_name = File.basename(path, ".rb")
-
-      # dump the stellar-core data
-      IO.write("#{base_path}/#{scenario_name}-core.sql", sql)
-
-      # load stellar-core data into test db
-      cd = PgDump.new(StellarCore::Base, "#{base_path}/#{scenario_name}-core.sql")
-      cd.load
-
-      reimport_history
-
-      # dump horizon db
-      hd = PgDump.new(History::Base, "#{base_path}/#{scenario_name}-horizon.sql")
-      hd.dump
-
-      StellarCore::Base.clear_all_connections!
+      load_scenario path
     end
   end
 
@@ -52,8 +36,7 @@ namespace :db do
     Rails.application.eager_load!
 
     scenario_name = ENV["SCENARIO"]
-    base_path     = "spec/fixtures/scenarios"
-    path          = "#{base_path}/#{scenario_name}.rb"
+    path          = "#{SCENARIO_BASE_PATH}/#{scenario_name}.rb"
 
     if path.blank?
       puts "please specify SCENARIO"
@@ -66,8 +49,25 @@ namespace :db do
       exit 1
     end
 
-    `psql #{ENV["DATABASE_URL"]} < #{base_path}/#{scenario_name}-horizon.sql`
-    `psql #{ENV["STELLAR_CORE_DATABASE_URL"]} < #{base_path}/#{scenario_name}-core.sql`
+    load_scenario path
+  end
+
+  def load_scenario(path)
+    sql = run_scenario path
+    scenario_name = File.basename(path, ".rb")
+
+    # dump the stellar-core data
+    IO.write("#{SCENARIO_BASE_PATH}/#{scenario_name}-core.sql", sql)
+
+    # load stellar-core data into test db
+    cd = PgDump.new(StellarCore::Base, "#{SCENARIO_BASE_PATH}/#{scenario_name}-core.sql")
+    cd.load
+
+    reimport_history
+
+    # dump horizon db
+    hd = PgDump.new(History::Base, "#{SCENARIO_BASE_PATH}/#{scenario_name}-horizon.sql")
+    hd.dump
   end
 
   def run_scenario(path)
