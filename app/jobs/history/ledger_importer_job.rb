@@ -119,6 +119,15 @@ class History::LedgerImporterJob < ApplicationJob
 
       # TODO: fill in details here
       case op.body.type
+      when Stellar::OperationType.create_account
+        op = op.body.create_account_op!
+        participant_addresses << Convert.pk_to_address(op.destination)
+
+        hop.details = {
+          "funder"           => Convert.pk_to_address(source_account),
+          "account"          => Convert.pk_to_address(op.destination),
+          "starting_balance" => op.starting_balance,
+        }
       when Stellar::OperationType.payment
         payment = op.body.payment_op!
 
@@ -141,16 +150,27 @@ class History::LedgerImporterJob < ApplicationJob
         else
           raise "Unknown currency type: #{payment.currency.type}"
         end
-      when Stellar::OperationType.create_account
-        op = op.body.create_account_op!
-        participant_addresses << Convert.pk_to_address(op.destination)
-
+      when Stellar::OperationType.path_payment
+        #TODO
+      when Stellar::OperationType.create_offer
+        #TODO
+      when Stellar::OperationType.set_options
+        #TODO
+      when Stellar::OperationType.change_trust
+        #TODO
+      when Stellar::OperationType.allow_trust
+        #TODO
+      when Stellar::OperationType.account_merge
+        destination  = op.body.destination!
         hop.details = {
-          "funder"           => Convert.pk_to_address(source_account),
-          "account"          => Convert.pk_to_address(op.destination),
-          "starting_balance" => op.starting_balance,
+          "account"   => Convert.pk_to_address(source_account),
+          "into"     => Convert.pk_to_address(destination)
         }
+        participant_addresses << hop.details["into"]
+      when Stellar::OperationType.inflation
+        #TODO
       end
+
 
       hop.save!
       hops << hop

@@ -60,17 +60,31 @@ RSpec.describe History::LedgerImporterJob, type: :job do
 
 end
 
+
+RSpec.describe History::LedgerImporterJob, "importing account_merge operations", type: :job do
+  load_scenario "account_merge"
+  reimport_history
+
+  let(:merge_op){ History::Operation.find(17179873280)}
+
+  it "sets the destination" do
+    expect(merge_op.details["account"]).to eq("gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ")
+    expect(merge_op.details["into"]).to eq("gT9jHoPKoErFwXavCrDYLkSVcVd9oyVv94ydrq6FnPMXpKHPTA")
+  end
+end
+
+
 # This block of specifications below don't follow the normal flow of specs
 # They are written more like normal tests (i.e. many assertions, larger size)
-# to work around the fact that our transaction seeder system does not yet 
+# to work around the fact that our transaction seeder system does not yet
 # produce deterministic results.
-# 
+#
 # This is better than nothing, though
 RSpec.describe History::LedgerImporterJob, "importing all fixture data", type: :job do
   let(:ledger_count){ StellarCore::LedgerHeader.count }
 
   before(:each) do
-    ledger_indexes = ledger_count.times.map{|i| i + 1} 
+    ledger_indexes = ledger_count.times.map{|i| i + 1}
     ledger_indexes.each{|idx| subject.perform(idx) }
   end
 
@@ -87,4 +101,3 @@ RSpec.describe History::LedgerImporterJob, "importing all fixture data", type: :
   end
 
 end
-
