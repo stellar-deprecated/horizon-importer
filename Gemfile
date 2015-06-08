@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 4.1.0'
+gem 'rails', '~> 4.2.0'
 gem 'jbuilder', '~> 2.0'
 gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'aasm', '~> 4.0.8'
@@ -11,7 +11,7 @@ gem 'stellar-base', require: false
 # gem 'stellar-base', path: "../ruby-stellar-base", require: false
 gem 'faraday'
 gem 'faraday_middleware'
-gem 'composite_primary_keys', '~> 7.0.13'
+gem 'composite_primary_keys', '~> 8.1.0'
 gem 'memoist'
 gem 'backports'
 gem 'json_expressions'
@@ -55,7 +55,6 @@ group :test, :development do
   gem 'vcr', require: false
   gem 'webmock', require: false
   gem 'yard'
-  gem 'apiaryio'
   gem 'timecop'
   # gem 'stellar_core_commander', ">= 0.0.4", require: false
   # gem 'stellar_core_commander', require: false, path: "../stellar_core_commander"

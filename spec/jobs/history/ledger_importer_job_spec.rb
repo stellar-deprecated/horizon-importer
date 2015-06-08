@@ -37,7 +37,7 @@ RSpec.describe History::LedgerImporterJob, type: :job do
   end
 
   context "when importing a non-existent ledger" do
-    let(:sequence){ 2**32 - 1 } #some large number that our test ledger is unlikely to contain
+    let(:sequence){ 2**31 - 1 } #some large number that our test ledger is unlikely to contain
     it{ expect{ result }.to raise_error(ActiveRecord::RecordNotFound) }
     it{ expect{ result rescue nil }.to_not change{ History::Ledger.count } }
   end
