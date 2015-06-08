@@ -186,7 +186,27 @@ class History::LedgerImporterJob < ApplicationJob
       when Stellar::OperationType.set_options
         #TODO
       when Stellar::OperationType.change_trust
-        #TODO
+        ctop        = op.body.change_trust_op!
+        currency    = ctop.line
+
+        hop.details = {
+          "trustor" => Convert.pk_to_address(source_account),
+          "limit"   => ctop.limit
+        }
+
+        case currency.type
+        when Stellar::CurrencyType.currency_type_native
+          raise "native currency in change_trust_op"
+        when Stellar::CurrencyType.currency_type_alphanum
+          an = currency.alpha_num!
+          hop.details["currency_type"]   = "alphanum"
+          hop.details["currency_code"]   = an.currency_code.strip
+          hop.details["currency_issuer"] = Convert.pk_to_address an.issuer
+          hop.details["trustee"]         = Convert.pk_to_address an.issuer
+        else
+          raise "Unknown currency type: #{currency.type}"
+        end
+
       when Stellar::OperationType.allow_trust
         atop        = op.body.allow_trust_op!
         currency    = atop.currency

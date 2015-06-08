@@ -95,6 +95,23 @@ RSpec.describe History::LedgerImporterJob, "importing path_payment operations", 
   end
 end
 
+RSpec.describe History::LedgerImporterJob, "importing change_trust operations", type: :job do
+  load_scenario "allow_trust"
+  reimport_history
+  let(:op){ History::Operation.find(21474844672)}
+
+  it "sets `trustee`" do
+    expect(op.details["trustee"]).to eq("gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq")
+  end
+
+  it "sets `trustor`" do
+    expect(op.details["trustor"]).to eq("gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ")
+  end
+
+  it "sets `limit`" do
+    expect(op.details["limit"]).to eq("4000")
+  end
+end
 
 RSpec.describe History::LedgerImporterJob, "importing allow_trust operations", type: :job do
   load_scenario "allow_trust"
