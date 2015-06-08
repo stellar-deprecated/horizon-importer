@@ -173,7 +173,7 @@ class History::LedgerImporterJob < ApplicationJob
           raise "Unknown currency type: #{payment.dest_currency.type}"
         end
 
-      when Stellar::OperationType.create_offer # TODO: change to modify offer when completed
+      when Stellar::OperationType.manage_offer # TODO: change to modify offer when completed
         #TODO
         # import into history api:
         #   - account that posted offer

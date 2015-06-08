@@ -98,7 +98,7 @@ end
 RSpec.describe History::LedgerImporterJob, "importing change_trust operations", type: :job do
   load_scenario "allow_trust"
   reimport_history
-  let(:op){ History::Operation.find(21474844672)}
+  let(:op){ History::Operation.find(21474840576)}
 
   it "sets `trustee`" do
     expect(op.details["trustee"]).to eq("gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq")
