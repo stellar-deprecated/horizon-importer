@@ -96,6 +96,29 @@ RSpec.describe History::LedgerImporterJob, "importing path_payment operations", 
 end
 
 
+RSpec.describe History::LedgerImporterJob, "importing allow_trust operations", type: :job do
+  load_scenario "allow_trust"
+  reimport_history
+  let(:allow_op){ History::Operation.find(25769807872)}
+  let(:revoke_op){ History::Operation.find(30064775168)}
+
+  it "sets `trustee`" do
+    expect(allow_op.details["trustee"]).to eq("gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq")
+    expect(revoke_op.details["trustee"]).to eq("gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq")
+  end
+
+  it "sets `trustor`" do
+    expect(allow_op.details["trustor"]).to eq("gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ")
+    expect(revoke_op.details["trustor"]).to eq("gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ")
+  end
+
+  it "sets `authorize`" do
+    expect(allow_op.details["authorize"]).to eq("true")
+    expect(revoke_op.details["authorize"]).to eq("false")
+  end
+end
+
+
 
 # This block of specifications below don't follow the normal flow of specs
 # They are written more like normal tests (i.e. many assertions, larger size)

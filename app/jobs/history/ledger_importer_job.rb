@@ -173,14 +173,40 @@ class History::LedgerImporterJob < ApplicationJob
           raise "Unknown currency type: #{payment.dest_currency.type}"
         end
 
-      when Stellar::OperationType.create_offer
+      when Stellar::OperationType.create_offer # TODO: change to modify offer when completed
         #TODO
+        # import into history api:
+        #   - account that posted offer
+        #   - order book info
+        #   - offer id
+        #   - amount
+        #   - price
+        # import into an trading API
+        #   TODO
       when Stellar::OperationType.set_options
         #TODO
       when Stellar::OperationType.change_trust
         #TODO
       when Stellar::OperationType.allow_trust
-        #TODO
+        atop        = op.body.allow_trust_op!
+        currency    = atop.currency
+
+        hop.details = {
+          "trustee"         => Convert.pk_to_address(source_account),
+          "trustor"         => Convert.pk_to_address(atop.trustor),
+          "authorize"       => atop.authorize
+        }
+
+        case currency.type
+        when Stellar::CurrencyType.currency_type_native
+          raise "native currency in allow_trust_op"
+        when Stellar::CurrencyType.currency_type_alphanum
+          hop.details["currency_type"]   = "alphanum"
+          hop.details["currency_code"]   = currency.currency_code!.strip
+          hop.details["currency_issuer"] = Convert.pk_to_address source_account
+        else
+          raise "Unknown currency type: #{currency.type}"
+        end
       when Stellar::OperationType.account_merge
         destination  = op.body.destination!
         hop.details = {
@@ -189,7 +215,7 @@ class History::LedgerImporterJob < ApplicationJob
         }
         participant_addresses << hop.details["into"]
       when Stellar::OperationType.inflation
-        #TODO
+        #Inflation has no details, presently.
       end
 
 
