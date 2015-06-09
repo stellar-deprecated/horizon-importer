@@ -73,7 +73,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: accounts; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: accounts; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE accounts (
@@ -91,7 +91,7 @@ CREATE TABLE accounts (
 
 
 --
--- Name: ledgerheaders; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: ledgerheaders; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE ledgerheaders (
@@ -107,7 +107,7 @@ CREATE TABLE ledgerheaders (
 
 
 --
--- Name: offers; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: offers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE offers (
@@ -128,7 +128,7 @@ CREATE TABLE offers (
 
 
 --
--- Name: peers; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: peers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE peers (
@@ -144,7 +144,7 @@ CREATE TABLE peers (
 
 
 --
--- Name: signers; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: signers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE signers (
@@ -155,7 +155,7 @@ CREATE TABLE signers (
 
 
 --
--- Name: storestate; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: storestate; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE storestate (
@@ -165,7 +165,7 @@ CREATE TABLE storestate (
 
 
 --
--- Name: trustlines; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: trustlines; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE trustlines (
@@ -181,7 +181,7 @@ CREATE TABLE trustlines (
 
 
 --
--- Name: txhistory; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: txhistory; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE txhistory (
@@ -213,9 +213,9 @@ gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ	949999990	12884901889	0	\N		
 
 COPY ledgerheaders (ledgerhash, prevhash, bucketlisthash, ledgerseq, closetime, data) FROM stdin;
 a9d12414d405652b752ce4425d3d94e7996a07a52228a58d7bf3bd35dd50eb46	0000000000000000000000000000000000000000000000000000000000000000	e71064e28d0740ac27cf07b267200ea9b8916ad1242195c015fa3012086588d3	1	0	AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5xBk4o0HQKwnzweyZyAOqbiRatEkIZXAFfowEghliNMAAAABAAAAAAAAAAABY0V4XYoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgCYloAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==
-5d790a68b223f1c68a9ba128ecd6c85969821cbb0f69e99e52b085e6adb7fc0d	a9d12414d405652b752ce4425d3d94e7996a07a52228a58d7bf3bd35dd50eb46	24128cf784e4c94f58a5a72a5036a54e82b2e37c1b1b327bd8af8ab48684abf6	2	1433796416	qdEkFNQFZSt1LORCXT2U55lqB6UiKKWNe/O9Nd1Q60bWGQFaFjFEkPZuQGDTJ8o1Qnt8FuQMpJZu40ekvFPjPOOwxEKY/BwUmvv0yJlvuSQnrkHkZJuTTKSVmRt4UrhVJBKM94TkyU9YpacqUDalToKy43wbGzJ72K+KtIaEq/YAAAACAAAAAFV1/0ABY0V4XYoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgCYloAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==
-bff9f8e3d97d2ff54a62b2b377f8fec850c3072d7ed3e3a4c93ea860bec4e608	5d790a68b223f1c68a9ba128ecd6c85969821cbb0f69e99e52b085e6adb7fc0d	5eb9bafd487646fa49877410039181af6b3adc192e4d8b220148d6d93b80a44b	3	1433796417	XXkKaLIj8caKm6Eo7NbIWWmCHLsPaemeUrCF5q23/A16pxnaHj0HIwj8xfJiraUdF2S/y9dBOmInQL38sLnMWftP17xW79ZYSazCdzdPeGDOtmcet3SVF8keFr55HM+LXrm6/Uh2RvpJh3QQA5GBr2s63BkuTYsiAUjW2TuApEsAAAADAAAAAFV1/0EBY0V4XYoAAAAAAAAAAAAeAAAAAAAAAAAAAAAAAAAACgCYloAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==
-5af59ca3ff67d03a0dae6fcf66c9a56f98e82349da7e5b08fc3c4b574e057da9	bff9f8e3d97d2ff54a62b2b377f8fec850c3072d7ed3e3a4c93ea860bec4e608	b93db1f127f6765038d2af4c3a07903d7281e6cb509bc895b77218ebff86f889	4	1433796418	v/n449l9L/VKYrKzd/j+yFDDBy1+0+OkyT6oYL7E5ggOIZ9xuwdgKCs7+WB+JpXQW0yLR7MXf7qszMjRP818cHb0k+SktAKFRGjCmCWXijESUuNYejUTuxB9FgDlM3eAuT2x8Sf2dlA40q9MOgeQPXKB5stQm8iVt3IY6/+G+IkAAAAEAAAAAFV1/0IBY0V4XYoAAAAAAAAAAAAoAAAAAAAAAAAAAAAAAAAACgCYloAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==
+8f273d150ecd60f481dd4a717d5c6b1e7042401c9ed43d0a0bc281527f13e1f8	a9d12414d405652b752ce4425d3d94e7996a07a52228a58d7bf3bd35dd50eb46	24128cf784e4c94f58a5a72a5036a54e82b2e37c1b1b327bd8af8ab48684abf6	2	1433892076	qdEkFNQFZSt1LORCXT2U55lqB6UiKKWNe/O9Nd1Q60bWGQFaFjFEkPZuQGDTJ8o1Qnt8FuQMpJZu40ekvFPjPOOwxEKY/BwUmvv0yJlvuSQnrkHkZJuTTKSVmRt4UrhVJBKM94TkyU9YpacqUDalToKy43wbGzJ72K+KtIaEq/YAAAACAAAAAFV3dOwBY0V4XYoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgCYloAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==
+6d00d81c55a7fbf354322be6608b86bb9104abf853ee0440169e7d76b3c3a999	8f273d150ecd60f481dd4a717d5c6b1e7042401c9ed43d0a0bc281527f13e1f8	5eb9bafd487646fa49877410039181af6b3adc192e4d8b220148d6d93b80a44b	3	1433892077	jyc9FQ7NYPSB3UpxfVxrHnBCQBye1D0KC8KBUn8T4fh3hutOFqb6Um0JyokQCHaZiZZfdtS8f1r+Y2l2MG4Z0PtP17xW79ZYSazCdzdPeGDOtmcet3SVF8keFr55HM+LXrm6/Uh2RvpJh3QQA5GBr2s63BkuTYsiAUjW2TuApEsAAAADAAAAAFV3dO0BY0V4XYoAAAAAAAAAAAAeAAAAAAAAAAAAAAAAAAAACgCYloAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==
+936ee7651b70cd6e5aa05ec532f17855cc39b891582bfbfc1832fc2644069988	6d00d81c55a7fbf354322be6608b86bb9104abf853ee0440169e7d76b3c3a999	b93db1f127f6765038d2af4c3a07903d7281e6cb509bc895b77218ebff86f889	4	1433892078	bQDYHFWn+/NUMivmYIuGu5EEq/hT7gRAFp59drPDqZnUrR1WVK0BY4F5xFJL9FnsHsJgD55E7KCmKFDaeTALxXb0k+SktAKFRGjCmCWXijESUuNYejUTuxB9FgDlM3eAuT2x8Sf2dlA40q9MOgeQPXKB5stQm8iVt3IY6/+G+IkAAAAEAAAAAFV3dO4BY0V4XYoAAAAAAAAAAAAoAAAAAAAAAAAAAAAAAAAACgCYloAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==
 \.
 
 
@@ -250,7 +250,7 @@ COPY signers (accountid, publickey, weight) FROM stdin;
 COPY storestate (statename, state) FROM stdin;
 databaseinitialized             	true
 forcescponnextlaunch            	false
-lastclosedledger                	5af59ca3ff67d03a0dae6fcf66c9a56f98e82349da7e5b08fc3c4b574e057da9
+lastclosedledger                	936ee7651b70cd6e5aa05ec532f17855cc39b891582bfbfc1832fc2644069988
 historyarchivestate             	{\n    "version": 0,\n    "currentLedger": 4,\n    "currentBuckets": [\n        {\n            "curr": "6775b90d536ecf8fc658c19d5ac6ad8981b13887ab271eb253828354c23e081a",\n            "next": {\n                "state": 0\n            },\n            "snap": "bd5ef75e66585c9f9f1e6ba5901a94048592901d0234d98750d2f1991f2ba566"\n        },\n        {\n            "curr": "dbbd826d458ade51d4a8cfc70260528fb788d3eb80c9a73e49a4cbba1a8f566c",\n            "next": {\n                "state": 1,\n                "output": "bd5ef75e66585c9f9f1e6ba5901a94048592901d0234d98750d2f1991f2ba566"\n            },\n            "snap": "0000000000000000000000000000000000000000000000000000000000000000"\n        },\n        {\n            "curr": "0000000000000000000000000000000000000000000000000000000000000000",\n            "next": {\n                "state": 0\n            },\n            "snap": "0000000000000000000000000000000000000000000000000000000000000000"\n        },\n        {\n            "curr": "0000000000000000000000000000000000000000000000000000000000000000",\n            "next": {\n                "state": 0\n            },\n            "snap": "0000000000000000000000000000000000000000000000000000000000000000"\n        },\n        {\n            "curr": "0000000000000000000000000000000000000000000000000000000000000000",\n            "next": {\n                "state": 0\n            },\n            "snap": "0000000000000000000000000000000000000000000000000000000000000000"\n        },\n        {\n            "curr": "0000000000000000000000000000000000000000000000000000000000000000",\n            "next": {\n                "state": 0\n            },\n            "snap": "0000000000000000000000000000000000000000000000000000000000000000"\n        },\n        {\n            "curr": "0000000000000000000000000000000000000000000000000000000000000000",\n            "next": {\n                "state": 0\n            },\n            "snap": "0000000000000000000000000000000000000000000000000000000000000000"\n        },\n        {\n            "curr": "0000000000000000000000000000000000000000000000000000000000000000",\n            "next": {\n                "state": 0\n            },\n            "snap": "0000000000000000000000000000000000000000000000000000000000000000"\n        },\n        {\n            "curr": "0000000000000000000000000000000000000000000000000000000000000000",\n            "next": {\n                "state": 0\n            },\n            "snap": "0000000000000000000000000000000000000000000000000000000000000000"\n        },\n        {\n            "curr": "0000000000000000000000000000000000000000000000000000000000000000",\n            "next": {\n                "state": 0\n            },\n            "snap": "0000000000000000000000000000000000000000000000000000000000000000"\n        },\n        {\n            "curr": "0000000000000000000000000000000000000000000000000000000000000000",\n            "next": {\n                "state": 0\n            },\n            "snap": "0000000000000000000000000000000000000000000000000000000000000000"\n        }\n    ]\n}
 \.
 
@@ -276,7 +276,7 @@ da3dae3d6baef2f56d53ff9fa4ddbc6cbda1ac798f0faa7de8edac9597c1dc0c	3	1	iZsoQO1WNsV
 
 
 --
--- Name: accounts_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: accounts_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY accounts
@@ -284,7 +284,7 @@ ALTER TABLE ONLY accounts
 
 
 --
--- Name: ledgerheaders_ledgerseq_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: ledgerheaders_ledgerseq_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY ledgerheaders
@@ -292,7 +292,7 @@ ALTER TABLE ONLY ledgerheaders
 
 
 --
--- Name: ledgerheaders_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: ledgerheaders_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY ledgerheaders
@@ -300,7 +300,7 @@ ALTER TABLE ONLY ledgerheaders
 
 
 --
--- Name: offers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: offers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY offers
@@ -308,7 +308,7 @@ ALTER TABLE ONLY offers
 
 
 --
--- Name: peers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: peers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY peers
@@ -316,7 +316,7 @@ ALTER TABLE ONLY peers
 
 
 --
--- Name: signers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: signers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY signers
@@ -324,7 +324,7 @@ ALTER TABLE ONLY signers
 
 
 --
--- Name: storestate_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: storestate_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY storestate
@@ -332,7 +332,7 @@ ALTER TABLE ONLY storestate
 
 
 --
--- Name: trustlines_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: trustlines_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY trustlines
@@ -340,7 +340,7 @@ ALTER TABLE ONLY trustlines
 
 
 --
--- Name: txhistory_ledgerseq_txindex_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: txhistory_ledgerseq_txindex_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY txhistory
@@ -348,7 +348,7 @@ ALTER TABLE ONLY txhistory
 
 
 --
--- Name: txhistory_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: txhistory_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY txhistory
@@ -356,57 +356,55 @@ ALTER TABLE ONLY txhistory
 
 
 --
--- Name: accountbalances; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: accountbalances; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX accountbalances ON accounts USING btree (balance);
 
 
 --
--- Name: accountlines; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: accountlines; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX accountlines ON trustlines USING btree (accountid);
 
 
 --
--- Name: getsissuerindex; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: getsissuerindex; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX getsissuerindex ON offers USING btree (getsissuer);
 
 
 --
--- Name: ledgersbyseq; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: ledgersbyseq; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX ledgersbyseq ON ledgerheaders USING btree (ledgerseq);
 
 
 --
--- Name: paysissuerindex; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: paysissuerindex; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX paysissuerindex ON offers USING btree (paysissuer);
 
 
 --
--- Name: priceindex; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: priceindex; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX priceindex ON offers USING btree (price);
 
 
 --
--- Name: signersaccount; Type: INDEX; Schema: public; Owner: -; Tablespace:
+-- Name: signersaccount; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX signersaccount ON signers USING btree (accountid);
 
 
-
-
-
 --
 -- PostgreSQL database dump complete
 --
+
