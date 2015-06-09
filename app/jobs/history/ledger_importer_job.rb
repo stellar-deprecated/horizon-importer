@@ -173,7 +173,9 @@ class History::LedgerImporterJob < ApplicationJob
           raise "Unknown currency type: #{payment.dest_currency.type}"
         end
 
-      when Stellar::OperationType.manage_offer # TODO: change to modify offer when completed
+        # TODO: calculate source cost when ClaimOfferAtom
+
+      when Stellar::OperationType.manage_offer
         #TODO
         # import into history api:
         #   - account that posted offer
@@ -181,10 +183,56 @@ class History::LedgerImporterJob < ApplicationJob
         #   - offer id
         #   - amount
         #   - price
+
+        # import into an trading API
+        #   TODO
+
+      when Stellar::OperationType.create_passive_offer
         # import into an trading API
         #   TODO
       when Stellar::OperationType.set_options
-        #TODO
+        sop = op.body.set_options_op!
+        hop.details = {}
+
+        if sop.inflation_dest.present?
+          hop.details["inflation_dest"] = Convert.pk_to_address(sop.inflation_dest)
+        end
+
+        #TODO: set/clear flags
+        parsed = Stellar::AccountFlags.parse_mask(sop.set_flags || 0)
+        if parsed.any?
+          hop.details["set_flags"] = parsed.map(&:value)
+          hop.details["set_flags_s"] = parsed.map(&:name)
+        end
+
+        parsed = Stellar::AccountFlags.parse_mask(sop.clear_flags || 0)
+        if parsed.any?
+          hop.details["clear_flags"] = parsed.map(&:value)
+          hop.details["clear_flags_s"] = parsed.map(&:name)
+        end
+
+        if sop.thresholds.present?
+          parsed = Stellar::Thresholds.parse(sop.thresholds)
+
+          hop.details.merge!({
+            "master_key_weight" => parsed[:master_weight],
+            "low_threshold"     => parsed[:low],
+            "medium_threshold"  => parsed[:medium],
+            "high_threshold"    => parsed[:high],
+          })
+        end
+
+        if sop.home_domain.present?
+          hop.details["home_domain"] = sop.home_domain
+        end
+
+        if sop.signer.present?
+          hop.details.merge!({
+            "signer_key"    => Convert.pk_to_address(sop.signer.pub_key),
+            "signer_weight" => sop.signer.weight,
+          })
+        end
+
       when Stellar::OperationType.change_trust
         ctop        = op.body.change_trust_op!
         currency    = ctop.line

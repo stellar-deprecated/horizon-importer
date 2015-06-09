@@ -135,6 +135,66 @@ RSpec.describe History::LedgerImporterJob, "importing allow_trust operations", t
   end
 end
 
+RSpec.describe History::LedgerImporterJob, "importing set_options operations", type: :job do
+  load_scenario "set_options"
+  reimport_history
+
+  describe "inflation_dest details" do
+    let(:op){ History::Operation.find(17179873280)}
+
+    it "sets `inflation_dest`" do
+      expect(op.details["inflation_dest"]).to eq("gT9jHoPKoErFwXavCrDYLkSVcVd9oyVv94ydrq6FnPMXpKHPTA")
+    end
+  end
+
+  describe "signer details" do
+    let(:add_op){ History::Operation.find(17179877376)}
+    let(:remove_op){ History::Operation.find(21474840576)}
+
+    it "sets `signer_key`" do
+      expect(add_op.details["signer_key"]).to eq("gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq")
+      expect(remove_op.details["signer_key"]).to eq("gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq")
+    end
+
+    it "sets `signer_weight`" do
+      expect(add_op.details["signer_weight"]).to eq("1")
+      expect(remove_op.details["signer_weight"]).to eq("0")
+    end
+  end
+
+  describe "thresholds details" do
+    let(:op){ History::Operation.find(17179881472)}
+
+    it "sets `low_threshold`" do
+      expect(op.details["low_threshold"]).to eq("0")
+    end
+
+    it "sets `medium_threshold`" do
+      expect(op.details["medium_threshold"]).to eq("2")
+    end
+
+    it "sets `high_threshold`" do
+      expect(op.details["high_threshold"]).to eq("2")
+    end
+
+    it "sets `master_key_weight`" do
+      expect(op.details["master_key_weight"]).to eq("2")
+    end
+  end
+
+  describe "set flag details" do
+    it "sets `flags_set`"
+  end
+
+  describe "clear flag details" do
+    it "sets `flags_cleared`"
+  end
+
+  describe "home domain details" do
+    it "sets `home_domain`"
+  end
+end
+
 
 
 # This block of specifications below don't follow the normal flow of specs
