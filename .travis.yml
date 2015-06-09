@@ -5,7 +5,7 @@ rvm:
 env:
 - DATABASE_USER="postgres" NOCOVERAGE="true" JRUBY_OPTS="-J-Xmx2048m"
 addons:
-  postgresql: '9.3'
+  postgresql: '9.4'
 script: bundle exec rake travis --trace
 before_script:
 - psql -c 'create database "horizon_test";' -U postgres

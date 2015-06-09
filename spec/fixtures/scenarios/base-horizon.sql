@@ -99,7 +99,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: history_accounts; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: history_accounts; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE history_accounts (
@@ -109,7 +109,7 @@ CREATE TABLE history_accounts (
 
 
 --
--- Name: history_ledgers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: history_ledgers; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE history_ledgers (
@@ -126,7 +126,7 @@ CREATE TABLE history_ledgers (
 
 
 --
--- Name: history_operation_participants; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: history_operation_participants; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE history_operation_participants (
@@ -156,7 +156,7 @@ ALTER SEQUENCE history_operation_participants_id_seq OWNED BY history_operation_
 
 
 --
--- Name: history_operations; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: history_operations; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE history_operations (
@@ -169,7 +169,7 @@ CREATE TABLE history_operations (
 
 
 --
--- Name: history_transaction_participants; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: history_transaction_participants; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE history_transaction_participants (
@@ -201,7 +201,7 @@ ALTER SEQUENCE history_transaction_participants_id_seq OWNED BY history_transact
 
 
 --
--- Name: history_transaction_statuses; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: history_transaction_statuses; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE history_transaction_statuses (
@@ -231,7 +231,7 @@ ALTER SEQUENCE history_transaction_statuses_id_seq OWNED BY history_transaction_
 
 
 --
--- Name: history_transactions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: history_transactions; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE history_transactions (
@@ -251,7 +251,7 @@ CREATE TABLE history_transactions (
 
 
 --
--- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE schema_migrations (
@@ -406,7 +406,7 @@ COPY schema_migrations (version) FROM stdin;
 
 
 --
--- Name: history_operation_participants_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: history_operation_participants_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY history_operation_participants
@@ -414,7 +414,7 @@ ALTER TABLE ONLY history_operation_participants
 
 
 --
--- Name: history_transaction_participants_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: history_transaction_participants_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY history_transaction_participants
@@ -422,7 +422,7 @@ ALTER TABLE ONLY history_transaction_participants
 
 
 --
--- Name: history_transaction_statuses_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: history_transaction_statuses_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY history_transaction_statuses
@@ -430,149 +430,141 @@ ALTER TABLE ONLY history_transaction_statuses
 
 
 --
--- Name: by_account; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: by_account; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE INDEX by_account ON history_transactions USING btree (account, account_sequence);
 
 
 --
--- Name: by_hash; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: by_hash; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE INDEX by_hash ON history_transactions USING btree (transaction_hash);
 
 
 --
--- Name: by_ledger; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: by_ledger; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE INDEX by_ledger ON history_transactions USING btree (ledger_sequence, application_order);
 
 
 --
--- Name: by_status; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: by_status; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE INDEX by_status ON history_transactions USING btree (transaction_status_id);
 
 
 --
--- Name: hist_op_p_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: hist_op_p_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE UNIQUE INDEX hist_op_p_id ON history_operation_participants USING btree (history_account_id, history_operation_id);
 
 
 --
--- Name: hs_ledger_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: hs_ledger_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE UNIQUE INDEX hs_ledger_by_id ON history_ledgers USING btree (id);
 
 
 --
--- Name: hs_transaction_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: hs_transaction_by_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE UNIQUE INDEX hs_transaction_by_id ON history_transactions USING btree (id);
 
 
 --
--- Name: index_history_accounts_on_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_history_accounts_on_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE UNIQUE INDEX index_history_accounts_on_id ON history_accounts USING btree (id);
 
 
 --
--- Name: index_history_ledgers_on_closed_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_history_ledgers_on_closed_at; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE INDEX index_history_ledgers_on_closed_at ON history_ledgers USING btree (closed_at);
 
 
 --
--- Name: index_history_ledgers_on_ledger_hash; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_history_ledgers_on_ledger_hash; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE UNIQUE INDEX index_history_ledgers_on_ledger_hash ON history_ledgers USING btree (ledger_hash);
 
 
 --
--- Name: index_history_ledgers_on_previous_ledger_hash; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_history_ledgers_on_previous_ledger_hash; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE UNIQUE INDEX index_history_ledgers_on_previous_ledger_hash ON history_ledgers USING btree (previous_ledger_hash);
 
 
 --
--- Name: index_history_ledgers_on_sequence; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_history_ledgers_on_sequence; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE UNIQUE INDEX index_history_ledgers_on_sequence ON history_ledgers USING btree (sequence);
 
 
 --
--- Name: index_history_operations_on_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_history_operations_on_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE UNIQUE INDEX index_history_operations_on_id ON history_operations USING btree (id);
 
 
 --
--- Name: index_history_operations_on_transaction_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_history_operations_on_transaction_id; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE INDEX index_history_operations_on_transaction_id ON history_operations USING btree (transaction_id);
 
 
 --
--- Name: index_history_operations_on_type; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_history_operations_on_type; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE INDEX index_history_operations_on_type ON history_operations USING btree (type);
 
 
 --
--- Name: index_history_transaction_participants_on_account; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_history_transaction_participants_on_account; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE INDEX index_history_transaction_participants_on_account ON history_transaction_participants USING btree (account);
 
 
 --
--- Name: index_history_transaction_participants_on_transaction_hash; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_history_transaction_participants_on_transaction_hash; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE INDEX index_history_transaction_participants_on_transaction_hash ON history_transaction_participants USING btree (transaction_hash);
 
 
 --
--- Name: index_history_transaction_statuses_lc_on_all; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_history_transaction_statuses_lc_on_all; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE UNIQUE INDEX index_history_transaction_statuses_lc_on_all ON history_transaction_statuses USING btree (id, result_code, result_code_s);
 
 
 --
--- Name: unique_schema_migrations; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: unique_schema_migrations; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE UNIQUE INDEX unique_schema_migrations ON schema_migrations USING btree (version);
 
 
---
--- Name: public; Type: ACL; Schema: -; Owner: -
---
 
-REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM nullstyle;
-GRANT ALL ON SCHEMA public TO nullstyle;
-GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
 --
 -- PostgreSQL database dump complete
 --
-

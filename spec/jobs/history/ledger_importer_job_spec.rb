@@ -148,8 +148,8 @@ RSpec.describe History::LedgerImporterJob, "importing set_options operations", t
   end
 
   describe "signer details" do
-    let(:add_op){ History::Operation.find(17179877376)}
-    let(:remove_op){ History::Operation.find(21474840576)}
+    let(:add_op){ History::Operation.find(17179889664)}
+    let(:remove_op){ History::Operation.find(21474844672)}
 
     it "sets `signer_key`" do
       expect(add_op.details["signer_key"]).to eq("gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq")

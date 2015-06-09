@@ -73,7 +73,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: accounts; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: accounts; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE accounts (
@@ -91,7 +91,7 @@ CREATE TABLE accounts (
 
 
 --
--- Name: ledgerheaders; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: ledgerheaders; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE ledgerheaders (
@@ -107,7 +107,7 @@ CREATE TABLE ledgerheaders (
 
 
 --
--- Name: offers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: offers; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE offers (
@@ -128,7 +128,7 @@ CREATE TABLE offers (
 
 
 --
--- Name: peers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: peers; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE peers (
@@ -144,7 +144,7 @@ CREATE TABLE peers (
 
 
 --
--- Name: signers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: signers; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE signers (
@@ -155,7 +155,7 @@ CREATE TABLE signers (
 
 
 --
--- Name: storestate; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: storestate; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE storestate (
@@ -165,7 +165,7 @@ CREATE TABLE storestate (
 
 
 --
--- Name: trustlines; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: trustlines; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE trustlines (
@@ -181,7 +181,7 @@ CREATE TABLE trustlines (
 
 
 --
--- Name: txhistory; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: txhistory; Type: TABLE; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE TABLE txhistory (
@@ -287,7 +287,7 @@ e2b3ecd737eb4c241e7abe15a6d079dbe1de708263f59d1882c05eb7d0e89c08	3	1	iZsoQO1WNsV
 
 
 --
--- Name: accounts_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: accounts_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY accounts
@@ -295,7 +295,7 @@ ALTER TABLE ONLY accounts
 
 
 --
--- Name: ledgerheaders_ledgerseq_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: ledgerheaders_ledgerseq_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY ledgerheaders
@@ -303,7 +303,7 @@ ALTER TABLE ONLY ledgerheaders
 
 
 --
--- Name: ledgerheaders_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: ledgerheaders_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY ledgerheaders
@@ -311,7 +311,7 @@ ALTER TABLE ONLY ledgerheaders
 
 
 --
--- Name: offers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: offers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY offers
@@ -319,7 +319,7 @@ ALTER TABLE ONLY offers
 
 
 --
--- Name: peers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: peers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY peers
@@ -327,7 +327,7 @@ ALTER TABLE ONLY peers
 
 
 --
--- Name: signers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: signers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY signers
@@ -335,7 +335,7 @@ ALTER TABLE ONLY signers
 
 
 --
--- Name: storestate_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: storestate_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY storestate
@@ -343,7 +343,7 @@ ALTER TABLE ONLY storestate
 
 
 --
--- Name: trustlines_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: trustlines_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY trustlines
@@ -351,7 +351,7 @@ ALTER TABLE ONLY trustlines
 
 
 --
--- Name: txhistory_ledgerseq_txindex_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: txhistory_ledgerseq_txindex_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY txhistory
@@ -359,7 +359,7 @@ ALTER TABLE ONLY txhistory
 
 
 --
--- Name: txhistory_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: txhistory_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY txhistory
@@ -367,65 +367,57 @@ ALTER TABLE ONLY txhistory
 
 
 --
--- Name: accountbalances; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: accountbalances; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE INDEX accountbalances ON accounts USING btree (balance);
 
 
 --
--- Name: accountlines; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: accountlines; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE INDEX accountlines ON trustlines USING btree (accountid);
 
 
 --
--- Name: getsissuerindex; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: getsissuerindex; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE INDEX getsissuerindex ON offers USING btree (getsissuer);
 
 
 --
--- Name: ledgersbyseq; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: ledgersbyseq; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE INDEX ledgersbyseq ON ledgerheaders USING btree (ledgerseq);
 
 
 --
--- Name: paysissuerindex; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: paysissuerindex; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE INDEX paysissuerindex ON offers USING btree (paysissuer);
 
 
 --
--- Name: priceindex; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: priceindex; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE INDEX priceindex ON offers USING btree (price);
 
 
 --
--- Name: signersaccount; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: signersaccount; Type: INDEX; Schema: public; Owner: -; Tablespace:
 --
 
 CREATE INDEX signersaccount ON signers USING btree (accountid);
 
 
---
--- Name: public; Type: ACL; Schema: -; Owner: -
---
 
-REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM nullstyle;
-GRANT ALL ON SCHEMA public TO nullstyle;
-GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
 --
 -- PostgreSQL database dump complete
 --
-
