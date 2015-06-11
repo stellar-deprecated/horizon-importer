@@ -291,10 +291,9 @@ class History::LedgerImporterJob < ApplicationJob
       hops << hop
 
       # now import the participants from this operation
-      participants = History::Account.where(address:participant_addresses).all
+      participants = History::Account.where(address:participant_addresses.uniq).all
 
       unless participants.length == participant_addresses.length
-        binding.pry
         raise "Could not find all participants"
       end
 
