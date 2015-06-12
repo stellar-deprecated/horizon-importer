@@ -9,7 +9,7 @@ GIT
 
 GIT
   remote: git://github.com/stellar/stellar_core_commander.git
-  revision: 2e06fc8401582a23d09464eb783c0605ae757a7e
+  revision: d04cc44732b8ccfc2a6e30917c25133a1d4bbf82
   specs:
     stellar_core_commander (0.0.11)
       activesupport (>= 4.0.0)

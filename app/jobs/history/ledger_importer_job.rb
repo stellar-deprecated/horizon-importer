@@ -119,7 +119,6 @@ class History::LedgerImporterJob < ApplicationJob
       })
 
 
-      # TODO: fill in details here
       case op.body.type
       when Stellar::OperationType.create_account
         op = op.body.create_account_op!
@@ -178,6 +177,8 @@ class History::LedgerImporterJob < ApplicationJob
         # TODO: calculate source cost when ClaimOfferAtom
 
       when Stellar::OperationType.manage_offer
+        offer = op.body.manage_offer_op!
+
         #TODO
         # import into history api:
         #   - account that posted offer
