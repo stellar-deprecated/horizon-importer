@@ -260,7 +260,7 @@ GEM
     webmock (1.21.0)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
-    xdr (0.0.2)
+    xdr (0.0.3)
       activemodel (~> 4)
       activesupport (~> 4)
       backports (~> 3.6)

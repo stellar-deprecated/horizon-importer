@@ -88,7 +88,11 @@ class StellarCore::Transaction < StellarCore::Base
     # TransactionResult => TransactionResult::Result => Array<OperationResult>
     result.result.results!
   end
-  
+
+  def operation_count
+    operations.length
+  end
+
   memoize def operations_with_results
     operations.zip(operation_results)
   end

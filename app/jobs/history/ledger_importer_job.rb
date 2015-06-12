@@ -31,6 +31,8 @@ class History::LedgerImporterJob < ApplicationJob
           ledger_hash:          stellar_core_ledger.ledgerhash,
           previous_ledger_hash: (stellar_core_ledger.prevhash unless first_ledger),
           closed_at:            Time.at(stellar_core_ledger.closetime),
+          transaction_count:    stellar_core_transactions.length,
+          operation_count:      stellar_core_transactions.map(&:operation_count).sum
         })
 
         stellar_core_transactions.each do |sctx|
