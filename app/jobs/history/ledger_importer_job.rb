@@ -179,20 +179,38 @@ class History::LedgerImporterJob < ApplicationJob
       when Stellar::OperationType.manage_offer
         offer = op.body.manage_offer_op!
 
+        hop.details = {
+          "offer_id" => offer.offer_id,
+          "amount"   => offer.amount,
+          "price"    => {
+            "n" => offer.price.n,
+            "d" => offer.price.d,
+          }
+        }
+
         #TODO
         # import into history api:
-        #   - account that posted offer
         #   - order book info
-        #   - offer id
-        #   - amount
-        #   - price
 
         # import into an trading API
         #   TODO
 
       when Stellar::OperationType.create_passive_offer
-        # import into an trading API
-        #   TODO
+        offer = op.body.create_passive_offer_op!
+
+        hop.details = {
+          "amount"    => offer.amount,
+          "price"     => {
+            "n" => offer.price.n,
+            "d" => offer.price.d,
+          }
+        }
+        
+        #TODO
+        # import into history api:
+        #   - order book info
+
+
       when Stellar::OperationType.set_options
         sop = op.body.set_options_op!
         hop.details = {}
