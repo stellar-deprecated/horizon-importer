@@ -13,6 +13,10 @@ class History::Operation < History::Base
   scope :before_token,      ->(cursor) { where('id < ?', cursor) }
   scope :after_token,       ->(cursor) { where('id > ?', cursor) }
 
+  def type_as_enum
+    Stellar::OperationType.by_value[type]
+  end
+
   def to_param
     id
   end
@@ -25,8 +29,8 @@ class History::Operation < History::Base
   def make_id
     return if self.transaction_id.blank?
     return if self.application_order.blank?
-    
-    ledger_sequence, tx_order, _ = TotalOrderId.parse(self.transaction_id) 
+
+    ledger_sequence, tx_order, _ = TotalOrderId.parse(self.transaction_id)
 
     self.id = TotalOrderId.make(ledger_sequence, tx_order, application_order)
   end

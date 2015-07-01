@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150609230237) do
+ActiveRecord::Schema.define(version: 20150629181921) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,6 +23,18 @@ ActiveRecord::Schema.define(version: 20150609230237) do
   end
 
   add_index "history_accounts", ["id"], name: "index_history_accounts_on_id", unique: true, using: :btree
+
+  create_table "history_effects", id: false, force: :cascade do |t|
+    t.integer "history_account_id",   limit: 8, null: false
+    t.integer "history_operation_id", limit: 8, null: false
+    t.integer "order",                          null: false
+    t.integer "type",                           null: false
+    t.jsonb   "details"
+  end
+
+  add_index "history_effects", ["history_account_id", "history_operation_id", "order"], name: "hist_e_id", unique: true, using: :btree
+  add_index "history_effects", ["history_operation_id", "order"], name: "hist_e_by_order", unique: true, using: :btree
+  add_index "history_effects", ["type"], name: "index_history_effects_on_type", using: :btree
 
   create_table "history_ledgers", id: false, force: :cascade do |t|
     t.integer  "sequence",                                    null: false
@@ -38,6 +50,7 @@ ActiveRecord::Schema.define(version: 20150609230237) do
 
   add_index "history_ledgers", ["closed_at"], name: "index_history_ledgers_on_closed_at", using: :btree
   add_index "history_ledgers", ["id"], name: "hs_ledger_by_id", unique: true, using: :btree
+  add_index "history_ledgers", ["id"], name: "index_history_ledgers_on_id", unique: true, using: :btree
   add_index "history_ledgers", ["ledger_hash"], name: "index_history_ledgers_on_ledger_hash", unique: true, using: :btree
   add_index "history_ledgers", ["previous_ledger_hash"], name: "index_history_ledgers_on_previous_ledger_hash", unique: true, using: :btree
   add_index "history_ledgers", ["sequence"], name: "index_history_ledgers_on_sequence", unique: true, using: :btree
@@ -95,6 +108,7 @@ ActiveRecord::Schema.define(version: 20150609230237) do
 
   add_index "history_transactions", ["account", "account_sequence"], name: "by_account", using: :btree
   add_index "history_transactions", ["id"], name: "hs_transaction_by_id", unique: true, using: :btree
+  add_index "history_transactions", ["id"], name: "index_history_transactions_on_id", unique: true, using: :btree
   add_index "history_transactions", ["ledger_sequence", "application_order"], name: "by_ledger", using: :btree
   add_index "history_transactions", ["transaction_hash"], name: "by_hash", using: :btree
   add_index "history_transactions", ["transaction_status_id"], name: "by_status", using: :btree

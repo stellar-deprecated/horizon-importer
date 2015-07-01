@@ -41,6 +41,7 @@ class History::LedgerImporterJob < ApplicationJob
           htx   = import_history_transaction sctx
           haccs = import_history_accounts sctx
           hops  = import_history_operations sctx, htx
+          heffs = import_history_effects sctx, hops
         end
 
         result
@@ -85,7 +86,6 @@ class History::LedgerImporterJob < ApplicationJob
     htx
   end
 
-
   def import_history_accounts(sctx)
     haccs = []
 
@@ -116,6 +116,7 @@ class History::LedgerImporterJob < ApplicationJob
         transaction_id:    htx.id,
         application_order: application_order,
         type:              op.body.type.value,
+        details:           {},
       })
 
 
@@ -137,20 +138,10 @@ class History::LedgerImporterJob < ApplicationJob
           "to"     => Convert.pk_to_address(payment.destination),
           "amount" => payment.amount,
         }
+        hop.details.merge! currency_details(payment.currency)
 
         participant_addresses << hop.details["to"]
 
-        case payment.currency.type
-        when Stellar::CurrencyType.currency_type_native
-          hop.details["currency_type"] = "native"
-        when Stellar::CurrencyType.currency_type_alphanum
-          an = payment.currency.alpha_num!
-          hop.details["currency_type"]   = "alphanum"
-          hop.details["currency_code"]   = an.currency_code.strip
-          hop.details["currency_issuer"] = Convert.pk_to_address an.issuer
-        else
-          raise "Unknown currency type: #{payment.currency.type}"
-        end
       when Stellar::OperationType.path_payment
         payment = op.body.path_payment_op!
 
@@ -159,20 +150,9 @@ class History::LedgerImporterJob < ApplicationJob
           "to"     => Convert.pk_to_address(payment.destination),
           "amount" => payment.dest_amount,
         }
+        hop.details.merge! currency_details(payment.dest_currency)
 
         participant_addresses << hop.details["to"]
-
-        case payment.dest_currency.type
-        when Stellar::CurrencyType.currency_type_native
-          hop.details["currency_type"] = "native"
-        when Stellar::CurrencyType.currency_type_alphanum
-          an = payment.dest_currency.alpha_num!
-          hop.details["currency_type"]   = "alphanum"
-          hop.details["currency_code"]   = an.currency_code.strip
-          hop.details["currency_issuer"] = Convert.pk_to_address an.issuer
-        else
-          raise "Unknown currency type: #{payment.dest_currency.type}"
-        end
 
         # TODO: calculate source cost when ClaimOfferAtom
 
@@ -205,7 +185,7 @@ class History::LedgerImporterJob < ApplicationJob
             "d" => offer.price.d,
           }
         }
-        
+
         #TODO
         # import into history api:
         #   - order book info
@@ -262,18 +242,11 @@ class History::LedgerImporterJob < ApplicationJob
           "trustor" => Convert.pk_to_address(source_account),
           "limit"   => ctop.limit
         }
+        hop.details.merge! currency_details(currency)
+        hop.details["trustee"] = hop.details["currency_issuer"]
 
-        case currency.type
-        when Stellar::CurrencyType.currency_type_native
+        if currency.type == Stellar::CurrencyType.currency_type_native
           raise "native currency in change_trust_op"
-        when Stellar::CurrencyType.currency_type_alphanum
-          an = currency.alpha_num!
-          hop.details["currency_type"]   = "alphanum"
-          hop.details["currency_code"]   = an.currency_code.strip
-          hop.details["currency_issuer"] = Convert.pk_to_address an.issuer
-          hop.details["trustee"]         = Convert.pk_to_address an.issuer
-        else
-          raise "Unknown currency type: #{currency.type}"
         end
 
       when Stellar::OperationType.allow_trust
@@ -296,6 +269,7 @@ class History::LedgerImporterJob < ApplicationJob
         else
           raise "Unknown currency type: #{currency.type}"
         end
+
       when Stellar::OperationType.account_merge
         destination  = op.body.destination!
         hop.details = {
@@ -325,6 +299,94 @@ class History::LedgerImporterJob < ApplicationJob
           history_operation: hop,
         })
       end
+    end
+
+    hops
+  end
+
+  def import_history_effects(sctx, hops)
+    heffs = []
+
+    sctx.operations_with_results.each_with_index do |op_and_r, application_order|
+      scop, scresult = *op_and_r
+      hop = hops[application_order]
+
+      heffs.concat import_history_effects_for_operation(sctx, scop, scresult, hop)
+    end
+
+    heffs
+  end
+
+  def import_history_effects_for_operation(sctx, scop, scresult, hop)
+    effects = History::EffectFactory.new(hop)
+    source_account = scop.source_account || sctx.source_account
+
+    case hop.type_as_enum
+    when Stellar::OperationType.create_account
+      scop = scop.body.create_account_op!
+
+      effects.create!("account_created", scop.destination, {
+        starting_balance: scop.starting_balance,
+      })
+
+      effects.create!("account_debited", source_account, {
+        currency_type: "native",
+        amount: scop.starting_balance
+      })
+
+    when Stellar::OperationType.payment
+      scop = scop.body.payment_op!
+      details = { amount: scop.amount }
+      details.merge!  currency_details(scop.currency)
+      effects.create!("account_credited", scop.destination, details)
+      effects.create!("account_debited", source_account, details)
+    when Stellar::OperationType.path_payment
+      scop = scop.body.path_payment_op!
+
+      dest_details = { amount: scop.dest_amount }
+      dest_details.merge!  currency_details(scop.dest_currency)
+      effects.create!("account_credited", scop.destination, dest_details)
+
+      scresult = scresult.tr!.path_payment_result!
+      source_details = { amount: scresult.send_amount }
+      source_details.merge!  currency_details(scop.send_currency)
+
+      effects.create!("account_credited", scop.destination, dest_details)
+      effects.create!("account_debited", source_account, source_details)
+    when Stellar::OperationType.manage_offer
+      # TODO
+    when Stellar::OperationType.create_passive_offer
+      # TODO
+    when Stellar::OperationType.set_options
+      # TODO
+    when Stellar::OperationType.change_trust
+      # TODO
+    when Stellar::OperationType.allow_trust
+      # TODO
+    when Stellar::OperationType.account_merge
+      # TODO
+    when Stellar::OperationType.inflation
+      # TODO
+    else
+      Rails.logger.info "Unknown type: #{hop.type_as_enum.name}.  skipping effects import"
+    end
+
+    effects.results
+  end
+
+  def currency_details(currency)
+    case currency.type
+    when Stellar::CurrencyType.currency_type_native
+      { "currency_type" => "native" }
+    when Stellar::CurrencyType.currency_type_alphanum
+      an = currency.alpha_num!
+      {
+        "currency_type"   => "alphanum",
+        "currency_code"   => an.currency_code.strip,
+        "currency_issuer" => Convert.pk_to_address(an.issuer),
+      }
+    else
+      raise "Unknown currency type: #{currency.type}"
     end
   end
 
