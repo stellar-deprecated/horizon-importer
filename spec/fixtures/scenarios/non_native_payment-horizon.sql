@@ -12,6 +12,7 @@ SET client_min_messages = warning;
 SET search_path = public, pg_catalog;
 
 DROP INDEX public.unique_schema_migrations;
+DROP INDEX public.index_history_transactions_on_id;
 DROP INDEX public.index_history_transaction_statuses_lc_on_all;
 DROP INDEX public.index_history_transaction_participants_on_transaction_hash;
 DROP INDEX public.index_history_transaction_participants_on_account;
@@ -21,11 +22,15 @@ DROP INDEX public.index_history_operations_on_id;
 DROP INDEX public.index_history_ledgers_on_sequence;
 DROP INDEX public.index_history_ledgers_on_previous_ledger_hash;
 DROP INDEX public.index_history_ledgers_on_ledger_hash;
+DROP INDEX public.index_history_ledgers_on_id;
 DROP INDEX public.index_history_ledgers_on_closed_at;
+DROP INDEX public.index_history_effects_on_type;
 DROP INDEX public.index_history_accounts_on_id;
 DROP INDEX public.hs_transaction_by_id;
 DROP INDEX public.hs_ledger_by_id;
 DROP INDEX public.hist_op_p_id;
+DROP INDEX public.hist_e_id;
+DROP INDEX public.hist_e_by_order;
 DROP INDEX public.by_status;
 DROP INDEX public.by_ledger;
 DROP INDEX public.by_hash;
@@ -46,6 +51,7 @@ DROP TABLE public.history_operations;
 DROP SEQUENCE public.history_operation_participants_id_seq;
 DROP TABLE public.history_operation_participants;
 DROP TABLE public.history_ledgers;
+DROP TABLE public.history_effects;
 DROP TABLE public.history_accounts;
 DROP EXTENSION hstore;
 DROP EXTENSION plpgsql;
@@ -105,6 +111,19 @@ SET default_with_oids = false;
 CREATE TABLE history_accounts (
     id bigint NOT NULL,
     address character varying(64)
+);
+
+
+--
+-- Name: history_effects; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE history_effects (
+    history_account_id bigint NOT NULL,
+    history_operation_id bigint NOT NULL,
+    "order" integer NOT NULL,
+    type integer NOT NULL,
+    details jsonb
 );
 
 
@@ -255,7 +274,7 @@ CREATE TABLE history_transactions (
 --
 
 CREATE TABLE schema_migrations (
-    version character varying(255) NOT NULL
+    version character varying NOT NULL
 );
 
 
@@ -293,16 +312,34 @@ COPY history_accounts (id, address) FROM stdin;
 
 
 --
+-- Data for Name: history_effects; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY history_effects (history_account_id, history_operation_id, "order", type, details) FROM stdin;
+12884905984	12884905984	0	0	{"starting_balance": 1000000000}
+0	12884905984	1	3	{"amount": 1000000000, "currency_type": "native"}
+12884910080	12884910080	0	0	{"starting_balance": 1000000000}
+0	12884910080	1	3	{"amount": 1000000000, "currency_type": "native"}
+12884914176	12884914176	0	0	{"starting_balance": 1000000000}
+0	12884914176	1	3	{"amount": 1000000000, "currency_type": "native"}
+12884905984	21474840576	0	2	{"amount": 1000000000, "currency_code": "USD", "currency_type": "alphanum", "currency_issuer": "gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq"}
+12884910080	21474840576	1	3	{"amount": 1000000000, "currency_code": "USD", "currency_type": "alphanum", "currency_issuer": "gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq"}
+12884914176	25769807872	0	2	{"amount": 500000000, "currency_code": "USD", "currency_type": "alphanum", "currency_issuer": "gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq"}
+12884905984	25769807872	1	3	{"amount": 500000000, "currency_code": "USD", "currency_type": "alphanum", "currency_issuer": "gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq"}
+\.
+
+
+--
 -- Data for Name: history_ledgers; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY history_ledgers (sequence, ledger_hash, previous_ledger_hash, transaction_count, operation_count, closed_at, created_at, updated_at, id) FROM stdin;
-1	a9d12414d405652b752ce4425d3d94e7996a07a52228a58d7bf3bd35dd50eb46	\N	0	0	1970-01-01 00:00:00	2015-06-09 23:21:23.515048	2015-06-09 23:21:23.515048	4294967296
-2	f44c7704c9b0f62dfff2baebd2d10b980c5cc8e2714b6f2f2311dcd44b17cd7c	a9d12414d405652b752ce4425d3d94e7996a07a52228a58d7bf3bd35dd50eb46	0	0	2015-06-09 23:21:21	2015-06-09 23:21:23.523785	2015-06-09 23:21:23.523785	8589934592
-3	c935d31aaa2f21cd451d9db90421754c1fcd2a5d03b25c19a9b9a67d0077258d	f44c7704c9b0f62dfff2baebd2d10b980c5cc8e2714b6f2f2311dcd44b17cd7c	0	0	2015-06-09 23:21:22	2015-06-09 23:21:23.532103	2015-06-09 23:21:23.532103	12884901888
-4	c6e1f1c64e5982a08e6d5d73b231552d30eb97e6c8bf3f7e2a6358c155d026d0	c935d31aaa2f21cd451d9db90421754c1fcd2a5d03b25c19a9b9a67d0077258d	0	0	2015-06-09 23:21:23	2015-06-09 23:21:23.580617	2015-06-09 23:21:23.580617	17179869184
-5	d5142f0d85ea1ffe51cbd6142bb1e6ec915aac044c3c5d1f5a1e7d6fce782ccf	c6e1f1c64e5982a08e6d5d73b231552d30eb97e6c8bf3f7e2a6358c155d026d0	0	0	2015-06-09 23:21:24	2015-06-09 23:21:23.608365	2015-06-09 23:21:23.608365	21474836480
-6	79068be0bee587029fb0479b6f39270009cd9de9f3895488965f4cb43c40f19c	d5142f0d85ea1ffe51cbd6142bb1e6ec915aac044c3c5d1f5a1e7d6fce782ccf	0	0	2015-06-09 23:21:25	2015-06-09 23:21:23.626388	2015-06-09 23:21:23.626388	25769803776
+1	a9d12414d405652b752ce4425d3d94e7996a07a52228a58d7bf3bd35dd50eb46	\N	0	0	1970-01-01 00:00:00	2015-07-01 23:20:11.05142	2015-07-01 23:20:11.05142	4294967296
+2	a09f0ae89de3891984c05ff84d4fd39513c446391203cf546f32207905ade393	a9d12414d405652b752ce4425d3d94e7996a07a52228a58d7bf3bd35dd50eb46	0	0	2015-07-01 23:20:08	2015-07-01 23:20:11.061543	2015-07-01 23:20:11.061543	8589934592
+3	4f3bff664e62fcc95f4bce91a14e362d6eb9bef6643f2110c5b036cac0d0018c	a09f0ae89de3891984c05ff84d4fd39513c446391203cf546f32207905ade393	3	3	2015-07-01 23:20:09	2015-07-01 23:20:11.071043	2015-07-01 23:20:11.071043	12884901888
+4	d6a9fb3b449c2a2b5269a9998838c162e2aea07c89cdaaa571c7ada9b0ead686	4f3bff664e62fcc95f4bce91a14e362d6eb9bef6643f2110c5b036cac0d0018c	2	2	2015-07-01 23:20:10	2015-07-01 23:20:11.140681	2015-07-01 23:20:11.140681	17179869184
+5	aa570654cc2cd72fd422e63a70d4ef34d18bdd79bca52a2e5acc6edcfb00cb5e	d6a9fb3b449c2a2b5269a9998838c162e2aea07c89cdaaa571c7ada9b0ead686	1	1	2015-07-01 23:20:11	2015-07-01 23:20:11.16721	2015-07-01 23:20:11.16721	21474836480
+6	80d371e87e62e88cae3abee4ecf2f9bd53776f1932d46f27209eef491d56e564	aa570654cc2cd72fd422e63a70d4ef34d18bdd79bca52a2e5acc6edcfb00cb5e	1	1	2015-07-01 23:20:12	2015-07-01 23:20:11.190021	2015-07-01 23:20:11.190021	25769803776
 \.
 
 
@@ -311,18 +348,18 @@ COPY history_ledgers (sequence, ledger_hash, previous_ledger_hash, transaction_c
 --
 
 COPY history_operation_participants (id, history_operation_id, history_account_id) FROM stdin;
-67	12884905984	0
-68	12884905984	12884905984
-69	12884910080	0
-70	12884910080	12884910080
-71	12884914176	0
-72	12884914176	12884914176
-73	17179873280	12884905984
-74	17179877376	12884914176
-75	21474840576	12884905984
-76	21474840576	12884910080
-77	25769807872	12884905984
-78	25769807872	12884914176
+28	12884905984	0
+29	12884905984	12884905984
+30	12884910080	0
+31	12884910080	12884910080
+32	12884914176	0
+33	12884914176	12884914176
+34	17179873280	12884905984
+35	17179877376	12884914176
+36	21474840576	12884905984
+37	21474840576	12884910080
+38	25769807872	12884905984
+39	25769807872	12884914176
 \.
 
 
@@ -330,7 +367,7 @@ COPY history_operation_participants (id, history_operation_id, history_account_i
 -- Name: history_operation_participants_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('history_operation_participants_id_seq', 78, true);
+SELECT pg_catalog.setval('history_operation_participants_id_seq', 39, true);
 
 
 --
@@ -353,16 +390,16 @@ COPY history_operations (id, transaction_id, application_order, type, details) F
 --
 
 COPY history_transaction_participants (id, transaction_hash, account, created_at, updated_at) FROM stdin;
-65	da3dae3d6baef2f56d53ff9fa4ddbc6cbda1ac798f0faa7de8edac9597c1dc0c	gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ	2015-06-09 23:21:23.537143	2015-06-09 23:21:23.537143
-66	da3dae3d6baef2f56d53ff9fa4ddbc6cbda1ac798f0faa7de8edac9597c1dc0c	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	2015-06-09 23:21:23.538264	2015-06-09 23:21:23.538264
-67	0c4dd3666ec5e7ab0a9d1134aecb83a0187a7e6ab6b54a8bbe35c3673f5bbe6e	gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq	2015-06-09 23:21:23.55023	2015-06-09 23:21:23.55023
-68	0c4dd3666ec5e7ab0a9d1134aecb83a0187a7e6ab6b54a8bbe35c3673f5bbe6e	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	2015-06-09 23:21:23.551204	2015-06-09 23:21:23.551204
-69	0971ddff00734a3b5741023c6200502e887419d57032c76cacb89d9d9860e54a	gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ	2015-06-09 23:21:23.562497	2015-06-09 23:21:23.562497
-70	0971ddff00734a3b5741023c6200502e887419d57032c76cacb89d9d9860e54a	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	2015-06-09 23:21:23.563592	2015-06-09 23:21:23.563592
-71	1b92d9a9651b11379a62c13a21958d516cf3dfe15f3628981243f0b4475c02fa	gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ	2015-06-09 23:21:23.585793	2015-06-09 23:21:23.585793
-72	f44b155ce8e6a7db7dd6294166bb710a481f102514b3c73fcada10ff20dca37c	gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ	2015-06-09 23:21:23.595206	2015-06-09 23:21:23.595206
-73	dc94538a35e5b30387324ce287fc96946c1a010c4ae252dad5ed1c7bec88916f	gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq	2015-06-09 23:21:23.613178	2015-06-09 23:21:23.613178
-74	e98e01a48170dfcd29a7f17c7021dd3fcbdbff2f15dbc89196a07798bec8e833	gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ	2015-06-09 23:21:23.630703	2015-06-09 23:21:23.630703
+28	da3dae3d6baef2f56d53ff9fa4ddbc6cbda1ac798f0faa7de8edac9597c1dc0c	gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ	2015-07-01 23:20:11.077778	2015-07-01 23:20:11.077778
+29	da3dae3d6baef2f56d53ff9fa4ddbc6cbda1ac798f0faa7de8edac9597c1dc0c	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	2015-07-01 23:20:11.078879	2015-07-01 23:20:11.078879
+30	0c4dd3666ec5e7ab0a9d1134aecb83a0187a7e6ab6b54a8bbe35c3673f5bbe6e	gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq	2015-07-01 23:20:11.098044	2015-07-01 23:20:11.098044
+31	0c4dd3666ec5e7ab0a9d1134aecb83a0187a7e6ab6b54a8bbe35c3673f5bbe6e	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	2015-07-01 23:20:11.099226	2015-07-01 23:20:11.099226
+32	0971ddff00734a3b5741023c6200502e887419d57032c76cacb89d9d9860e54a	gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ	2015-07-01 23:20:11.116578	2015-07-01 23:20:11.116578
+33	0971ddff00734a3b5741023c6200502e887419d57032c76cacb89d9d9860e54a	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	2015-07-01 23:20:11.117665	2015-07-01 23:20:11.117665
+34	1b92d9a9651b11379a62c13a21958d516cf3dfe15f3628981243f0b4475c02fa	gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ	2015-07-01 23:20:11.145443	2015-07-01 23:20:11.145443
+35	f44b155ce8e6a7db7dd6294166bb710a481f102514b3c73fcada10ff20dca37c	gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ	2015-07-01 23:20:11.154567	2015-07-01 23:20:11.154567
+36	dc94538a35e5b30387324ce287fc96946c1a010c4ae252dad5ed1c7bec88916f	gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq	2015-07-01 23:20:11.171445	2015-07-01 23:20:11.171445
+37	e98e01a48170dfcd29a7f17c7021dd3fcbdbff2f15dbc89196a07798bec8e833	gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ	2015-07-01 23:20:11.194214	2015-07-01 23:20:11.194214
 \.
 
 
@@ -370,7 +407,7 @@ COPY history_transaction_participants (id, transaction_hash, account, created_at
 -- Name: history_transaction_participants_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('history_transaction_participants_id_seq', 74, true);
+SELECT pg_catalog.setval('history_transaction_participants_id_seq', 37, true);
 
 
 --
@@ -393,13 +430,13 @@ SELECT pg_catalog.setval('history_transaction_statuses_id_seq', 1, false);
 --
 
 COPY history_transactions (transaction_hash, ledger_sequence, application_order, account, account_sequence, max_fee, fee_paid, operation_count, transaction_status_id, created_at, updated_at, id) FROM stdin;
-da3dae3d6baef2f56d53ff9fa4ddbc6cbda1ac798f0faa7de8edac9597c1dc0c	3	1	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	1	10	10	1	-1	2015-06-09 23:21:23.535122	2015-06-09 23:21:23.535122	12884905984
-0c4dd3666ec5e7ab0a9d1134aecb83a0187a7e6ab6b54a8bbe35c3673f5bbe6e	3	2	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	2	10	10	1	-1	2015-06-09 23:21:23.548424	2015-06-09 23:21:23.548424	12884910080
-0971ddff00734a3b5741023c6200502e887419d57032c76cacb89d9d9860e54a	3	3	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	3	10	10	1	-1	2015-06-09 23:21:23.5605	2015-06-09 23:21:23.5605	12884914176
-1b92d9a9651b11379a62c13a21958d516cf3dfe15f3628981243f0b4475c02fa	4	1	gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ	12884901889	10	10	1	-1	2015-06-09 23:21:23.58393	2015-06-09 23:21:23.58393	17179873280
-f44b155ce8e6a7db7dd6294166bb710a481f102514b3c73fcada10ff20dca37c	4	2	gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ	12884901889	10	10	1	-1	2015-06-09 23:21:23.593286	2015-06-09 23:21:23.593286	17179877376
-dc94538a35e5b30387324ce287fc96946c1a010c4ae252dad5ed1c7bec88916f	5	1	gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq	12884901889	10	10	1	-1	2015-06-09 23:21:23.611589	2015-06-09 23:21:23.611589	21474840576
-e98e01a48170dfcd29a7f17c7021dd3fcbdbff2f15dbc89196a07798bec8e833	6	1	gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ	12884901890	10	10	1	-1	2015-06-09 23:21:23.629209	2015-06-09 23:21:23.629209	25769807872
+da3dae3d6baef2f56d53ff9fa4ddbc6cbda1ac798f0faa7de8edac9597c1dc0c	3	1	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	1	10	10	1	-1	2015-07-01 23:20:11.075624	2015-07-01 23:20:11.075624	12884905984
+0c4dd3666ec5e7ab0a9d1134aecb83a0187a7e6ab6b54a8bbe35c3673f5bbe6e	3	2	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	2	10	10	1	-1	2015-07-01 23:20:11.096108	2015-07-01 23:20:11.096108	12884910080
+0971ddff00734a3b5741023c6200502e887419d57032c76cacb89d9d9860e54a	3	3	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	3	10	10	1	-1	2015-07-01 23:20:11.114898	2015-07-01 23:20:11.114898	12884914176
+1b92d9a9651b11379a62c13a21958d516cf3dfe15f3628981243f0b4475c02fa	4	1	gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ	12884901889	10	10	1	-1	2015-07-01 23:20:11.143604	2015-07-01 23:20:11.143604	17179873280
+f44b155ce8e6a7db7dd6294166bb710a481f102514b3c73fcada10ff20dca37c	4	2	gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ	12884901889	10	10	1	-1	2015-07-01 23:20:11.152927	2015-07-01 23:20:11.152927	17179877376
+dc94538a35e5b30387324ce287fc96946c1a010c4ae252dad5ed1c7bec88916f	5	1	gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq	12884901889	10	10	1	-1	2015-07-01 23:20:11.1699	2015-07-01 23:20:11.1699	21474840576
+e98e01a48170dfcd29a7f17c7021dd3fcbdbff2f15dbc89196a07798bec8e833	6	1	gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ	12884901890	10	10	1	-1	2015-07-01 23:20:11.192594	2015-07-01 23:20:11.192594	25769807872
 \.
 
 
@@ -408,7 +445,7 @@ e98e01a48170dfcd29a7f17c7021dd3fcbdbff2f15dbc89196a07798bec8e833	6	1	gsKuurNYgtB
 --
 
 COPY schema_migrations (version) FROM stdin;
-20150508215546
+20150629181921
 20150310224849
 20150313225945
 20150313225955
@@ -416,6 +453,7 @@ COPY schema_migrations (version) FROM stdin;
 20150508003829
 20150508175821
 20150508183542
+20150508215546
 20150609230237
 \.
 
@@ -473,6 +511,20 @@ CREATE INDEX by_status ON history_transactions USING btree (transaction_status_i
 
 
 --
+-- Name: hist_e_by_order; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX hist_e_by_order ON history_effects USING btree (history_operation_id, "order");
+
+
+--
+-- Name: hist_e_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX hist_e_id ON history_effects USING btree (history_account_id, history_operation_id, "order");
+
+
+--
 -- Name: hist_op_p_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -501,10 +553,24 @@ CREATE UNIQUE INDEX index_history_accounts_on_id ON history_accounts USING btree
 
 
 --
+-- Name: index_history_effects_on_type; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_history_effects_on_type ON history_effects USING btree (type);
+
+
+--
 -- Name: index_history_ledgers_on_closed_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_history_ledgers_on_closed_at ON history_ledgers USING btree (closed_at);
+
+
+--
+-- Name: index_history_ledgers_on_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_history_ledgers_on_id ON history_ledgers USING btree (id);
 
 
 --
@@ -568,6 +634,13 @@ CREATE INDEX index_history_transaction_participants_on_transaction_hash ON histo
 --
 
 CREATE UNIQUE INDEX index_history_transaction_statuses_lc_on_all ON history_transaction_statuses USING btree (id, result_code, result_code_s);
+
+
+--
+-- Name: index_history_transactions_on_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_history_transactions_on_id ON history_transactions USING btree (id);
 
 
 --

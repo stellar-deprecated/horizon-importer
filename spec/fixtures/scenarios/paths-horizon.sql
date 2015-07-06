@@ -12,6 +12,7 @@ SET client_min_messages = warning;
 SET search_path = public, pg_catalog;
 
 DROP INDEX public.unique_schema_migrations;
+DROP INDEX public.index_history_transactions_on_id;
 DROP INDEX public.index_history_transaction_statuses_lc_on_all;
 DROP INDEX public.index_history_transaction_participants_on_transaction_hash;
 DROP INDEX public.index_history_transaction_participants_on_account;
@@ -21,11 +22,15 @@ DROP INDEX public.index_history_operations_on_id;
 DROP INDEX public.index_history_ledgers_on_sequence;
 DROP INDEX public.index_history_ledgers_on_previous_ledger_hash;
 DROP INDEX public.index_history_ledgers_on_ledger_hash;
+DROP INDEX public.index_history_ledgers_on_id;
 DROP INDEX public.index_history_ledgers_on_closed_at;
+DROP INDEX public.index_history_effects_on_type;
 DROP INDEX public.index_history_accounts_on_id;
 DROP INDEX public.hs_transaction_by_id;
 DROP INDEX public.hs_ledger_by_id;
 DROP INDEX public.hist_op_p_id;
+DROP INDEX public.hist_e_id;
+DROP INDEX public.hist_e_by_order;
 DROP INDEX public.by_status;
 DROP INDEX public.by_ledger;
 DROP INDEX public.by_hash;
@@ -46,6 +51,7 @@ DROP TABLE public.history_operations;
 DROP SEQUENCE public.history_operation_participants_id_seq;
 DROP TABLE public.history_operation_participants;
 DROP TABLE public.history_ledgers;
+DROP TABLE public.history_effects;
 DROP TABLE public.history_accounts;
 DROP EXTENSION hstore;
 DROP EXTENSION plpgsql;
@@ -105,6 +111,19 @@ SET default_with_oids = false;
 CREATE TABLE history_accounts (
     id bigint NOT NULL,
     address character varying(64)
+);
+
+
+--
+-- Name: history_effects; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE history_effects (
+    history_account_id bigint NOT NULL,
+    history_operation_id bigint NOT NULL,
+    "order" integer NOT NULL,
+    type integer NOT NULL,
+    details jsonb
 );
 
 
@@ -206,7 +225,7 @@ ALTER SEQUENCE history_transaction_participants_id_seq OWNED BY history_transact
 
 CREATE TABLE history_transaction_statuses (
     id integer NOT NULL,
-    result_code_s character varying(255) NOT NULL,
+    result_code_s character varying NOT NULL,
     result_code integer NOT NULL
 );
 
@@ -255,7 +274,7 @@ CREATE TABLE history_transactions (
 --
 
 CREATE TABLE schema_migrations (
-    version character varying(255) NOT NULL
+    version character varying NOT NULL
 );
 
 
@@ -286,10 +305,42 @@ ALTER TABLE ONLY history_transaction_statuses ALTER COLUMN id SET DEFAULT nextva
 
 COPY history_accounts (id, address) FROM stdin;
 0	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC
-12884905984	gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb
-12884910080	gU6RrUSUcZpQjTWVsSrNDKvW7exzG25U18mHxE9dFRN3akkmgu
-12884914176	gsCpJprcAE3mMhVEtmjzMJgiNf3aoQ7SwUpxSGs7YnwJNLVMo3N
-12884918272	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW
+12884905984	gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn
+12884910080	g62GvcFEMMiz3ux5Cz6V49WTtQ2KJenahMdXGnt2V4AneQaZ2e
+12884914176	gfrDLq9eLCPFqud45zE6bCHNc21wxPfW8AL4YPsa3zVbrzcC41
+12884918272	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa
+\.
+
+
+--
+-- Data for Name: history_effects; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY history_effects (history_account_id, history_operation_id, "order", type, details) FROM stdin;
+12884910080	21474840576	0	2	{"amount": 5000, "currency_code": "USD", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+12884905984	21474840576	1	3	{"amount": 5000, "currency_code": "USD", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+12884918272	21474844672	0	2	{"amount": 5000, "currency_code": "EUR", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+12884905984	21474844672	1	3	{"amount": 5000, "currency_code": "EUR", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+12884918272	21474848768	0	2	{"amount": 5000, "currency_code": "1", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+12884905984	21474848768	1	3	{"amount": 5000, "currency_code": "1", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+12884918272	21474852864	0	2	{"amount": 5000, "currency_code": "21", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+12884905984	21474852864	1	3	{"amount": 5000, "currency_code": "21", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+12884918272	21474856960	0	2	{"amount": 5000, "currency_code": "22", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+12884905984	21474856960	1	3	{"amount": 5000, "currency_code": "22", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+12884918272	21474861056	0	2	{"amount": 5000, "currency_code": "31", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+12884905984	21474861056	1	3	{"amount": 5000, "currency_code": "31", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+12884918272	21474865152	0	2	{"amount": 5000, "currency_code": "32", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+12884905984	21474865152	1	3	{"amount": 5000, "currency_code": "32", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+12884918272	21474869248	0	2	{"amount": 5000, "currency_code": "33", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+12884905984	21474869248	1	3	{"amount": 5000, "currency_code": "33", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+12884905984	12884905984	0	0	{"starting_balance": 10000000000}
+0	12884905984	1	3	{"amount": 10000000000, "currency_type": "native"}
+12884910080	12884910080	0	0	{"starting_balance": 10000000000}
+0	12884910080	1	3	{"amount": 10000000000, "currency_type": "native"}
+12884914176	12884914176	0	0	{"starting_balance": 10000000000}
+0	12884914176	1	3	{"amount": 10000000000, "currency_type": "native"}
+12884918272	12884918272	0	0	{"starting_balance": 10000000000}
+0	12884918272	1	3	{"amount": 10000000000, "currency_type": "native"}
 \.
 
 
@@ -298,12 +349,12 @@ COPY history_accounts (id, address) FROM stdin;
 --
 
 COPY history_ledgers (sequence, ledger_hash, previous_ledger_hash, transaction_count, operation_count, closed_at, created_at, updated_at, id) FROM stdin;
-1	a9d12414d405652b752ce4425d3d94e7996a07a52228a58d7bf3bd35dd50eb46	\N	0	0	1970-01-01 00:00:00	2015-06-11 16:34:32.251135	2015-06-11 16:34:32.251135	4294967296
-2	b524791e8226a08bb6fae8f96631d61cbfe617be2fb325475cd614a7f6a24c91	a9d12414d405652b752ce4425d3d94e7996a07a52228a58d7bf3bd35dd50eb46	0	0	2015-06-11 16:34:29	2015-06-11 16:34:32.264965	2015-06-11 16:34:32.264965	8589934592
-3	84c80a58a1077e25b04e77d72eca8b06a5c0791562c7b052224afc15b34752b9	b524791e8226a08bb6fae8f96631d61cbfe617be2fb325475cd614a7f6a24c91	0	0	2015-06-11 16:34:30	2015-06-11 16:34:32.276815	2015-06-11 16:34:32.276815	12884901888
-4	72f492587d995e9f0bb9a8c7aa051586801b82b727287a66db45b99753599122	84c80a58a1077e25b04e77d72eca8b06a5c0791562c7b052224afc15b34752b9	0	0	2015-06-11 16:34:31	2015-06-11 16:34:32.409892	2015-06-11 16:34:32.409892	17179869184
-5	aadfd9a86ebdf3fb660dce229d290c495d28b8cb1cfc98fc295a85a0acd64ab3	72f492587d995e9f0bb9a8c7aa051586801b82b727287a66db45b99753599122	0	0	2015-06-11 16:34:32	2015-06-11 16:34:32.492182	2015-06-11 16:34:32.492182	21474836480
-6	8d23b9d784221e40bc3ca557f12cf5ce17b3fa81a5e70562a0588505ad2b45e7	aadfd9a86ebdf3fb660dce229d290c495d28b8cb1cfc98fc295a85a0acd64ab3	0	0	2015-06-11 16:34:33	2015-06-11 16:34:32.579005	2015-06-11 16:34:32.579005	25769803776
+1	a9d12414d405652b752ce4425d3d94e7996a07a52228a58d7bf3bd35dd50eb46	\N	0	0	1970-01-01 00:00:00	2015-07-01 23:20:25.40172	2015-07-01 23:20:25.40172	4294967296
+2	c0c9df658a141195f2df9ed21a25380ccf92badfe48c4b7b3e8e7d21c1544c3f	a9d12414d405652b752ce4425d3d94e7996a07a52228a58d7bf3bd35dd50eb46	0	0	2015-07-01 23:20:22	2015-07-01 23:20:25.411859	2015-07-01 23:20:25.411859	8589934592
+3	835ec356c3b6f70e641b357b2e3125a68e8d63917c39d015fd501321f68c537b	c0c9df658a141195f2df9ed21a25380ccf92badfe48c4b7b3e8e7d21c1544c3f	4	4	2015-07-01 23:20:23	2015-07-01 23:20:25.421753	2015-07-01 23:20:25.421753	12884901888
+4	a21e183fd8b044eb6d7f32f4c634bbf7e4a5ff94c1d2db9efb225ab1b07e4e68	835ec356c3b6f70e641b357b2e3125a68e8d63917c39d015fd501321f68c537b	10	10	2015-07-01 23:20:24	2015-07-01 23:20:25.508449	2015-07-01 23:20:25.508449	17179869184
+5	ec9cc598ffd3f4f6ba13bf6dfc42800186e24dc3a84735d5032cf6fe05ed0dcc	a21e183fd8b044eb6d7f32f4c634bbf7e4a5ff94c1d2db9efb225ab1b07e4e68	8	8	2015-07-01 23:20:25	2015-07-01 23:20:25.609224	2015-07-01 23:20:25.609224	21474836480
+6	55837c42c2be9dd6feef81d8ca4ab7032840c4568b2c56feb023aef63f66a80b	ec9cc598ffd3f4f6ba13bf6dfc42800186e24dc3a84735d5032cf6fe05ed0dcc	10	10	2015-07-01 23:20:26	2015-07-01 23:20:25.760697	2015-07-01 23:20:25.760697	25769803776
 \.
 
 
@@ -312,50 +363,50 @@ COPY history_ledgers (sequence, ledger_hash, previous_ledger_hash, transaction_c
 --
 
 COPY history_operation_participants (id, history_operation_id, history_account_id) FROM stdin;
-231	12884905984	0
-232	12884905984	12884905984
-233	12884910080	0
-234	12884910080	12884910080
-235	12884914176	0
-236	12884914176	12884914176
-237	12884918272	0
-238	12884918272	12884918272
-239	17179873280	12884918272
-240	17179877376	12884910080
-241	17179881472	12884914176
-242	17179885568	12884918272
-243	17179889664	12884918272
-244	17179893760	12884918272
-245	17179897856	12884918272
-246	17179901952	12884918272
-247	17179906048	12884918272
-248	17179910144	12884918272
-249	21474840576	12884905984
-250	21474840576	12884910080
-251	21474844672	12884905984
-252	21474844672	12884918272
-253	21474848768	12884905984
-254	21474848768	12884918272
-255	21474852864	12884905984
-256	21474852864	12884918272
-257	21474856960	12884905984
-258	21474856960	12884918272
-259	21474861056	12884905984
-260	21474861056	12884918272
-261	21474865152	12884905984
-262	21474865152	12884918272
-263	21474869248	12884905984
-264	21474869248	12884918272
-265	25769807872	12884918272
-266	25769811968	12884918272
-267	25769816064	12884918272
-268	25769820160	12884918272
-269	25769824256	12884918272
-270	25769828352	12884918272
-271	25769832448	12884918272
-272	25769836544	12884918272
-273	25769840640	12884918272
-274	25769844736	12884918272
+111	17179906048	12884918272
+112	17179910144	12884918272
+113	21474840576	12884905984
+114	21474840576	12884910080
+115	21474844672	12884905984
+116	21474844672	12884918272
+117	21474848768	12884905984
+118	21474848768	12884918272
+119	21474852864	12884905984
+120	21474852864	12884918272
+121	21474856960	12884905984
+122	21474856960	12884918272
+123	21474861056	12884905984
+124	21474861056	12884918272
+125	21474865152	12884905984
+126	21474865152	12884918272
+127	21474869248	12884905984
+128	21474869248	12884918272
+129	25769807872	12884918272
+130	25769811968	12884918272
+131	25769816064	12884918272
+132	25769820160	12884918272
+133	25769824256	12884918272
+134	25769828352	12884918272
+135	25769832448	12884918272
+136	25769836544	12884918272
+137	25769840640	12884918272
+138	25769844736	12884918272
+95	12884905984	0
+96	12884905984	12884905984
+97	12884910080	0
+98	12884910080	12884910080
+99	12884914176	0
+100	12884914176	12884914176
+101	12884918272	0
+102	12884918272	12884918272
+103	17179873280	12884918272
+104	17179877376	12884910080
+105	17179881472	12884914176
+106	17179885568	12884918272
+107	17179889664	12884918272
+108	17179893760	12884918272
+109	17179897856	12884918272
+110	17179901952	12884918272
 \.
 
 
@@ -363,7 +414,7 @@ COPY history_operation_participants (id, history_operation_id, history_account_i
 -- Name: history_operation_participants_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('history_operation_participants_id_seq', 274, true);
+SELECT pg_catalog.setval('history_operation_participants_id_seq', 138, true);
 
 
 --
@@ -371,38 +422,38 @@ SELECT pg_catalog.setval('history_operation_participants_id_seq', 274, true);
 --
 
 COPY history_operations (id, transaction_id, application_order, type, details) FROM stdin;
-12884905984	12884905984	0	0	{"funder": "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC", "account": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb", "starting_balance": 10000000000}
-12884910080	12884910080	0	0	{"funder": "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC", "account": "gU6RrUSUcZpQjTWVsSrNDKvW7exzG25U18mHxE9dFRN3akkmgu", "starting_balance": 10000000000}
-12884914176	12884914176	0	0	{"funder": "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC", "account": "gsCpJprcAE3mMhVEtmjzMJgiNf3aoQ7SwUpxSGs7YnwJNLVMo3N", "starting_balance": 10000000000}
-12884918272	12884918272	0	0	{"funder": "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC", "account": "gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW", "starting_balance": 10000000000}
-17179873280	17179873280	0	6	{"limit": 9223372036854775807, "trustee": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb", "trustor": "gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW", "currency_code": "USD", "currency_type": "alphanum", "currency_issuer": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb"}
-17179877376	17179877376	0	6	{"limit": 9223372036854775807, "trustee": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb", "trustor": "gU6RrUSUcZpQjTWVsSrNDKvW7exzG25U18mHxE9dFRN3akkmgu", "currency_code": "USD", "currency_type": "alphanum", "currency_issuer": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb"}
-17179881472	17179881472	0	6	{"limit": 9223372036854775807, "trustee": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb", "trustor": "gsCpJprcAE3mMhVEtmjzMJgiNf3aoQ7SwUpxSGs7YnwJNLVMo3N", "currency_code": "EUR", "currency_type": "alphanum", "currency_issuer": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb"}
-17179885568	17179885568	0	6	{"limit": 9223372036854775807, "trustee": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb", "trustor": "gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW", "currency_code": "EUR", "currency_type": "alphanum", "currency_issuer": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb"}
-17179889664	17179889664	0	6	{"limit": 9223372036854775807, "trustee": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb", "trustor": "gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW", "currency_code": "1", "currency_type": "alphanum", "currency_issuer": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb"}
-17179893760	17179893760	0	6	{"limit": 9223372036854775807, "trustee": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb", "trustor": "gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW", "currency_code": "21", "currency_type": "alphanum", "currency_issuer": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb"}
-17179897856	17179897856	0	6	{"limit": 9223372036854775807, "trustee": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb", "trustor": "gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW", "currency_code": "22", "currency_type": "alphanum", "currency_issuer": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb"}
-17179901952	17179901952	0	6	{"limit": 9223372036854775807, "trustee": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb", "trustor": "gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW", "currency_code": "31", "currency_type": "alphanum", "currency_issuer": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb"}
-17179906048	17179906048	0	6	{"limit": 9223372036854775807, "trustee": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb", "trustor": "gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW", "currency_code": "32", "currency_type": "alphanum", "currency_issuer": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb"}
-17179910144	17179910144	0	6	{"limit": 9223372036854775807, "trustee": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb", "trustor": "gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW", "currency_code": "33", "currency_type": "alphanum", "currency_issuer": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb"}
-21474840576	21474840576	0	1	{"to": "gU6RrUSUcZpQjTWVsSrNDKvW7exzG25U18mHxE9dFRN3akkmgu", "from": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb", "amount": 5000, "currency_code": "USD", "currency_type": "alphanum", "currency_issuer": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb"}
-21474844672	21474844672	0	1	{"to": "gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW", "from": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb", "amount": 5000, "currency_code": "EUR", "currency_type": "alphanum", "currency_issuer": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb"}
-21474848768	21474848768	0	1	{"to": "gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW", "from": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb", "amount": 5000, "currency_code": "1", "currency_type": "alphanum", "currency_issuer": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb"}
-21474852864	21474852864	0	1	{"to": "gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW", "from": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb", "amount": 5000, "currency_code": "21", "currency_type": "alphanum", "currency_issuer": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb"}
-21474856960	21474856960	0	1	{"to": "gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW", "from": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb", "amount": 5000, "currency_code": "22", "currency_type": "alphanum", "currency_issuer": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb"}
-21474861056	21474861056	0	1	{"to": "gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW", "from": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb", "amount": 5000, "currency_code": "31", "currency_type": "alphanum", "currency_issuer": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb"}
-21474865152	21474865152	0	1	{"to": "gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW", "from": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb", "amount": 5000, "currency_code": "32", "currency_type": "alphanum", "currency_issuer": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb"}
-21474869248	21474869248	0	1	{"to": "gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW", "from": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb", "amount": 5000, "currency_code": "33", "currency_type": "alphanum", "currency_issuer": "gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb"}
-25769807872	25769807872	0	3	\N
-25769811968	25769811968	0	3	\N
-25769816064	25769816064	0	3	\N
-25769820160	25769820160	0	3	\N
-25769824256	25769824256	0	3	\N
-25769828352	25769828352	0	3	\N
-25769832448	25769832448	0	3	\N
-25769836544	25769836544	0	3	\N
-25769840640	25769840640	0	3	\N
-25769844736	25769844736	0	3	\N
+21474856960	21474856960	0	1	{"to": "gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa", "from": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn", "amount": 5000, "currency_code": "22", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+21474861056	21474861056	0	1	{"to": "gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa", "from": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn", "amount": 5000, "currency_code": "31", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+21474865152	21474865152	0	1	{"to": "gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa", "from": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn", "amount": 5000, "currency_code": "32", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+21474869248	21474869248	0	1	{"to": "gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa", "from": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn", "amount": 5000, "currency_code": "33", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+25769807872	25769807872	0	3	{"price": {"d": 1, "n": 1}, "amount": 10, "offer_id": 0}
+25769811968	25769811968	0	3	{"price": {"d": 1, "n": 1}, "amount": 20, "offer_id": 0}
+25769816064	25769816064	0	3	{"price": {"d": 1, "n": 1}, "amount": 20, "offer_id": 0}
+25769820160	25769820160	0	3	{"price": {"d": 1, "n": 1}, "amount": 30, "offer_id": 0}
+25769824256	25769824256	0	3	{"price": {"d": 1, "n": 1}, "amount": 30, "offer_id": 0}
+25769828352	25769828352	0	3	{"price": {"d": 1, "n": 1}, "amount": 30, "offer_id": 0}
+25769832448	25769832448	0	3	{"price": {"d": 1, "n": 1}, "amount": 40, "offer_id": 0}
+25769836544	25769836544	0	3	{"price": {"d": 1, "n": 1}, "amount": 40, "offer_id": 0}
+25769840640	25769840640	0	3	{"price": {"d": 1, "n": 1}, "amount": 40, "offer_id": 0}
+25769844736	25769844736	0	3	{"price": {"d": 1, "n": 1}, "amount": 40, "offer_id": 0}
+12884905984	12884905984	0	0	{"funder": "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC", "account": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn", "starting_balance": 10000000000}
+12884910080	12884910080	0	0	{"funder": "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC", "account": "g62GvcFEMMiz3ux5Cz6V49WTtQ2KJenahMdXGnt2V4AneQaZ2e", "starting_balance": 10000000000}
+12884914176	12884914176	0	0	{"funder": "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC", "account": "gfrDLq9eLCPFqud45zE6bCHNc21wxPfW8AL4YPsa3zVbrzcC41", "starting_balance": 10000000000}
+12884918272	12884918272	0	0	{"funder": "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC", "account": "gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa", "starting_balance": 10000000000}
+17179873280	17179873280	0	6	{"limit": 9223372036854775807, "trustee": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn", "trustor": "gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa", "currency_code": "USD", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+17179877376	17179877376	0	6	{"limit": 9223372036854775807, "trustee": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn", "trustor": "g62GvcFEMMiz3ux5Cz6V49WTtQ2KJenahMdXGnt2V4AneQaZ2e", "currency_code": "USD", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+17179881472	17179881472	0	6	{"limit": 9223372036854775807, "trustee": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn", "trustor": "gfrDLq9eLCPFqud45zE6bCHNc21wxPfW8AL4YPsa3zVbrzcC41", "currency_code": "EUR", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+17179885568	17179885568	0	6	{"limit": 9223372036854775807, "trustee": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn", "trustor": "gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa", "currency_code": "EUR", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+17179889664	17179889664	0	6	{"limit": 9223372036854775807, "trustee": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn", "trustor": "gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa", "currency_code": "1", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+17179893760	17179893760	0	6	{"limit": 9223372036854775807, "trustee": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn", "trustor": "gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa", "currency_code": "21", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+17179897856	17179897856	0	6	{"limit": 9223372036854775807, "trustee": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn", "trustor": "gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa", "currency_code": "22", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+17179901952	17179901952	0	6	{"limit": 9223372036854775807, "trustee": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn", "trustor": "gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa", "currency_code": "31", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+17179906048	17179906048	0	6	{"limit": 9223372036854775807, "trustee": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn", "trustor": "gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa", "currency_code": "32", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+17179910144	17179910144	0	6	{"limit": 9223372036854775807, "trustee": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn", "trustor": "gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa", "currency_code": "33", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+21474840576	21474840576	0	1	{"to": "g62GvcFEMMiz3ux5Cz6V49WTtQ2KJenahMdXGnt2V4AneQaZ2e", "from": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn", "amount": 5000, "currency_code": "USD", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+21474844672	21474844672	0	1	{"to": "gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa", "from": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn", "amount": 5000, "currency_code": "EUR", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+21474848768	21474848768	0	1	{"to": "gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa", "from": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn", "amount": 5000, "currency_code": "1", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
+21474852864	21474852864	0	1	{"to": "gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa", "from": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn", "amount": 5000, "currency_code": "21", "currency_type": "alphanum", "currency_issuer": "gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn"}
 \.
 
 
@@ -411,42 +462,42 @@ COPY history_operations (id, transaction_id, application_order, type, details) F
 --
 
 COPY history_transaction_participants (id, transaction_hash, account, created_at, updated_at) FROM stdin;
-462	134a0e4e9bf5f46ecd235adf376c78caa3d8d134a4e3f56d68455ff8a3ce053c	gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb	2015-06-11 16:34:32.295322	2015-06-11 16:34:32.295322
-463	134a0e4e9bf5f46ecd235adf376c78caa3d8d134a4e3f56d68455ff8a3ce053c	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	2015-06-11 16:34:32.298873	2015-06-11 16:34:32.298873
-464	80b78d4db2187843bc406e579b9cfa55f44b334c4b46b59885acebb5bb1f4c19	gU6RrUSUcZpQjTWVsSrNDKvW7exzG25U18mHxE9dFRN3akkmgu	2015-06-11 16:34:32.368001	2015-06-11 16:34:32.368001
-465	80b78d4db2187843bc406e579b9cfa55f44b334c4b46b59885acebb5bb1f4c19	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	2015-06-11 16:34:32.369598	2015-06-11 16:34:32.369598
-466	3c5d62a68430c6c5c0addb2b46f1913e02582fac7541dbfa6609d42e1d2ede83	gsCpJprcAE3mMhVEtmjzMJgiNf3aoQ7SwUpxSGs7YnwJNLVMo3N	2015-06-11 16:34:32.381058	2015-06-11 16:34:32.381058
-467	3c5d62a68430c6c5c0addb2b46f1913e02582fac7541dbfa6609d42e1d2ede83	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	2015-06-11 16:34:32.382322	2015-06-11 16:34:32.382322
-468	701d2b4daec74b69717c53389132053295b0174e014c92775303ad1ece2e53b1	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	2015-06-11 16:34:32.393389	2015-06-11 16:34:32.393389
-469	701d2b4daec74b69717c53389132053295b0174e014c92775303ad1ece2e53b1	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	2015-06-11 16:34:32.394509	2015-06-11 16:34:32.394509
-470	1eb6a57d072dcabfa06d297c5cd736fdf12bc669fa85ebed0f11fceb4ddf0ae1	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	2015-06-11 16:34:32.414593	2015-06-11 16:34:32.414593
-471	a6fcfa08f10609eea3ce899c206503fe18010dbceccd4695055ba9ada938cf6d	gU6RrUSUcZpQjTWVsSrNDKvW7exzG25U18mHxE9dFRN3akkmgu	2015-06-11 16:34:32.422045	2015-06-11 16:34:32.422045
-472	09999bb1ed9b49990146f873d0868a0b7af0493b58f328b82a6341d3257431c8	gsCpJprcAE3mMhVEtmjzMJgiNf3aoQ7SwUpxSGs7YnwJNLVMo3N	2015-06-11 16:34:32.429096	2015-06-11 16:34:32.429096
-473	067dd8d6d6e259d51c0b41854bbdd296c91cedb8d2bb83342aa308bbebd4d499	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	2015-06-11 16:34:32.436115	2015-06-11 16:34:32.436115
-474	b84da8270097b9d00f8a9a2fc4e4434d9694f4a121df1ac1607dc2f4f0c5da86	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	2015-06-11 16:34:32.443071	2015-06-11 16:34:32.443071
-475	19113182d195406cf9737560a746f143c3bd1afdd1472b36eb03fccb3773b36e	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	2015-06-11 16:34:32.450977	2015-06-11 16:34:32.450977
-476	0b6d70d4addbb9e587a84e99d218d9f98e88e20a41044313d9ae236747619035	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	2015-06-11 16:34:32.458747	2015-06-11 16:34:32.458747
-477	14e864a64fa7bacf5f7c001bc9b1df96930c7dc7ba22218cf80bf3f1e5180fba	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	2015-06-11 16:34:32.465969	2015-06-11 16:34:32.465969
-478	07a8ccddee897dfc80720c6888a196b93f9613e37f47eb8dd1d99d8d81347c81	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	2015-06-11 16:34:32.472899	2015-06-11 16:34:32.472899
-479	5c605237b717e0e53fbd007641ee6dbdd43c06077cbd36c6f577bc32ac5553ab	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	2015-06-11 16:34:32.479879	2015-06-11 16:34:32.479879
-480	a7573afa76f774a7546f3212b4b8caa6ee6a608e9041574add231149152bfcad	gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb	2015-06-11 16:34:32.497366	2015-06-11 16:34:32.497366
-481	202c53787d22fcc39424fc6b4cb803fde8be0ed1e2e38344332a41fe912ed1e6	gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb	2015-06-11 16:34:32.508065	2015-06-11 16:34:32.508065
-482	a325424539a2e13e21ee991139f156ed73ac86c03c1e61cd4a616eb10f207a49	gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb	2015-06-11 16:34:32.519083	2015-06-11 16:34:32.519083
-483	8391035dd353651448b17e21fb6c10e7d394a5b37fc89a3e16eba033acc79a0a	gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb	2015-06-11 16:34:32.529472	2015-06-11 16:34:32.529472
-484	b3c3a3864fc22cda7460ba0088846953fd765216754d7d8f9928bb3fb6b26e65	gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb	2015-06-11 16:34:32.538707	2015-06-11 16:34:32.538707
-485	a070c8f1298dc2bc4781e4a8431ceb428205acd99879aaa07c6cf30051c50c4c	gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb	2015-06-11 16:34:32.548161	2015-06-11 16:34:32.548161
-486	1d2399eb61db32d96ed69965a5f6d1eb436f37896d9ae36ecf1f414e6d06e0b9	gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb	2015-06-11 16:34:32.557378	2015-06-11 16:34:32.557378
-487	1117cb4f032c3dbad210ef536882a4caa51f3bf11922fdff4ec1fcfa3530286c	gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb	2015-06-11 16:34:32.565675	2015-06-11 16:34:32.565675
-488	aaf947893760b8be679cb19f5e19b0fd4201806ce000b851f74fcd0bd5365a52	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	2015-06-11 16:34:32.583782	2015-06-11 16:34:32.583782
-489	51d2aa637003115e3d03b7f97538db2a4e24bd6445d9d7895589a44d50a3c2ea	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	2015-06-11 16:34:32.590998	2015-06-11 16:34:32.590998
-490	ae62f6f04893132a17bf7265882eb9b2b79db958d976b38e768ff71eeea9bc76	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	2015-06-11 16:34:32.599836	2015-06-11 16:34:32.599836
-491	4da0d5b01a494342d7754be504650be66feb6fa87805387701ea245bb0393c0f	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	2015-06-11 16:34:32.607068	2015-06-11 16:34:32.607068
-492	856199cd825977224dd744fb4ebb8cd571e406ff5ed4515b03d9885e394f1d51	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	2015-06-11 16:34:32.614164	2015-06-11 16:34:32.614164
-493	9fd8b715b26d1596534e13389efa4125e40093e12bc68d47e4f3686fbf492dd7	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	2015-06-11 16:34:32.622118	2015-06-11 16:34:32.622118
-494	4298731edea30b9e6b09c6b709cf8020f9e0136cb1656d781e6bfd3bac5e527a	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	2015-06-11 16:34:32.629563	2015-06-11 16:34:32.629563
-495	bb013139b5f14065c8294d063a1465b0c7e4ad410b7908d8e8281342281940fd	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	2015-06-11 16:34:32.637095	2015-06-11 16:34:32.637095
-496	2837a6d0ab2dd177c41e9efb4a9ca757b1b4eed6de98701f2e6acffbb25d9126	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	2015-06-11 16:34:32.643711	2015-06-11 16:34:32.643711
-497	ed5c89d96b5621002100b06f9341321aa9b0ef679ecb10acc834256276ab5e77	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	2015-06-11 16:34:32.650439	2015-06-11 16:34:32.650439
+102	556c827c93b28e89a646fee61a9058571b7b5205e9ad5f99e035c703e08a8a84	gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn	2015-07-01 23:20:25.614199	2015-07-01 23:20:25.614199
+103	315a8f6be9649c8ce42205c2cdaf675dd11767a33a19f161d4fd76df86da6b83	gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn	2015-07-01 23:20:25.630499	2015-07-01 23:20:25.630499
+104	208937c32be6da97d73da0d6ce11767415aa0e1093aa8c73bd9a172815557c7f	gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn	2015-07-01 23:20:25.646826	2015-07-01 23:20:25.646826
+105	012ade991fe738dac4d524f913fcd925619de8fb5073cedb23962e369315ce29	gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn	2015-07-01 23:20:25.665682	2015-07-01 23:20:25.665682
+106	57a3f18d7f49389366a5edf2a6a930f95df4b651681bfd551ce023c64abaab1c	gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn	2015-07-01 23:20:25.682937	2015-07-01 23:20:25.682937
+107	ae337f74457ca9d2375e3eb38ac0bf5fa6f89a82e41708fd6b25906178ba02ea	gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn	2015-07-01 23:20:25.697919	2015-07-01 23:20:25.697919
+108	c5da93996dbf0c1d3f8e0b33ae18f9ba0eb01c00ad5921b2330e8cbd777d4e37	gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn	2015-07-01 23:20:25.714065	2015-07-01 23:20:25.714065
+109	6994d8d3e10b08364136118b99d9bc0bd0d56efa6e7b758ab49f3d510a37f73e	gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn	2015-07-01 23:20:25.736699	2015-07-01 23:20:25.736699
+110	e254419d1ffedd9afbd1db91a219fdcbff375b04515f942baee8f40d85af209e	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	2015-07-01 23:20:25.76589	2015-07-01 23:20:25.76589
+111	fda3121593b39aa4273791fbb8e13b62a9653780abceb4eed95016540b756d39	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	2015-07-01 23:20:25.775071	2015-07-01 23:20:25.775071
+112	bd95b76f8c560039ef4940b752b66c3410c757621b16b09463f53e659493591b	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	2015-07-01 23:20:25.783484	2015-07-01 23:20:25.783484
+113	9ff663d6c10e3138717e744536135b01829b79674eaa87b062bdcb1509c9be53	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	2015-07-01 23:20:25.790719	2015-07-01 23:20:25.790719
+114	238f0419d20c0c30177ba1a72d78d1f58d3cca4ed0cd8f4ba7047993424c3708	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	2015-07-01 23:20:25.798104	2015-07-01 23:20:25.798104
+115	2e5b428e2138afdca80bdbac054e3d0a2c843b3797d1f980acd00026af638a3e	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	2015-07-01 23:20:25.806934	2015-07-01 23:20:25.806934
+116	bd4b08e05d21a2c803fa1f8cb82bcf326574b6dc9bb8bd34576ba990803f446d	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	2015-07-01 23:20:25.816374	2015-07-01 23:20:25.816374
+117	3adca7921f1c3de5637557f560a204e86d94d20f35586be79ce88af5714d903e	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	2015-07-01 23:20:25.825329	2015-07-01 23:20:25.825329
+118	1d8d84bfea8a376128264558522c2090d22faaa49a574e6a15349a2a19077e2a	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	2015-07-01 23:20:25.833172	2015-07-01 23:20:25.833172
+119	f111bfcaf5d1657dfbc4b7120e50dc70002ce231860d20ab81f0a61279a3d605	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	2015-07-01 23:20:25.840275	2015-07-01 23:20:25.840275
+84	ee950550e353e92b49e0df0b232afa2054658c60e5e4b5fc51cd6fe98a7d5b12	gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn	2015-07-01 23:20:25.427128	2015-07-01 23:20:25.427128
+85	ee950550e353e92b49e0df0b232afa2054658c60e5e4b5fc51cd6fe98a7d5b12	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	2015-07-01 23:20:25.428242	2015-07-01 23:20:25.428242
+86	dce3d72f0312f86c27e4d56c48d58f6aa6a0515e0a899e4c5974e95376dc0556	g62GvcFEMMiz3ux5Cz6V49WTtQ2KJenahMdXGnt2V4AneQaZ2e	2015-07-01 23:20:25.446121	2015-07-01 23:20:25.446121
+87	dce3d72f0312f86c27e4d56c48d58f6aa6a0515e0a899e4c5974e95376dc0556	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	2015-07-01 23:20:25.447218	2015-07-01 23:20:25.447218
+88	84f5d5bfd9104e817bb36d5ae6258968cd6508bc31676cc5968476b4cbd78056	gfrDLq9eLCPFqud45zE6bCHNc21wxPfW8AL4YPsa3zVbrzcC41	2015-07-01 23:20:25.465822	2015-07-01 23:20:25.465822
+89	84f5d5bfd9104e817bb36d5ae6258968cd6508bc31676cc5968476b4cbd78056	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	2015-07-01 23:20:25.466934	2015-07-01 23:20:25.466934
+90	3c99b935d962fc673256b05a67f46c0918dc4eeb39000daeb52261be4e1b0a32	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	2015-07-01 23:20:25.484244	2015-07-01 23:20:25.484244
+91	3c99b935d962fc673256b05a67f46c0918dc4eeb39000daeb52261be4e1b0a32	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	2015-07-01 23:20:25.485334	2015-07-01 23:20:25.485334
+92	177f95aa5af1bc5f18c9e5006b6157079713c2bcb98f617bd2106c726cf862e8	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	2015-07-01 23:20:25.513272	2015-07-01 23:20:25.513272
+93	a6233d334848ef9ebdc4059a813c5d3fd55354bf3b63e7f4c699dc6891872016	g62GvcFEMMiz3ux5Cz6V49WTtQ2KJenahMdXGnt2V4AneQaZ2e	2015-07-01 23:20:25.521793	2015-07-01 23:20:25.521793
+94	5b32841986587466c948f944b104ee5637511ea241d693346d23ca1bc658fe3d	gfrDLq9eLCPFqud45zE6bCHNc21wxPfW8AL4YPsa3zVbrzcC41	2015-07-01 23:20:25.530863	2015-07-01 23:20:25.530863
+95	299163167925d70d44b2632dfaaec8b6368646aeccfd0f7115007e1b035bdc2e	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	2015-07-01 23:20:25.539045	2015-07-01 23:20:25.539045
+96	0f83a2eb879c9fe3934aae2b4773d0e66d0e1291b1168643cf36e99e2f4fcd8b	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	2015-07-01 23:20:25.546913	2015-07-01 23:20:25.546913
+97	79ea531295a5f04d37cf6e3393de246b65ba21e979f47bff7a56b06d73912583	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	2015-07-01 23:20:25.556246	2015-07-01 23:20:25.556246
+98	cffb771bdc887e31cc6303e3f178ebebf58204b200dd82d9de705257090589f1	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	2015-07-01 23:20:25.565101	2015-07-01 23:20:25.565101
+99	6ce990ec2e483e381335d23b0806d9b003e4121df6d1260f5f7a105e75fe5f93	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	2015-07-01 23:20:25.573941	2015-07-01 23:20:25.573941
+100	ff62ab38df8decf97f0af415ab85464ecee9de0806e35833d665276378d6617e	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	2015-07-01 23:20:25.58361	2015-07-01 23:20:25.58361
+101	a473c295e0fc3483f753c74c7b467f0db7b8fd7450f3eda013b4d8907fe7000b	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	2015-07-01 23:20:25.593178	2015-07-01 23:20:25.593178
 \.
 
 
@@ -454,7 +505,7 @@ COPY history_transaction_participants (id, transaction_hash, account, created_at
 -- Name: history_transaction_participants_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('history_transaction_participants_id_seq', 497, true);
+SELECT pg_catalog.setval('history_transaction_participants_id_seq', 119, true);
 
 
 --
@@ -477,38 +528,38 @@ SELECT pg_catalog.setval('history_transaction_statuses_id_seq', 1, false);
 --
 
 COPY history_transactions (transaction_hash, ledger_sequence, application_order, account, account_sequence, max_fee, fee_paid, operation_count, transaction_status_id, created_at, updated_at, id) FROM stdin;
-134a0e4e9bf5f46ecd235adf376c78caa3d8d134a4e3f56d68455ff8a3ce053c	3	1	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	1	10	10	1	-1	2015-06-11 16:34:32.287202	2015-06-11 16:34:32.287202	12884905984
-80b78d4db2187843bc406e579b9cfa55f44b334c4b46b59885acebb5bb1f4c19	3	2	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	2	10	10	1	-1	2015-06-11 16:34:32.365621	2015-06-11 16:34:32.365621	12884910080
-3c5d62a68430c6c5c0addb2b46f1913e02582fac7541dbfa6609d42e1d2ede83	3	3	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	3	10	10	1	-1	2015-06-11 16:34:32.37917	2015-06-11 16:34:32.37917	12884914176
-701d2b4daec74b69717c53389132053295b0174e014c92775303ad1ece2e53b1	3	4	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	4	10	10	1	-1	2015-06-11 16:34:32.391585	2015-06-11 16:34:32.391585	12884918272
-1eb6a57d072dcabfa06d297c5cd736fdf12bc669fa85ebed0f11fceb4ddf0ae1	4	1	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	12884901889	10	10	1	-1	2015-06-11 16:34:32.413088	2015-06-11 16:34:32.413088	17179873280
-a6fcfa08f10609eea3ce899c206503fe18010dbceccd4695055ba9ada938cf6d	4	2	gU6RrUSUcZpQjTWVsSrNDKvW7exzG25U18mHxE9dFRN3akkmgu	12884901889	10	10	1	-1	2015-06-11 16:34:32.42065	2015-06-11 16:34:32.42065	17179877376
-09999bb1ed9b49990146f873d0868a0b7af0493b58f328b82a6341d3257431c8	4	3	gsCpJprcAE3mMhVEtmjzMJgiNf3aoQ7SwUpxSGs7YnwJNLVMo3N	12884901889	10	10	1	-1	2015-06-11 16:34:32.427739	2015-06-11 16:34:32.427739	17179881472
-067dd8d6d6e259d51c0b41854bbdd296c91cedb8d2bb83342aa308bbebd4d499	4	4	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	12884901890	10	10	1	-1	2015-06-11 16:34:32.434771	2015-06-11 16:34:32.434771	17179885568
-b84da8270097b9d00f8a9a2fc4e4434d9694f4a121df1ac1607dc2f4f0c5da86	4	5	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	12884901891	10	10	1	-1	2015-06-11 16:34:32.44173	2015-06-11 16:34:32.44173	17179889664
-19113182d195406cf9737560a746f143c3bd1afdd1472b36eb03fccb3773b36e	4	6	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	12884901892	10	10	1	-1	2015-06-11 16:34:32.449086	2015-06-11 16:34:32.449086	17179893760
-0b6d70d4addbb9e587a84e99d218d9f98e88e20a41044313d9ae236747619035	4	7	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	12884901893	10	10	1	-1	2015-06-11 16:34:32.457247	2015-06-11 16:34:32.457247	17179897856
-14e864a64fa7bacf5f7c001bc9b1df96930c7dc7ba22218cf80bf3f1e5180fba	4	8	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	12884901894	10	10	1	-1	2015-06-11 16:34:32.464401	2015-06-11 16:34:32.464401	17179901952
-07a8ccddee897dfc80720c6888a196b93f9613e37f47eb8dd1d99d8d81347c81	4	9	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	12884901895	10	10	1	-1	2015-06-11 16:34:32.471509	2015-06-11 16:34:32.471509	17179906048
-5c605237b717e0e53fbd007641ee6dbdd43c06077cbd36c6f577bc32ac5553ab	4	10	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	12884901896	10	10	1	-1	2015-06-11 16:34:32.478551	2015-06-11 16:34:32.478551	17179910144
-a7573afa76f774a7546f3212b4b8caa6ee6a608e9041574add231149152bfcad	5	1	gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb	12884901889	10	10	1	-1	2015-06-11 16:34:32.495581	2015-06-11 16:34:32.495581	21474840576
-202c53787d22fcc39424fc6b4cb803fde8be0ed1e2e38344332a41fe912ed1e6	5	2	gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb	12884901890	10	10	1	-1	2015-06-11 16:34:32.505714	2015-06-11 16:34:32.505714	21474844672
-a325424539a2e13e21ee991139f156ed73ac86c03c1e61cd4a616eb10f207a49	5	3	gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb	12884901891	10	10	1	-1	2015-06-11 16:34:32.517067	2015-06-11 16:34:32.517067	21474848768
-8391035dd353651448b17e21fb6c10e7d394a5b37fc89a3e16eba033acc79a0a	5	4	gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb	12884901892	10	10	1	-1	2015-06-11 16:34:32.527917	2015-06-11 16:34:32.527917	21474852864
-b3c3a3864fc22cda7460ba0088846953fd765216754d7d8f9928bb3fb6b26e65	5	5	gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb	12884901893	10	10	1	-1	2015-06-11 16:34:32.537078	2015-06-11 16:34:32.537078	21474856960
-a070c8f1298dc2bc4781e4a8431ceb428205acd99879aaa07c6cf30051c50c4c	5	6	gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb	12884901894	10	10	1	-1	2015-06-11 16:34:32.546484	2015-06-11 16:34:32.546484	21474861056
-1d2399eb61db32d96ed69965a5f6d1eb436f37896d9ae36ecf1f414e6d06e0b9	5	7	gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb	12884901895	10	10	1	-1	2015-06-11 16:34:32.555789	2015-06-11 16:34:32.555789	21474865152
-1117cb4f032c3dbad210ef536882a4caa51f3bf11922fdff4ec1fcfa3530286c	5	8	gCBGKZDTwK1Ywa7o437AXRogQkqAxB5x1Zzs9P8Ek82fL2TEeb	12884901896	10	10	1	-1	2015-06-11 16:34:32.564164	2015-06-11 16:34:32.564164	21474869248
-aaf947893760b8be679cb19f5e19b0fd4201806ce000b851f74fcd0bd5365a52	6	1	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	12884901897	10	10	1	-1	2015-06-11 16:34:32.582141	2015-06-11 16:34:32.582141	25769807872
-51d2aa637003115e3d03b7f97538db2a4e24bd6445d9d7895589a44d50a3c2ea	6	2	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	12884901898	10	10	1	-1	2015-06-11 16:34:32.589345	2015-06-11 16:34:32.589345	25769811968
-ae62f6f04893132a17bf7265882eb9b2b79db958d976b38e768ff71eeea9bc76	6	3	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	12884901899	10	10	1	-1	2015-06-11 16:34:32.59816	2015-06-11 16:34:32.59816	25769816064
-4da0d5b01a494342d7754be504650be66feb6fa87805387701ea245bb0393c0f	6	4	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	12884901900	10	10	1	-1	2015-06-11 16:34:32.605407	2015-06-11 16:34:32.605407	25769820160
-856199cd825977224dd744fb4ebb8cd571e406ff5ed4515b03d9885e394f1d51	6	5	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	12884901901	10	10	1	-1	2015-06-11 16:34:32.612474	2015-06-11 16:34:32.612474	25769824256
-9fd8b715b26d1596534e13389efa4125e40093e12bc68d47e4f3686fbf492dd7	6	6	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	12884901902	10	10	1	-1	2015-06-11 16:34:32.620442	2015-06-11 16:34:32.620442	25769828352
-4298731edea30b9e6b09c6b709cf8020f9e0136cb1656d781e6bfd3bac5e527a	6	7	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	12884901903	10	10	1	-1	2015-06-11 16:34:32.627872	2015-06-11 16:34:32.627872	25769832448
-bb013139b5f14065c8294d063a1465b0c7e4ad410b7908d8e8281342281940fd	6	8	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	12884901904	10	10	1	-1	2015-06-11 16:34:32.635511	2015-06-11 16:34:32.635511	25769836544
-2837a6d0ab2dd177c41e9efb4a9ca757b1b4eed6de98701f2e6acffbb25d9126	6	9	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	12884901905	10	10	1	-1	2015-06-11 16:34:32.642255	2015-06-11 16:34:32.642255	25769840640
-ed5c89d96b5621002100b06f9341321aa9b0ef679ecb10acc834256276ab5e77	6	10	gZikHQwScYTTpkcGmjziS8FTf8UxV5sWvFRj8ap3fbwW79KUtW	12884901906	10	10	1	-1	2015-06-11 16:34:32.648981	2015-06-11 16:34:32.648981	25769844736
+208937c32be6da97d73da0d6ce11767415aa0e1093aa8c73bd9a172815557c7f	5	3	gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn	12884901891	10	10	1	-1	2015-07-01 23:20:25.644872	2015-07-01 23:20:25.644872	21474848768
+012ade991fe738dac4d524f913fcd925619de8fb5073cedb23962e369315ce29	5	4	gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn	12884901892	10	10	1	-1	2015-07-01 23:20:25.663723	2015-07-01 23:20:25.663723	21474852864
+57a3f18d7f49389366a5edf2a6a930f95df4b651681bfd551ce023c64abaab1c	5	5	gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn	12884901893	10	10	1	-1	2015-07-01 23:20:25.68134	2015-07-01 23:20:25.68134	21474856960
+ae337f74457ca9d2375e3eb38ac0bf5fa6f89a82e41708fd6b25906178ba02ea	5	6	gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn	12884901894	10	10	1	-1	2015-07-01 23:20:25.696103	2015-07-01 23:20:25.696103	21474861056
+c5da93996dbf0c1d3f8e0b33ae18f9ba0eb01c00ad5921b2330e8cbd777d4e37	5	7	gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn	12884901895	10	10	1	-1	2015-07-01 23:20:25.712394	2015-07-01 23:20:25.712394	21474865152
+6994d8d3e10b08364136118b99d9bc0bd0d56efa6e7b758ab49f3d510a37f73e	5	8	gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn	12884901896	10	10	1	-1	2015-07-01 23:20:25.735106	2015-07-01 23:20:25.735106	21474869248
+e254419d1ffedd9afbd1db91a219fdcbff375b04515f942baee8f40d85af209e	6	1	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	12884901897	10	10	1	-1	2015-07-01 23:20:25.763996	2015-07-01 23:20:25.763996	25769807872
+fda3121593b39aa4273791fbb8e13b62a9653780abceb4eed95016540b756d39	6	2	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	12884901898	10	10	1	-1	2015-07-01 23:20:25.77306	2015-07-01 23:20:25.77306	25769811968
+bd95b76f8c560039ef4940b752b66c3410c757621b16b09463f53e659493591b	6	3	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	12884901899	10	10	1	-1	2015-07-01 23:20:25.781825	2015-07-01 23:20:25.781825	25769816064
+9ff663d6c10e3138717e744536135b01829b79674eaa87b062bdcb1509c9be53	6	4	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	12884901900	10	10	1	-1	2015-07-01 23:20:25.789204	2015-07-01 23:20:25.789204	25769820160
+238f0419d20c0c30177ba1a72d78d1f58d3cca4ed0cd8f4ba7047993424c3708	6	5	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	12884901901	10	10	1	-1	2015-07-01 23:20:25.79641	2015-07-01 23:20:25.79641	25769824256
+2e5b428e2138afdca80bdbac054e3d0a2c843b3797d1f980acd00026af638a3e	6	6	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	12884901902	10	10	1	-1	2015-07-01 23:20:25.804869	2015-07-01 23:20:25.804869	25769828352
+bd4b08e05d21a2c803fa1f8cb82bcf326574b6dc9bb8bd34576ba990803f446d	6	7	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	12884901903	10	10	1	-1	2015-07-01 23:20:25.814671	2015-07-01 23:20:25.814671	25769832448
+3adca7921f1c3de5637557f560a204e86d94d20f35586be79ce88af5714d903e	6	8	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	12884901904	10	10	1	-1	2015-07-01 23:20:25.823517	2015-07-01 23:20:25.823517	25769836544
+1d8d84bfea8a376128264558522c2090d22faaa49a574e6a15349a2a19077e2a	6	9	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	12884901905	10	10	1	-1	2015-07-01 23:20:25.831647	2015-07-01 23:20:25.831647	25769840640
+f111bfcaf5d1657dfbc4b7120e50dc70002ce231860d20ab81f0a61279a3d605	6	10	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	12884901906	10	10	1	-1	2015-07-01 23:20:25.838753	2015-07-01 23:20:25.838753	25769844736
+ee950550e353e92b49e0df0b232afa2054658c60e5e4b5fc51cd6fe98a7d5b12	3	1	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	1	10	10	1	-1	2015-07-01 23:20:25.425172	2015-07-01 23:20:25.425172	12884905984
+dce3d72f0312f86c27e4d56c48d58f6aa6a0515e0a899e4c5974e95376dc0556	3	2	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	2	10	10	1	-1	2015-07-01 23:20:25.444217	2015-07-01 23:20:25.444217	12884910080
+84f5d5bfd9104e817bb36d5ae6258968cd6508bc31676cc5968476b4cbd78056	3	3	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	3	10	10	1	-1	2015-07-01 23:20:25.46328	2015-07-01 23:20:25.46328	12884914176
+3c99b935d962fc673256b05a67f46c0918dc4eeb39000daeb52261be4e1b0a32	3	4	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	4	10	10	1	-1	2015-07-01 23:20:25.482482	2015-07-01 23:20:25.482482	12884918272
+177f95aa5af1bc5f18c9e5006b6157079713c2bcb98f617bd2106c726cf862e8	4	1	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	12884901889	10	10	1	-1	2015-07-01 23:20:25.511562	2015-07-01 23:20:25.511562	17179873280
+a6233d334848ef9ebdc4059a813c5d3fd55354bf3b63e7f4c699dc6891872016	4	2	g62GvcFEMMiz3ux5Cz6V49WTtQ2KJenahMdXGnt2V4AneQaZ2e	12884901889	10	10	1	-1	2015-07-01 23:20:25.520215	2015-07-01 23:20:25.520215	17179877376
+5b32841986587466c948f944b104ee5637511ea241d693346d23ca1bc658fe3d	4	3	gfrDLq9eLCPFqud45zE6bCHNc21wxPfW8AL4YPsa3zVbrzcC41	12884901889	10	10	1	-1	2015-07-01 23:20:25.528986	2015-07-01 23:20:25.528986	17179881472
+299163167925d70d44b2632dfaaec8b6368646aeccfd0f7115007e1b035bdc2e	4	4	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	12884901890	10	10	1	-1	2015-07-01 23:20:25.537469	2015-07-01 23:20:25.537469	17179885568
+0f83a2eb879c9fe3934aae2b4773d0e66d0e1291b1168643cf36e99e2f4fcd8b	4	5	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	12884901891	10	10	1	-1	2015-07-01 23:20:25.545395	2015-07-01 23:20:25.545395	17179889664
+79ea531295a5f04d37cf6e3393de246b65ba21e979f47bff7a56b06d73912583	4	6	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	12884901892	10	10	1	-1	2015-07-01 23:20:25.554506	2015-07-01 23:20:25.554506	17179893760
+cffb771bdc887e31cc6303e3f178ebebf58204b200dd82d9de705257090589f1	4	7	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	12884901893	10	10	1	-1	2015-07-01 23:20:25.563408	2015-07-01 23:20:25.563408	17179897856
+6ce990ec2e483e381335d23b0806d9b003e4121df6d1260f5f7a105e75fe5f93	4	8	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	12884901894	10	10	1	-1	2015-07-01 23:20:25.572077	2015-07-01 23:20:25.572077	17179901952
+ff62ab38df8decf97f0af415ab85464ecee9de0806e35833d665276378d6617e	4	9	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	12884901895	10	10	1	-1	2015-07-01 23:20:25.581605	2015-07-01 23:20:25.581605	17179906048
+a473c295e0fc3483f753c74c7b467f0db7b8fd7450f3eda013b4d8907fe7000b	4	10	gsFJG8CkpJZYwp3zLyjnYzbDFD3jogJgSafpzuG6TgxjaXVVVQa	12884901896	10	10	1	-1	2015-07-01 23:20:25.5912	2015-07-01 23:20:25.5912	17179910144
+556c827c93b28e89a646fee61a9058571b7b5205e9ad5f99e035c703e08a8a84	5	1	gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn	12884901889	10	10	1	-1	2015-07-01 23:20:25.612485	2015-07-01 23:20:25.612485	21474840576
+315a8f6be9649c8ce42205c2cdaf675dd11767a33a19f161d4fd76df86da6b83	5	2	gcACxiDEUZozNAc5eXKNJZesypjJnD4yd2z2MFhHfJ5SpkBqwn	12884901890	10	10	1	-1	2015-07-01 23:20:25.628804	2015-07-01 23:20:25.628804	21474844672
 \.
 
 
@@ -517,10 +568,11 @@ ed5c89d96b5621002100b06f9341321aa9b0ef679ecb10acc834256276ab5e77	6	10	gZikHQwScY
 --
 
 COPY schema_migrations (version) FROM stdin;
-20150501160031
+20150629181921
 20150310224849
 20150313225945
 20150313225955
+20150501160031
 20150508003829
 20150508175821
 20150508183542
@@ -582,6 +634,20 @@ CREATE INDEX by_status ON history_transactions USING btree (transaction_status_i
 
 
 --
+-- Name: hist_e_by_order; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX hist_e_by_order ON history_effects USING btree (history_operation_id, "order");
+
+
+--
+-- Name: hist_e_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX hist_e_id ON history_effects USING btree (history_account_id, history_operation_id, "order");
+
+
+--
 -- Name: hist_op_p_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -610,10 +676,24 @@ CREATE UNIQUE INDEX index_history_accounts_on_id ON history_accounts USING btree
 
 
 --
+-- Name: index_history_effects_on_type; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_history_effects_on_type ON history_effects USING btree (type);
+
+
+--
 -- Name: index_history_ledgers_on_closed_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_history_ledgers_on_closed_at ON history_ledgers USING btree (closed_at);
+
+
+--
+-- Name: index_history_ledgers_on_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_history_ledgers_on_id ON history_ledgers USING btree (id);
 
 
 --
@@ -677,6 +757,13 @@ CREATE INDEX index_history_transaction_participants_on_transaction_hash ON histo
 --
 
 CREATE UNIQUE INDEX index_history_transaction_statuses_lc_on_all ON history_transaction_statuses USING btree (id, result_code, result_code_s);
+
+
+--
+-- Name: index_history_transactions_on_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_history_transactions_on_id ON history_transactions USING btree (id);
 
 
 --
