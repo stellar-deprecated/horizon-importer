@@ -144,13 +144,17 @@ class History::LedgerImporterJob < ApplicationJob
 
       when Stellar::OperationType.path_payment
         payment = op.body.path_payment_op!
+        result = result.tr!.path_payment_result!
 
         hop.details = {
-          "from"   => Convert.pk_to_address(source_account),
-          "to"     => Convert.pk_to_address(payment.destination),
-          "amount" => payment.dest_amount,
+          "from"          => Convert.pk_to_address(source_account),
+          "to"            => Convert.pk_to_address(payment.destination),
+          "amount"        => payment.dest_amount,
+          "source_amount" => result.send_amount
         }
+
         hop.details.merge! currency_details(payment.dest_currency)
+        hop.details.merge! currency_details(payment.send_currency, "send_")
 
         participant_addresses << hop.details["to"]
 
@@ -358,15 +362,56 @@ class History::LedgerImporterJob < ApplicationJob
     when Stellar::OperationType.create_passive_offer
       # TODO
     when Stellar::OperationType.set_options
-      # TODO
+      scop = scop.body.set_options_op!
+      # TODO: if signer present, add the signer* effects
+
+      unless scop.home_domain.nil?
+        effects.create!("account_home_domain_updated", source_account, {
+          "home_domain" => scop.home_domain
+        })
+      end
+
+      unless scop.thresholds.nil?
+        effects.create!("account_thresholds_updated", source_account, {
+          # TODO: fill in details
+        })
+
+        # TODO: import signer_* effects for master key
+      end
+
+      unless scop.set_flags.nil? && scop.clear_flags.nil?
+        effects.create!("account_flags_updated", source_account, {
+          # TODO: fill in details
+        })
+      end
+
     when Stellar::OperationType.change_trust
+      scop = scop.body.change_trust_op!
+      effect = nil # if a trustline was added in the meta, use trustline_added
+                   # if limit is 0, use trustline_removed
+                   # otherwise trustline_updated
+
       # TODO
     when Stellar::OperationType.allow_trust
-      # TODO
+      scop = scop.body.allow_trust_op!
+      effect = scop.authorize ? "trustline_authorized" : "trustline_deauthorized"
+      details = {
+        "trustor" => Convert.pk_to_address(scop.trustor),
+        "currency_code" => scop.currency.currency_code!.strip,
+      }
+
+      effects.create!(effect, source_account, details)
     when Stellar::OperationType.account_merge
-      # TODO
+      # TODO: account_debited on source account of remaining lumens in source_account
+      # TODO: account_credited on destination of remaining lumens in source_account
+      effects.create!("account_removed", source_account, source_details)
     when Stellar::OperationType.inflation
-      # TODO
+      payouts = scresult.tr!.inflation_result!.payouts!
+
+      payouts.each do |payout|
+        details = { amount: payout.amount, currency_type: "native" }
+        effects.create!("account_credited", payout.destination, details)
+      end
     else
       Rails.logger.info "Unknown type: #{hop.type_as_enum.name}.  skipping effects import"
     end
@@ -374,16 +419,16 @@ class History::LedgerImporterJob < ApplicationJob
     effects.results
   end
 
-  def currency_details(currency)
+  def currency_details(currency, prefix="")
     case currency.type
     when Stellar::CurrencyType.currency_type_native
-      { "currency_type" => "native" }
+      { "#{prefix}currency_type" => "native" }
     when Stellar::CurrencyType.currency_type_alphanum
       an = currency.alpha_num!
       {
-        "currency_type"   => "alphanum",
-        "currency_code"   => an.currency_code.strip,
-        "currency_issuer" => Convert.pk_to_address(an.issuer),
+        "#{prefix}currency_type"   => "alphanum",
+        "#{prefix}currency_code"   => an.currency_code.strip,
+        "#{prefix}currency_issuer" => Convert.pk_to_address(an.issuer),
       }
     else
       raise "Unknown currency type: #{currency.type}"
