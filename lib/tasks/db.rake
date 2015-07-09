@@ -24,7 +24,7 @@ namespace :db do
 
     raise "This should only be run from RAILS_ENV='test'" unless Rails.env.test?
 
-    scenarios = Dir["#{SCENARIO_BASE_PATH}/*.rb"]
+    scenarios = Dir["#{SCENARIO_BASE_PATH}/**/*.rb"]
 
     scenarios.each do |path|
       load_scenario path
@@ -73,7 +73,11 @@ namespace :db do
   def run_scenario(path)
     sql = `bundle exec scc -r #{path}`
 
-    exit 1 unless $?.success?
+    unless $?.success?
+      puts "failed while running #{path}:"
+      puts sql
+      exit 1
+    end
 
     sql
   end
