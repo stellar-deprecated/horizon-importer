@@ -17,8 +17,8 @@ class History::Effect < History::Base
 
     # trustline effects
     20 => "trustline_created", # from change_trust
-    21 => "trustline_updated", # from change_trust, allow_trust
-    22 => "trustline_removed", # from change_trust
+    21 => "trustline_removed", # from change_trust
+    22 => "trustline_updated", # from change_trust, allow_trust
     23 => "trustline_authorized", # from allow_trust
     24 => "trustline_deauthorized", # from allow_trust
 
