@@ -18,14 +18,8 @@ set_flags :usd_gateway, [:auth_revocable_flag]
 
 close_ledger
 
-trust :scott,  :usd_gateway, "USD"
-change_trust :andrew, :usd_gateway, "USD", 4000
-
-close_ledger
-
-allow_trust :usd_gateway, :scott, "USD"
-allow_trust :usd_gateway, :andrew, "USD"
-
-close_ledger
-
-revoke_trust :usd_gateway, :andrew, "USD"
+trust :scott,  :usd_gateway, "USD"              ; close_ledger
+change_trust :andrew, :usd_gateway, "USD", 4000 ; close_ledger
+allow_trust :usd_gateway, :scott, "USD"         ; close_ledger
+allow_trust :usd_gateway, :andrew, "USD"        ; close_ledger
+revoke_trust :usd_gateway, :andrew, "USD"       ; close_ledger

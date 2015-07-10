@@ -216,15 +216,20 @@ class History::LedgerImporterJob < ApplicationJob
           hop.details["clear_flags_s"] = parsed.map(&:name)
         end
 
-        if sop.thresholds.present?
-          parsed = Stellar::Thresholds.parse(sop.thresholds)
+        if sop.master_weight.present?
+          hop.details["master_key_weight"] = sop.master_weight
+        end
 
-          hop.details.merge!({
-            "master_key_weight" => parsed[:master_weight],
-            "low_threshold"     => parsed[:low],
-            "medium_threshold"  => parsed[:medium],
-            "high_threshold"    => parsed[:high],
-          })
+        if sop.low_threshold.present?
+          hop.details["low_threshold"]     = sop.low_threshold
+        end
+
+        if sop.med_threshold.present?
+          hop.details["med_threshold"]  = sop.med_threshold
+        end
+
+        if sop.high_threshold.present?
+          hop.details["high_threshold"]    = sop.high_threshold
         end
 
         if sop.home_domain.present?
@@ -371,13 +376,13 @@ class History::LedgerImporterJob < ApplicationJob
         })
       end
 
-      unless scop.thresholds.nil?
-        effects.create!("account_thresholds_updated", source_account, {
-          # TODO: fill in details
-        })
-
-        # TODO: import signer_* effects for master key
-      end
+      # unless scop.thresholds.nil?
+      #   effects.create!("account_thresholds_updated", source_account, {
+      #     # TODO: fill in details
+      #   })
+      #
+      #   # TODO: import signer_* effects for master key
+      # end
 
       unless scop.set_flags.nil? && scop.clear_flags.nil?
         effects.create!("account_flags_updated", source_account, {

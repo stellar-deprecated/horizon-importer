@@ -305,9 +305,9 @@ ALTER TABLE ONLY history_transaction_statuses ALTER COLUMN id SET DEFAULT nextva
 
 COPY history_accounts (id, address) FROM stdin;
 0	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC
-12884905984	gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ
-12884910080	gT9jHoPKoErFwXavCrDYLkSVcVd9oyVv94ydrq6FnPMXpKHPTA
-12884914176	gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ
+8589938688	gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ
+8589942784	gT9jHoPKoErFwXavCrDYLkSVcVd9oyVv94ydrq6FnPMXpKHPTA
+8589946880	gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ
 \.
 
 
@@ -316,14 +316,14 @@ COPY history_accounts (id, address) FROM stdin;
 --
 
 COPY history_effects (history_account_id, history_operation_id, "order", type, details) FROM stdin;
-12884905984	12884905984	0	0	{"starting_balance": 1000000000}
-0	12884905984	1	3	{"amount": 1000000000, "currency_type": "native"}
-12884910080	12884910080	0	0	{"starting_balance": 1000000000}
-0	12884910080	1	3	{"amount": 1000000000, "currency_type": "native"}
-12884914176	12884914176	0	0	{"starting_balance": 1000000000}
-0	12884914176	1	3	{"amount": 1000000000, "currency_type": "native"}
-12884914176	17179873280	0	2	{"amount": 50000000, "currency_type": "native"}
-12884905984	17179873280	1	3	{"amount": 50000000, "currency_type": "native"}
+8589938688	8589938688	0	0	{"starting_balance": 1000000000}
+0	8589938688	1	3	{"amount": 1000000000, "currency_type": "native"}
+8589942784	8589942784	0	0	{"starting_balance": 1000000000}
+0	8589942784	1	3	{"amount": 1000000000, "currency_type": "native"}
+8589946880	8589946880	0	0	{"starting_balance": 1000000000}
+0	8589946880	1	3	{"amount": 1000000000, "currency_type": "native"}
+8589946880	12884905984	0	2	{"amount": 50000000, "currency_type": "native"}
+8589938688	12884905984	1	3	{"amount": 50000000, "currency_type": "native"}
 \.
 
 
@@ -332,10 +332,9 @@ COPY history_effects (history_account_id, history_operation_id, "order", type, d
 --
 
 COPY history_ledgers (sequence, ledger_hash, previous_ledger_hash, transaction_count, operation_count, closed_at, created_at, updated_at, id) FROM stdin;
-1	a9d12414d405652b752ce4425d3d94e7996a07a52228a58d7bf3bd35dd50eb46	\N	0	0	1970-01-01 00:00:00	2015-07-06 15:22:12.555097	2015-07-06 15:22:12.555097	4294967296
-2	947ec8c4f018f638d4cda5b072ef542b7065a221d0c23e42c541a8a734943b43	a9d12414d405652b752ce4425d3d94e7996a07a52228a58d7bf3bd35dd50eb46	0	0	2015-07-06 15:22:10	2015-07-06 15:22:12.563889	2015-07-06 15:22:12.563889	8589934592
-3	3071744f9f9af651bb45ba61cc8324d6ee28cb4e832518e11c989069205bdf9e	947ec8c4f018f638d4cda5b072ef542b7065a221d0c23e42c541a8a734943b43	3	3	2015-07-06 15:22:11	2015-07-06 15:22:12.573088	2015-07-06 15:22:12.573088	12884901888
-4	6327419a6df9ce5f939bed0cc2b0493baff5484a3cd55c1e3c2ef6b5285653ea	3071744f9f9af651bb45ba61cc8324d6ee28cb4e832518e11c989069205bdf9e	1	1	2015-07-06 15:22:12	2015-07-06 15:22:12.641577	2015-07-06 15:22:12.641577	17179869184
+1	e8e10918f9c000c73119abe54cf089f59f9015cc93c49ccf00b5e8b9afb6e6b1	\N	0	0	1970-01-01 00:00:00	2015-07-10 15:49:22.596451	2015-07-10 15:49:22.596451	4294967296
+2	0966cdf0426fa1de0323a13c287d6344726a04b4cc3f1235f34c0b985b9c4e49	e8e10918f9c000c73119abe54cf089f59f9015cc93c49ccf00b5e8b9afb6e6b1	3	3	2015-07-10 15:49:21	2015-07-10 15:49:22.606864	2015-07-10 15:49:22.606864	8589934592
+3	169d3c95926529da501df9bb8e71a6097aed2d52e6db9eed34d3c32d32436aaa	0966cdf0426fa1de0323a13c287d6344726a04b4cc3f1235f34c0b985b9c4e49	1	1	2015-07-10 15:49:22	2015-07-10 15:49:22.681602	2015-07-10 15:49:22.681602	12884901888
 \.
 
 
@@ -344,14 +343,14 @@ COPY history_ledgers (sequence, ledger_hash, previous_ledger_hash, transaction_c
 --
 
 COPY history_operation_participants (id, history_operation_id, history_account_id) FROM stdin;
-290	12884905984	0
-291	12884905984	12884905984
-292	12884910080	0
-293	12884910080	12884910080
-294	12884914176	0
-295	12884914176	12884914176
-296	17179873280	12884905984
-297	17179873280	12884914176
+20	8589938688	0
+21	8589938688	8589938688
+22	8589942784	0
+23	8589942784	8589942784
+24	8589946880	0
+25	8589946880	8589946880
+26	12884905984	8589938688
+27	12884905984	8589946880
 \.
 
 
@@ -359,7 +358,7 @@ COPY history_operation_participants (id, history_operation_id, history_account_i
 -- Name: history_operation_participants_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('history_operation_participants_id_seq', 297, true);
+SELECT pg_catalog.setval('history_operation_participants_id_seq', 27, true);
 
 
 --
@@ -367,10 +366,10 @@ SELECT pg_catalog.setval('history_operation_participants_id_seq', 297, true);
 --
 
 COPY history_operations (id, transaction_id, application_order, type, details) FROM stdin;
-12884905984	12884905984	0	0	{"funder": "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC", "account": "gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ", "starting_balance": 1000000000}
-12884910080	12884910080	0	0	{"funder": "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC", "account": "gT9jHoPKoErFwXavCrDYLkSVcVd9oyVv94ydrq6FnPMXpKHPTA", "starting_balance": 1000000000}
-12884914176	12884914176	0	0	{"funder": "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC", "account": "gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ", "starting_balance": 1000000000}
-17179873280	17179873280	0	1	{"to": "gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ", "from": "gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ", "amount": 50000000, "currency_type": "native"}
+8589938688	8589938688	0	0	{"funder": "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC", "account": "gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ", "starting_balance": 1000000000}
+8589942784	8589942784	0	0	{"funder": "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC", "account": "gT9jHoPKoErFwXavCrDYLkSVcVd9oyVv94ydrq6FnPMXpKHPTA", "starting_balance": 1000000000}
+8589946880	8589946880	0	0	{"funder": "gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC", "account": "gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ", "starting_balance": 1000000000}
+12884905984	12884905984	0	1	{"to": "gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ", "from": "gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ", "amount": 50000000, "currency_type": "native"}
 \.
 
 
@@ -379,14 +378,14 @@ COPY history_operations (id, transaction_id, application_order, type, details) F
 --
 
 COPY history_transaction_participants (id, transaction_hash, account, created_at, updated_at) FROM stdin;
-269	da3dae3d6baef2f56d53ff9fa4ddbc6cbda1ac798f0faa7de8edac9597c1dc0c	gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ	2015-07-06 15:22:12.578385	2015-07-06 15:22:12.578385
-270	da3dae3d6baef2f56d53ff9fa4ddbc6cbda1ac798f0faa7de8edac9597c1dc0c	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	2015-07-06 15:22:12.579608	2015-07-06 15:22:12.579608
-271	95e1810754d6903ad6a748645eefbf1d16136e9dc75698efa1dfb4cc2738eb94	gT9jHoPKoErFwXavCrDYLkSVcVd9oyVv94ydrq6FnPMXpKHPTA	2015-07-06 15:22:12.598083	2015-07-06 15:22:12.598083
-272	95e1810754d6903ad6a748645eefbf1d16136e9dc75698efa1dfb4cc2738eb94	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	2015-07-06 15:22:12.599171	2015-07-06 15:22:12.599171
-273	0971ddff00734a3b5741023c6200502e887419d57032c76cacb89d9d9860e54a	gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ	2015-07-06 15:22:12.616116	2015-07-06 15:22:12.616116
-274	0971ddff00734a3b5741023c6200502e887419d57032c76cacb89d9d9860e54a	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	2015-07-06 15:22:12.617288	2015-07-06 15:22:12.617288
-275	5bd122cef07943e50c100251f70df2fbfc6f475e1a3b6ef35dbff2a10a1df4bf	gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ	2015-07-06 15:22:12.647366	2015-07-06 15:22:12.647366
-276	5bd122cef07943e50c100251f70df2fbfc6f475e1a3b6ef35dbff2a10a1df4bf	gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ	2015-07-06 15:22:12.648563	2015-07-06 15:22:12.648563
+20	99fd775e6eed3e331c7df84b540d955db4ece9f57d22980715918acb7ce5bbf4	gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ	2015-07-10 15:49:22.612829	2015-07-10 15:49:22.612829
+21	99fd775e6eed3e331c7df84b540d955db4ece9f57d22980715918acb7ce5bbf4	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	2015-07-10 15:49:22.613966	2015-07-10 15:49:22.613966
+22	eb9da38f9630df62576c2725fc4efe6bc0ce03c749c7a1f1e050db5fe84e41be	gT9jHoPKoErFwXavCrDYLkSVcVd9oyVv94ydrq6FnPMXpKHPTA	2015-07-10 15:49:22.63404	2015-07-10 15:49:22.63404
+23	eb9da38f9630df62576c2725fc4efe6bc0ce03c749c7a1f1e050db5fe84e41be	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	2015-07-10 15:49:22.635157	2015-07-10 15:49:22.635157
+24	aa810ffa52e4574337d24b34950fa0d1970ae42aded04f684d551d82cef3b4db	gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ	2015-07-10 15:49:22.655266	2015-07-10 15:49:22.655266
+25	aa810ffa52e4574337d24b34950fa0d1970ae42aded04f684d551d82cef3b4db	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	2015-07-10 15:49:22.656286	2015-07-10 15:49:22.656286
+26	7c51321eac0223879d74a63ea63ec0fb5aa8091f4a775f47263ebf6add8c3db5	gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ	2015-07-10 15:49:22.689044	2015-07-10 15:49:22.689044
+27	7c51321eac0223879d74a63ea63ec0fb5aa8091f4a775f47263ebf6add8c3db5	gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ	2015-07-10 15:49:22.69066	2015-07-10 15:49:22.69066
 \.
 
 
@@ -394,7 +393,7 @@ COPY history_transaction_participants (id, transaction_hash, account, created_at
 -- Name: history_transaction_participants_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('history_transaction_participants_id_seq', 276, true);
+SELECT pg_catalog.setval('history_transaction_participants_id_seq', 27, true);
 
 
 --
@@ -417,10 +416,10 @@ SELECT pg_catalog.setval('history_transaction_statuses_id_seq', 1, false);
 --
 
 COPY history_transactions (transaction_hash, ledger_sequence, application_order, account, account_sequence, max_fee, fee_paid, operation_count, transaction_status_id, created_at, updated_at, id) FROM stdin;
-da3dae3d6baef2f56d53ff9fa4ddbc6cbda1ac798f0faa7de8edac9597c1dc0c	3	1	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	1	10	10	1	-1	2015-07-06 15:22:12.576304	2015-07-06 15:22:12.576304	12884905984
-95e1810754d6903ad6a748645eefbf1d16136e9dc75698efa1dfb4cc2738eb94	3	2	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	2	10	10	1	-1	2015-07-06 15:22:12.596271	2015-07-06 15:22:12.596271	12884910080
-0971ddff00734a3b5741023c6200502e887419d57032c76cacb89d9d9860e54a	3	3	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	3	10	10	1	-1	2015-07-06 15:22:12.61418	2015-07-06 15:22:12.61418	12884914176
-5bd122cef07943e50c100251f70df2fbfc6f475e1a3b6ef35dbff2a10a1df4bf	4	1	gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ	12884901889	10	10	1	-1	2015-07-06 15:22:12.64528	2015-07-06 15:22:12.64528	17179873280
+99fd775e6eed3e331c7df84b540d955db4ece9f57d22980715918acb7ce5bbf4	2	1	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	1	10	10	1	-1	2015-07-10 15:49:22.610298	2015-07-10 15:49:22.610298	8589938688
+eb9da38f9630df62576c2725fc4efe6bc0ce03c749c7a1f1e050db5fe84e41be	2	2	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	2	10	10	1	-1	2015-07-10 15:49:22.631912	2015-07-10 15:49:22.631912	8589942784
+aa810ffa52e4574337d24b34950fa0d1970ae42aded04f684d551d82cef3b4db	2	3	gspbxqXqEUZkiCCEFFCN9Vu4FLucdjLLdLcsV6E82Qc1T7ehsTC	3	10	10	1	-1	2015-07-10 15:49:22.653134	2015-07-10 15:49:22.653134	8589946880
+7c51321eac0223879d74a63ea63ec0fb5aa8091f4a775f47263ebf6add8c3db5	3	1	gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ	8589934593	10	10	1	-1	2015-07-10 15:49:22.685874	2015-07-10 15:49:22.685874	12884905984
 \.
 
 

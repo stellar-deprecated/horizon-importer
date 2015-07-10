@@ -1,6 +1,6 @@
-# 
+#
 # Generic format conversion module
-# 
+#
 module Convert
   require 'base64'
 
@@ -24,8 +24,10 @@ module Convert
     Stellar::Util::Base58.stellar
   end
 
+  ## Converts a Stellar::PublicKey instance (or any typedef of it such as
+  # Stellar::AccountID) to an address
   def pk_to_address(pk)
-    base58.check_encode(:account_id, pk)
+    base58.check_encode(:account_id, pk.ed25519!)
   end
 
   extend self

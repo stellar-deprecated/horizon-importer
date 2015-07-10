@@ -42,7 +42,7 @@ class StellarCore::Transaction < StellarCore::Base
   alias source_account submitting_account
 
   def submitting_address
-    Convert.base58.check_encode(:account_id, submitting_account)
+    Convert.base58.check_encode(:account_id, submitting_account.ed25519!)
   end
 
   def submitting_sequence
@@ -76,7 +76,7 @@ class StellarCore::Transaction < StellarCore::Base
 
 
   def participant_addresses
-    participants.map{|a| Convert.base58.check_encode(:account_id, a)}
+    participants.map{|a| Convert.base58.check_encode(:account_id, a.ed25519!)}
   end
   memoize :participant_addresses
 

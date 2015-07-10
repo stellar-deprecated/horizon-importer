@@ -65,7 +65,7 @@ RSpec.describe History::LedgerImporterJob, "importing account_merge operations",
   load_scenario "account_merge"
   reimport_history
 
-  let(:op){ History::Operation.find(17179873280)}
+  let(:op){ History::Operation.find(12884905984)}
 
   it "sets `account`" do
     expect(op.details["account"]).to eq("gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ")
@@ -80,7 +80,7 @@ end
 RSpec.describe History::LedgerImporterJob, "importing path_payment operations", type: :job do
   load_scenario "pathed_payment"
   reimport_history
-  let(:op){ History::Operation.find(30064775168)}
+  let(:op){ History::Operation.find(25769807872)}
 
   it "sets `from`" do
     expect(op.details["from"]).to eq("gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ")
@@ -98,7 +98,7 @@ end
 RSpec.describe History::LedgerImporterJob, "importing change_trust operations", type: :job do
   load_scenario "allow_trust"
   reimport_history
-  let(:op){ History::Operation.find(21474844672)}
+  let(:op){ History::Operation.find(21474840576)}
 
   it "sets `trustee`" do
     expect(op.details["trustee"]).to eq("gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq")
@@ -117,7 +117,7 @@ RSpec.describe History::LedgerImporterJob, "importing allow_trust operations", t
   load_scenario "allow_trust"
   reimport_history
   let(:allow_op){ History::Operation.find(25769807872)}
-  let(:revoke_op){ History::Operation.find(30064775168)}
+  let(:revoke_op){ History::Operation.find(34359742464)}
 
   it "sets `trustee`" do
     expect(allow_op.details["trustee"]).to eq("gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq")
@@ -140,7 +140,7 @@ RSpec.describe History::LedgerImporterJob, "importing set_options operations", t
   reimport_history
 
   describe "inflation_dest details" do
-    let(:op){ History::Operation.find(17179873280)}
+    let(:op){ History::Operation.find(12884905984)}
 
     it "sets `inflation_dest`" do
       expect(op.details["inflation_dest"]).to eq("gT9jHoPKoErFwXavCrDYLkSVcVd9oyVv94ydrq6FnPMXpKHPTA")
@@ -148,8 +148,8 @@ RSpec.describe History::LedgerImporterJob, "importing set_options operations", t
   end
 
   describe "signer details" do
-    let(:add_op){ History::Operation.find(17179889664)}
-    let(:remove_op){ History::Operation.find(21474844672)}
+    let(:add_op){ History::Operation.find(34359742464)}
+    let(:remove_op){ History::Operation.find(42949677056)}
 
     it "sets `signer_key`" do
       expect(add_op.details["signer_key"]).to eq("gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq")
@@ -162,24 +162,29 @@ RSpec.describe History::LedgerImporterJob, "importing set_options operations", t
     end
   end
 
+  describe "master signer details" do
+    let(:op){ History::Operation.find(21474840576)}
+
+    it "sets `master_key_weight`" do
+      expect(op.details["master_key_weight"]).to eq(2)
+    end
+  end
+
   describe "thresholds details" do
-    let(:op){ History::Operation.find(17179881472)}
+    let(:op){ History::Operation.find(25769807872)}
 
     it "sets `low_threshold`" do
       expect(op.details["low_threshold"]).to eq(0)
     end
 
-    it "sets `medium_threshold`" do
-      expect(op.details["medium_threshold"]).to eq(2)
+    it "sets `med_threshold`" do
+      expect(op.details["med_threshold"]).to eq(2)
     end
 
     it "sets `high_threshold`" do
       expect(op.details["high_threshold"]).to eq(2)
     end
 
-    it "sets `master_key_weight`" do
-      expect(op.details["master_key_weight"]).to eq(2)
-    end
   end
 
   describe "set flag details" do
