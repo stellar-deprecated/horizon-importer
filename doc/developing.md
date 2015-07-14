@@ -7,7 +7,7 @@ This project is a Ruby on Rails project.
 - rbenv - (https://github.com/sstephenson/rbenv) (optional, but recommended)
 - ruby-build - (https://github.com/sstephenson/ruby-build) (optional, but recommended)
 - rbenv-vars - (https://github.com/sstephenson/rbenv-vars) (optional, but recommended)
-- ruby 1.9.3
+- ruby 2.2 or later
 - bundler - (http://bundler.io/)
 - libsodium
 - postgresql
@@ -30,25 +30,26 @@ brew install rbenv-vars
 
 Some additional instructions for how to activate each of these will be printed by homebrew after each step, if necessary.  please follow them to activate rbenv for your shell
 
-###  Installing MRI 1.9.3
+###  Installing Ruby 2.2
 
 Now that we have rbenv and ruby-build installed, we can use them to get our ruby interpeter installed:
 
 ```bash
-rbenv install 1.9.3-p547
+rbenv install 2.2.0
 ```
 
 You can confirm they were installed successfully using:
 
 ```bash
-➜ RBENV_VERSION=1.9.3-p547 ruby -v
-ruby 1.9.3p547 (2014-05-14 revision 45962) [x86_64-darwin13.4.0]
+➜ RBENV_VERSION=2.2.0 ruby -v
+ruby 2.2.0p0 (2014-12-25 revision 49005) [x86_64-darwin14]
 ```
 
 ### Installing bundler
 
 ```bash
-RBENV_VERSION=1.9.3-p547 gem install bundler
+RBENV_VERSION=2.2.0 gem install bundler
+rbenv rehash
 ```
 
 ### Installing libsodium
@@ -176,6 +177,3 @@ Randomized with seed 27966
 ```
 
 Tada! You are now setup.
-
-
-
