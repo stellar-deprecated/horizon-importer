@@ -9,12 +9,12 @@ namespace :testnet do
     source      = Stellar::KeyPair.from_raw_seed("allmylifemyhearthasbeensearching")
     destination = Stellar::KeyPair.from_seed ENV["FRIENDBOT_SECRET"]
     sequence    = StellarCore::Account.where(accountid: source.address).first.sequence
-    
-    tx = Stellar::Transaction.payment({
-      account:     source,
-      destination: destination,
-      sequence:    sequence + 1,
-      amount:      [:native, 10_000_000_0000000]
+
+    tx = Stellar::Transaction.create_account({
+      account:          source,
+      destination:      destination,
+      sequence:         sequence + 1,
+      starting_balance: 10_000_000 * Stellar::ONE,
     })
 
     hex = tx.to_envelope(source).to_xdr(:hex)

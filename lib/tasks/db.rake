@@ -1,20 +1,24 @@
 
 namespace :db do
   desc "clears all history tables and rebuilds the from the stellar_core db"
-  task :rebuild_history => :environment do
-    Rails.application.eager_load!
+  task :rebuild_history => ["db:clear_history", "db:batch_import_history"]
 
-    # clear history
-    History::Base.transaction do
-      History::Base.descendants.each(&:delete_all)
-    end
-
-    # reimport
+  desc "imports as many un-imported ledgers as possible"
+  task :batch_import_history => :environment do
     # TODO: include activerecord-stream for better scalability
     StellarCore::LedgerHeader.order("ledgerseq ASC").all.each do |header|
       History::LedgerImporterJob.new.perform(header.sequence)
     end
   end
+
+  desc "clears all history tables"
+  task :clear_history => :environment do
+    Rails.application.eager_load!
+    History::Base.transaction do
+      History::Base.descendants.each(&:delete_all)
+    end
+  end
+
 
   SCENARIO_BASE_PATH = "spec/fixtures/scenarios"
 
