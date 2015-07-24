@@ -94,7 +94,7 @@ class History::LedgerImporterJob < ApplicationJob
 
       pop                 = op.body.value
       destination_pk      = pop.destination
-      destination_address = Convert.pk_to_address(destination_pk)
+      destination_address = Stellar::Convert.pk_to_address(destination_pk)
       id                  = TotalOrderId.make(sctx.ledgerseq, sctx.txindex, i)
 
       haccs << History::Account.create!(address: destination_address, id: id)
@@ -110,7 +110,7 @@ class History::LedgerImporterJob < ApplicationJob
       op, result = *op_and_r
 
       source_account = op.source_account || sctx.source_account
-      participant_addresses = [Convert.pk_to_address(source_account)]
+      participant_addresses = [Stellar::Convert.pk_to_address(source_account)]
 
       hop = History::Operation.new({
         transaction_id:    htx.id,
@@ -123,22 +123,22 @@ class History::LedgerImporterJob < ApplicationJob
       case op.body.type
       when Stellar::OperationType.create_account
         op = op.body.create_account_op!
-        participant_addresses << Convert.pk_to_address(op.destination)
+        participant_addresses << Stellar::Convert.pk_to_address(op.destination)
 
         hop.details = {
-          "funder"           => Convert.pk_to_address(source_account),
-          "account"          => Convert.pk_to_address(op.destination),
+          "funder"           => Stellar::Convert.pk_to_address(source_account),
+          "account"          => Stellar::Convert.pk_to_address(op.destination),
           "starting_balance" => op.starting_balance,
         }
       when Stellar::OperationType.payment
         payment = op.body.payment_op!
 
         hop.details = {
-          "from"   => Convert.pk_to_address(source_account),
-          "to"     => Convert.pk_to_address(payment.destination),
+          "from"   => Stellar::Convert.pk_to_address(source_account),
+          "to"     => Stellar::Convert.pk_to_address(payment.destination),
           "amount" => payment.amount,
         }
-        hop.details.merge! currency_details(payment.currency)
+        hop.details.merge! asset_details(payment.asset)
 
         participant_addresses << hop.details["to"]
 
@@ -147,19 +147,16 @@ class History::LedgerImporterJob < ApplicationJob
         result = result.tr!.path_payment_result!
 
         hop.details = {
-          "from"          => Convert.pk_to_address(source_account),
-          "to"            => Convert.pk_to_address(payment.destination),
+          "from"          => Stellar::Convert.pk_to_address(source_account),
+          "to"            => Stellar::Convert.pk_to_address(payment.destination),
           "amount"        => payment.dest_amount,
           "source_amount" => result.send_amount
         }
 
-        hop.details.merge! currency_details(payment.dest_currency)
-        hop.details.merge! currency_details(payment.send_currency, "send_")
+        hop.details.merge! asset_details(payment.dest_asset)
+        hop.details.merge! asset_details(payment.send_asset, "send_")
 
         participant_addresses << hop.details["to"]
-
-        # TODO: calculate source cost when ClaimOfferAtom
-
       when Stellar::OperationType.manage_offer
         offer = op.body.manage_offer_op!
 
@@ -200,7 +197,7 @@ class History::LedgerImporterJob < ApplicationJob
         hop.details = {}
 
         if sop.inflation_dest.present?
-          hop.details["inflation_dest"] = Convert.pk_to_address(sop.inflation_dest)
+          hop.details["inflation_dest"] = Stellar::Convert.pk_to_address(sop.inflation_dest)
         end
 
         #TODO: set/clear flags
@@ -238,52 +235,56 @@ class History::LedgerImporterJob < ApplicationJob
 
         if sop.signer.present?
           hop.details.merge!({
-            "signer_key"    => Convert.pk_to_address(sop.signer.pub_key),
+            "signer_key"    => Stellar::Convert.pk_to_address(sop.signer.pub_key),
             "signer_weight" => sop.signer.weight,
           })
         end
 
       when Stellar::OperationType.change_trust
         ctop        = op.body.change_trust_op!
-        currency    = ctop.line
+        asset    = ctop.line
 
         hop.details = {
-          "trustor" => Convert.pk_to_address(source_account),
+          "trustor" => Stellar::Convert.pk_to_address(source_account),
           "limit"   => ctop.limit
         }
-        hop.details.merge! currency_details(currency)
-        hop.details["trustee"] = hop.details["currency_issuer"]
+        hop.details.merge! asset_details(asset)
+        hop.details["trustee"] = hop.details["asset_issuer"]
 
-        if currency.type == Stellar::CurrencyType.currency_type_native
-          raise "native currency in change_trust_op"
+        if asset.type == Stellar::AssetType.asset_type_native
+          raise "native asset in change_trust_op"
         end
 
       when Stellar::OperationType.allow_trust
-        atop        = op.body.allow_trust_op!
-        currency    = atop.currency
+        atop  = op.body.allow_trust_op!
+        asset = atop.asset
 
         hop.details = {
-          "trustee"         => Convert.pk_to_address(source_account),
-          "trustor"         => Convert.pk_to_address(atop.trustor),
+          "trustee"         => Stellar::Convert.pk_to_address(source_account),
+          "trustor"         => Stellar::Convert.pk_to_address(atop.trustor),
           "authorize"       => atop.authorize
         }
 
-        case currency.type
-        when Stellar::CurrencyType.currency_type_native
-          raise "native currency in allow_trust_op"
-        when Stellar::CurrencyType.currency_type_alphanum
-          hop.details["currency_type"]   = "alphanum"
-          hop.details["currency_code"]   = currency.currency_code!.strip
-          hop.details["currency_issuer"] = Convert.pk_to_address source_account
+        case asset.type
+        when Stellar::AssetType.asset_type_native
+          raise "native asset in allow_trust_op"
+        when Stellar::AssetType.asset_type_credit_alphanum4
+          hop.details["asset_type"]   = "credit_alphanum4"
+          hop.details["asset_code"]   = asset.asset_code4!.strip
+          hop.details["asset_issuer"] = Stellar::Convert.pk_to_address source_account
+        when Stellar::AssetType.asset_type_credit_alphanum12
+          hop.details["asset_type"]   = "credit_alphanum12"
+          hop.details["asset_code"]   = asset.asset_code12!.strip
+          hop.details["asset_issuer"] = Stellar::Convert.pk_to_address source_account
         else
-          raise "Unknown currency type: #{currency.type}"
+          raise "Unknown asset type: #{asset.type}"
         end
 
       when Stellar::OperationType.account_merge
         destination  = op.body.destination!
         hop.details = {
-          "account"   => Convert.pk_to_address(source_account),
-          "into"     => Convert.pk_to_address(destination)
+          "account"   => Stellar::Convert.pk_to_address(source_account),
+          "into"     => Stellar::Convert.pk_to_address(destination)
         }
         participant_addresses << hop.details["into"]
       when Stellar::OperationType.inflation
@@ -339,26 +340,26 @@ class History::LedgerImporterJob < ApplicationJob
       })
 
       effects.create!("account_debited", source_account, {
-        currency_type: "native",
+        asset_type: "native",
         amount: scop.starting_balance
       })
 
     when Stellar::OperationType.payment
       scop = scop.body.payment_op!
       details = { amount: scop.amount }
-      details.merge!  currency_details(scop.currency)
+      details.merge!  asset_details(scop.asset)
       effects.create!("account_credited", scop.destination, details)
       effects.create!("account_debited", source_account, details)
     when Stellar::OperationType.path_payment
       scop = scop.body.path_payment_op!
 
       dest_details = { amount: scop.dest_amount }
-      dest_details.merge!  currency_details(scop.dest_currency)
+      dest_details.merge!  asset_details(scop.dest_asset)
       effects.create!("account_credited", scop.destination, dest_details)
 
       scresult = scresult.tr!.path_payment_result!
       source_details = { amount: scresult.send_amount }
-      source_details.merge!  currency_details(scop.send_currency)
+      source_details.merge!  asset_details(scop.send_asset)
 
       effects.create!("account_credited", scop.destination, dest_details)
       effects.create!("account_debited", source_account, source_details)
@@ -399,11 +400,25 @@ class History::LedgerImporterJob < ApplicationJob
       # TODO
     when Stellar::OperationType.allow_trust
       scop = scop.body.allow_trust_op!
+      asset = scop.asset
       effect = scop.authorize ? "trustline_authorized" : "trustline_deauthorized"
       details = {
-        "trustor" => Convert.pk_to_address(scop.trustor),
-        "currency_code" => scop.currency.currency_code!.strip,
+        "trustor" => Stellar::Convert.pk_to_address(scop.trustor),
       }
+
+      case asset.type
+      when Stellar::AssetType.asset_type_native
+        raise "native asset in allow_trust_op"
+      when Stellar::AssetType.asset_type_credit_alphanum4
+        details["asset_type"]   = "credit_alphanum4"
+        details["asset_code"]   = asset.asset_code4!.strip
+      when Stellar::AssetType.asset_type_credit_alphanum12
+        details["asset_type"]   = "credit_alphanum12"
+        details["asset_code"]   = asset.asset_code12!.strip
+      else
+        raise "Unknown asset type: #{asset.type}"
+      end
+
 
       effects.create!(effect, source_account, details)
     when Stellar::OperationType.account_merge
@@ -414,7 +429,7 @@ class History::LedgerImporterJob < ApplicationJob
       payouts = scresult.tr!.inflation_result!.payouts!
 
       payouts.each do |payout|
-        details = { amount: payout.amount, currency_type: "native" }
+        details = { amount: payout.amount, asset_type: "native" }
         effects.create!("account_credited", payout.destination, details)
       end
     else
@@ -424,20 +439,25 @@ class History::LedgerImporterJob < ApplicationJob
     effects.results
   end
 
-  def currency_details(currency, prefix="")
-    case currency.type
-    when Stellar::CurrencyType.currency_type_native
-      { "#{prefix}currency_type" => "native" }
-    when Stellar::CurrencyType.currency_type_alphanum
-      an = currency.alpha_num!
-      {
-        "#{prefix}currency_type"   => "alphanum",
-        "#{prefix}currency_code"   => an.currency_code.strip,
-        "#{prefix}currency_issuer" => Convert.pk_to_address(an.issuer),
-      }
+  def asset_details(asset, prefix="")
+    case asset.type
+    when Stellar::AssetType.asset_type_native
+      { "#{prefix}asset_type" => "native" }
+    when Stellar::AssetType.asset_type_credit_alphanum4
+      coded_asset_details(asset, prefix, "credit_alphanum4")
+    when Stellar::AssetType.asset_type_credit_alphanum4
+      coded_asset_details(asset, prefix, "credit_alphanum12")
     else
-      raise "Unknown currency type: #{currency.type}"
+      raise "Unknown asset type: #{asset.type}"
     end
+  end
+
+  def coded_asset_details(asset, prefix, type)
+    {
+      "#{prefix}asset_type"   => type,
+      "#{prefix}asset_code"   => asset.code.strip,
+      "#{prefix}asset_issuer" => Stellar::Convert.pk_to_address(asset.issuer),
+    }
   end
 
   #
@@ -446,7 +466,6 @@ class History::LedgerImporterJob < ApplicationJob
   # a new account in some transaction's metadata.
   #
   def create_master_history_account!
-    master_key = Stellar::KeyPair.from_raw_seed "allmylifemyhearthasbeensearching"
-    History::Account.create!(address: master_key.address, id: 0)
+    History::Account.create!(address: Stellar::KeyPair.master.address, id: 0)
   end
 end

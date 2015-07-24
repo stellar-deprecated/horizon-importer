@@ -68,11 +68,11 @@ RSpec.describe History::LedgerImporterJob, "importing account_merge operations",
   let(:op){ History::Operation.find(12884905984)}
 
   it "sets `account`" do
-    expect(op.details["account"]).to eq("gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ")
+    expect(op.details["account"]).to eq("GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU")
   end
 
   it "sets `into`" do
-    expect(op.details["into"]).to eq("gT9jHoPKoErFwXavCrDYLkSVcVd9oyVv94ydrq6FnPMXpKHPTA")
+    expect(op.details["into"]).to eq("GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2")
   end
 end
 
@@ -83,11 +83,11 @@ RSpec.describe History::LedgerImporterJob, "importing path_payment operations", 
   let(:op){ History::Operation.find(25769807872)}
 
   it "sets `from`" do
-    expect(op.details["from"]).to eq("gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ")
+    expect(op.details["from"]).to eq("GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU")
   end
 
   it "sets `to`" do
-    expect(op.details["to"]).to eq("gT9jHoPKoErFwXavCrDYLkSVcVd9oyVv94ydrq6FnPMXpKHPTA")
+    expect(op.details["to"]).to eq("GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2")
   end
 
   it "sets `amount`" do
@@ -101,11 +101,11 @@ RSpec.describe History::LedgerImporterJob, "importing change_trust operations", 
   let(:op){ History::Operation.find(21474840576)}
 
   it "sets `trustee`" do
-    expect(op.details["trustee"]).to eq("gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq")
+    expect(op.details["trustee"]).to eq("GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4")
   end
 
   it "sets `trustor`" do
-    expect(op.details["trustor"]).to eq("gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ")
+    expect(op.details["trustor"]).to eq("GBXGQJWVLWOYHFLVTKWV5FGHA3LNYY2JQKM7OAJAUEQFU6LPCSEFVXON")
   end
 
   it "sets `limit`" do
@@ -120,13 +120,13 @@ RSpec.describe History::LedgerImporterJob, "importing allow_trust operations", t
   let(:revoke_op){ History::Operation.find(34359742464)}
 
   it "sets `trustee`" do
-    expect(allow_op.details["trustee"]).to eq("gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq")
-    expect(revoke_op.details["trustee"]).to eq("gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq")
+    expect(allow_op.details["trustee"]).to eq("GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4")
+    expect(revoke_op.details["trustee"]).to eq("GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4")
   end
 
   it "sets `trustor`" do
-    expect(allow_op.details["trustor"]).to eq("gsKuurNYgtBhTSFfsCaWqNb3Ze5Je9csKTSLfjo8Ko2b1f66ayZ")
-    expect(revoke_op.details["trustor"]).to eq("gqdUHrgHUp8uMb74HiQvYztze2ffLhVXpPwj7gEZiJRa4jhCXQ")
+    expect(allow_op.details["trustor"]).to eq("GCXKG6RN4ONIEPCMNFB732A436Z5PNDSRLGWK7GBLCMQLIFO4S7EYWVU")
+    expect(revoke_op.details["trustor"]).to eq("GBXGQJWVLWOYHFLVTKWV5FGHA3LNYY2JQKM7OAJAUEQFU6LPCSEFVXON")
   end
 
   it "sets `authorize`" do
@@ -143,7 +143,7 @@ RSpec.describe History::LedgerImporterJob, "importing set_options operations", t
     let(:op){ History::Operation.find(12884905984)}
 
     it "sets `inflation_dest`" do
-      expect(op.details["inflation_dest"]).to eq("gT9jHoPKoErFwXavCrDYLkSVcVd9oyVv94ydrq6FnPMXpKHPTA")
+      expect(op.details["inflation_dest"]).to eq("GA5WBPYA5Y4WAEHXWR2UKO2UO4BUGHUQ74EUPKON2QHV4WRHOIRNKKH2")
     end
   end
 
@@ -152,8 +152,8 @@ RSpec.describe History::LedgerImporterJob, "importing set_options operations", t
     let(:remove_op){ History::Operation.find(42949677056)}
 
     it "sets `signer_key`" do
-      expect(add_op.details["signer_key"]).to eq("gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq")
-      expect(remove_op.details["signer_key"]).to eq("gsPsm67nNK8HtwMedJZFki3jAEKgg1s4nRKrHREFqTzT6ErzBiq")
+      expect(add_op.details["signer_key"]).to eq("GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4")
+      expect(remove_op.details["signer_key"]).to eq("GC23QF2HUE52AMXUFUH3AYJAXXGXXV2VHXYYR6EYXETPKDXZSAW67XO4")
     end
 
     it "sets `signer_weight`" do

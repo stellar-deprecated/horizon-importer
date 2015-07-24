@@ -97,7 +97,7 @@ class TransactionSubmission
   end
 
   def parsed_envelope
-    raw = Convert.from_hex(tx_envelope)
+    raw = Stellar::Convert.from_hex(tx_envelope)
     Stellar::TransactionEnvelope.from_xdr(raw)
   rescue EOFError
     nil
@@ -115,7 +115,7 @@ class TransactionSubmission
   memoize :history_transaction
 
   def transaction_hash
-    Convert.to_hex(parsed_envelope.tx.hash)
+    Stellar::Convert.to_hex(parsed_envelope.tx.hash)
   end
 
   def submission_status

@@ -23,11 +23,11 @@ class StellarCore::Account < StellarCore::Base
 
   def balances
     [].tap do |balances|
-      balances << {currency: {type: :native}, balance: self.balance}
+      balances << {asset: {type: :native}, balance: self.balance}
 
       trust_lines.each do |tl|
         balances << {
-          currency: {type: :iso4217, issuer: tl.issuer, code: tl.currency_code},
+          asset: {type: tl.asset_type_s, issuer: tl.issuer, code: tl.asset_code},
           balance:  tl.balance,
           limit:    tl.tlimit
         }
