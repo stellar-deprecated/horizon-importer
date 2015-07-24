@@ -13,7 +13,7 @@ ledger imported by horizon.
 
         {
           "_links": {
-            "self": { 
+            "self": {
               "href": "/accounts/gjgPNE2GpySt5iYZaFFo1svCJ4gbHwXxUy8DDqeYTDK6UzsPTs"
             },
             "transactions": {
@@ -24,13 +24,13 @@ ledger imported by horizon.
           "address": "gjgPNE2GpySt5iYZaFFo1svCJ4gbHwXxUy8DDqeYTDK6UzsPTs",
           "sequence": 3,
           "balances": [{
-            "currency": {
+            "asset": {
               "type": "native"
             },
             "balance": 100000000
           },{
-            "currency": {
-              "type": "iso4217",
+            "asset": {
+              "type": "credit_alphanum_4",
               "code": "USD",
               "issuers": "gM4gu1GLe3vm8LKFfRJcmTt1eaEuQEbo61a8BVkGcou78m21K7"
             },
@@ -170,7 +170,7 @@ Represents a single transaction that has been submitted and validated by the ste
           "submission_result": "000000000000000a0000000000000001000000000000000000000000"
         }
 
-## Friendbot (Currency Faucet) [/friendbot]
+## Friendbot (Lumen Faucet) [/friendbot]
 
 When configured with a secret key, horizon can fund accounts to help you test your applications.  Friendbot gives them out.
 
@@ -194,9 +194,3 @@ When configured with a secret key, horizon can fund accounts to help you test yo
           "title": "Resource Missing",
           "instance": "request://08a9edea-a20c-4b93-95b5-fdfff985b4c9"
         }
-
-
-
-
-
-

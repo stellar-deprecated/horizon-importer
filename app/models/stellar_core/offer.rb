@@ -2,8 +2,8 @@ class StellarCore::Offer < StellarCore::Base
   self.table_name  = "offers"
   self.primary_key = "offerid"
 
-  scope :taker_gets, -> (c) { currency_filter("gets", c) }
-  scope :taker_pays, -> (c) { currency_filter("pays", c) }
+  scope :buying, -> (c) { asset_filter("buying", c) }
+  scope :selling, -> (c) { asset_filter("selling", c) }
 
   ## WIP
   def self.find_path(source, destination, amount_needed)
@@ -17,13 +17,13 @@ class StellarCore::Offer < StellarCore::Base
       visited[current] = true
 
       # get outbound edges from current
-      candidates = taker_gets(current)
+      candidates = selling(current)
 
       candidates.each do |offer|
-        next if visited[offer.taker_pays] == true
+        next if visited[offer.buying] == true
         #TODO: check we have enough amount
 
-        next_path = path + [offer.taker_pays]
+        next_path = path + [offer.buying]
 
         if next_path.last == source
           results << next_path
@@ -44,36 +44,44 @@ class StellarCore::Offer < StellarCore::Base
   end
 
 
-  def self.currency_filter(prefix, c)
-    case c.type
-    when Stellar::CurrencyType.currency_type_native
-      where({"#{prefix}issuer" => nil})
-    when Stellar::CurrencyType.currency_type_alphanum
-      ac = c.alpha_num!
-      where({
-        "#{prefix}issuer"           => Convert.pk_to_address(ac.issuer),
-        "#{prefix}alphanumcurrency" => ac.currency_code.strip,
+  def self.asset_filter(prefix, a)
+    by_type = where({"#{prefix}assettype" => a.type.value})
+
+    is_credit = false
+    is_credit ||= a.type == Stellar::AssetType.asset_type_credit_alphanum4
+    is_credit ||= a.type == Stellar::AssetType.asset_type_credit_alphanum12
+
+    if is_credit
+      by_type.where({
+        "#{prefix}issuer"    => Stellar::Convert.pk_to_address(a.issuer),
+        "#{prefix}assetcode" => a.code.strip,
       })
     else
-      raise ArgumentError, "unsupported currency type: #{c.type}"
+      by_type
     end
   end
 
-  def taker_pays
-    currency(paysalphanumcurrency, paysissuer)
+  def buying
+    asset(buyingassettype, buyingassetcode, buyingissuer)
   end
 
-  def taker_gets
-    currency(getsalphanumcurrency, getsissuer)
+  def selling
+    asset(sellingassettype, sellingassetcode, sellingissuer)
   end
 
   private
-  def currency(alphanumcurrency, issuer)
-    if issuer.blank?
-      Stellar::Currency.native
-    else
+  # asset converts the db column values of type/code/issuer into a
+  # Stellar::Asset instance
+  def asset(type, code, issuer)
+    case type
+    when Stellar::AssetType.asset_type_native.value
+      Stellar::Asset.native
+    when Stellar::AssetType.asset_type_credit_alphanum4.value
       issuer = Stellar::KeyPair.from_address(issuer)
-      Stellar::Currency.alphanum(alphanumcurrency, issuer)
+      Stellar::Asset.alphanum4(code, issuer)
+    when Stellar::AssetType.asset_type_credit_alphanum12.value
+      issuer = Stellar::KeyPair.from_address(issuer)
+      Stellar::Asset.alphanum12(code, issuer)
     end
   end
 end

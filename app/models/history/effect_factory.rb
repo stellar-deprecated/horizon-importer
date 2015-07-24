@@ -17,7 +17,7 @@ class History::EffectFactory
   def create!(type_name, account_public_key, details)
 
     hacc = History::Account.
-      where(address: Convert.pk_to_address(account_public_key)).
+      where(address: Stellar::Convert.pk_to_address(account_public_key)).
       first
 
     heff = History::Effect.create!({

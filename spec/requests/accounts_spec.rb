@@ -8,7 +8,7 @@ RSpec.describe "Account Requests", type: :request do
 
     context "with a single unknown account" do
       let(:addresses){["not_real"]}
-      
+
       it{ should have_status(:not_found) }
       it{ should match_json({
         type:   "not_found",
@@ -22,13 +22,13 @@ RSpec.describe "Account Requests", type: :request do
       let(:address){ addresses.first }
       let(:account){ StellarCore::Account.find(address)}
       it{ should have_status(:ok) }
-      
+
       it{ should match_json({
         id:address,
         address: address,
         sequence: account.sequence,
         balances: [
-          {currency: {type: :native}, balance: account.balance }
+          {asset: {type: :native}, balance: account.balance }
         ],
         :_links => {
           :self => Hash,
@@ -39,10 +39,10 @@ RSpec.describe "Account Requests", type: :request do
 
     context "with multiple known accounts" do
       let(:addresses){[
-        create(:master_key_pair), 
+        create(:master_key_pair),
         create(:scott_key_pair),
       ].map(&:address)}
-      
+
       it{ should have_status(:ok) }
       it{ should match_json({
         _embedded: {

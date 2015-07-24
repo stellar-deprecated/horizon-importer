@@ -19,20 +19,20 @@ class StellarCore::Transaction < StellarCore::Base
   end
 
   def envelope
-    raw_envelope = Convert.from_base64(self.txbody)
+    raw_envelope = Stellar::Convert.from_base64(self.txbody)
     Stellar::TransactionEnvelope.from_xdr(raw_envelope)
   end
   memoize :envelope
 
   def result_pair
-    raw_result = Convert.from_base64(self.txresult)
+    raw_result = Stellar::Convert.from_base64(self.txresult)
     Stellar::TransactionResultPair.from_xdr(raw_result)
   end
   memoize :result_pair
 
   def meta
-    raw_meta = Convert.from_base64(self.txmeta)
-    Stellar::TransactionMeta.from_xdr(raw_meta)
+    raw_meta = Stellar::Convert.from_base64(self.txmeta)
+    Stellar::TransactionMeta.from_xdr(raw_meta).v0!
   end
   memoize :meta
 
@@ -42,7 +42,7 @@ class StellarCore::Transaction < StellarCore::Base
   alias source_account submitting_account
 
   def submitting_address
-    Convert.base58.check_encode(:account_id, submitting_account.ed25519!)
+    Stellar::Convert.pk_to_address(submitting_account)
   end
 
   def submitting_sequence
@@ -63,7 +63,8 @@ class StellarCore::Transaction < StellarCore::Base
 
   def participants
     # get all entries with type of "account"
-    account_entries = meta.changes.
+    all_changes = meta.changes + meta.operations.flat_map(&:changes)
+    account_entries = all_changes.
       select{|e| e.value.type == Stellar::LedgerEntryType.account }
 
     # extract the account id from each (both live and dead
@@ -76,7 +77,7 @@ class StellarCore::Transaction < StellarCore::Base
 
 
   def participant_addresses
-    participants.map{|a| Convert.base58.check_encode(:account_id, a.ed25519!)}
+    participants.map{|a| Stellar::Convert.pk_to_address(a)}
   end
   memoize :participant_addresses
 
