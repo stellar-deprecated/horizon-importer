@@ -26,7 +26,7 @@ class TransactionSubmission
   attr_reader :tx_envelope
 
   #
-  # Create a new submission from a provided xdr-serialized, hex-encoded
+  # Create a new submission from a provided xdr-serialized, base64-encoded
   # transaction envelope.
   #
   # @param tx_envelope [String] the transaction envelope
@@ -97,7 +97,7 @@ class TransactionSubmission
   end
 
   def parsed_envelope
-    raw = Stellar::Convert.from_hex(tx_envelope)
+    raw = Stellar::Convert.from_base64(tx_envelope)
     Stellar::TransactionEnvelope.from_xdr(raw)
   rescue EOFError
     nil

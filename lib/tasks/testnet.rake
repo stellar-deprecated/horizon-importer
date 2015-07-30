@@ -6,7 +6,7 @@ namespace :testnet do
   task :fund_friendbot => :environment do
     Rails.application.eager_load!
 
-    source      = Stellar::KeyPair.from_raw_seed("allmylifemyhearthasbeensearching")
+    source      = Stellar::KeyPair.master
     destination = Stellar::KeyPair.from_seed ENV["FRIENDBOT_SECRET"]
     sequence    = StellarCore::Account.where(accountid: source.address).first.sequence
 
@@ -17,9 +17,9 @@ namespace :testnet do
       starting_balance: 10_000_000 * Stellar::ONE,
     })
 
-    hex = tx.to_envelope(source).to_xdr(:hex)
+    base64 = tx.to_envelope(source).to_xdr(:base64)
 
-    tx_sub = TransactionSubmission.new(hex)
+    tx_sub = TransactionSubmission.new(base64)
     tx_sub.skip_finished_check!
     tx_sub.process
 

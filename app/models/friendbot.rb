@@ -1,10 +1,10 @@
-# 
+#
 # Friendbot is your friendly neighborhood stellar faucet.  It will
 # sign and send transactions at the request of anyone, when given a secret seed.
-# 
+#
 # NOTE: This functionality should not remain in within horizon.  We're including
-# it here because the it's a simpler implementation. 
-# 
+# it here because the it's a simpler implementation.
+#
 class Friendbot
   include Celluloid
 
@@ -42,9 +42,9 @@ class Friendbot
       starting_balance: 1000_000000
     })
 
-    hex = tx.to_envelope(@keypair).to_xdr(:hex)
+    b64 = tx.to_envelope(@keypair).to_xdr(:base64)
 
-    tx_sub = TransactionSubmission.new(hex)
+    tx_sub = TransactionSubmission.new(b64)
     tx_sub.skip_finished_check!
     tx_sub.process
 
@@ -54,12 +54,12 @@ class Friendbot
       @sequence = nil # reset the sequence so we reload the next payment
     end
 
-    tx_sub    
+    tx_sub
   end
 
   private
   def refresh_sequence_number
-    StellarCore::Account.connection_pool.with_connection do 
+    StellarCore::Account.connection_pool.with_connection do
       account = StellarCore::Account.where(accountid: @keypair.address).first
 
       raise "invalid friendbot seed: account not found" if account.blank?
