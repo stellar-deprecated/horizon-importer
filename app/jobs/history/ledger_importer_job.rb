@@ -445,7 +445,7 @@ class History::LedgerImporterJob < ApplicationJob
       { "#{prefix}asset_type" => "native" }
     when Stellar::AssetType.asset_type_credit_alphanum4
       coded_asset_details(asset, prefix, "credit_alphanum4")
-    when Stellar::AssetType.asset_type_credit_alphanum4
+    when Stellar::AssetType.asset_type_credit_alphanum12
       coded_asset_details(asset, prefix, "credit_alphanum12")
     else
       raise "Unknown asset type: #{asset.type}"
