@@ -36,8 +36,6 @@ class History::LedgerImporterJob < ApplicationJob
         })
 
         stellar_core_transactions.each do |sctx|
-          next unless sctx.success?
-
           htx   = import_history_transaction sctx
           haccs = import_history_accounts sctx
           hops  = import_history_operations sctx, htx
@@ -70,6 +68,8 @@ class History::LedgerImporterJob < ApplicationJob
       fee_paid:          sctx.fee_paid,
       operation_count:   sctx.operations.size,
       # TODO: uncomment when low card system is fixed
+      txresult:          sctx.txresult,
+      success:           sctx.success?,
       # result_code:       sctx.result_code.value,
       # result_code_s:     sctx.result_code_s,
       # TODO: remove the below when low card system is fixed
@@ -88,7 +88,9 @@ class History::LedgerImporterJob < ApplicationJob
 
   def import_history_accounts(sctx)
     haccs = []
-
+    if !sctx.success? 
+      return 
+    end
     sctx.operations.each_with_index do |op, i|
       next unless op.body.type == Stellar::OperationType.create_account
 
