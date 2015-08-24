@@ -367,13 +367,18 @@ class History::LedgerImporterJob < ApplicationJob
         })
       end
 
-      # unless scop.thresholds.nil?
-      #   effects.create!("account_thresholds_updated", source_account, {
-      #     # TODO: fill in details
-      #   })
-      #
-      #   # TODO: import signer_* effects for master key
-      # end
+      thresholds_changed = scop.low_threshold.present? ||
+                           scop.med_threshold.present? ||
+                           scop.high_threshold.present?
+
+
+      if thresholds_changed
+        details = {}
+        details["low_threshold"]  = scop.low_threshold  if scop.low_threshold.present?
+        details["med_threshold"]  = scop.med_threshold  if scop.med_threshold.present?
+        details["high_threshold"] = scop.high_threshold if scop.high_threshold.present?
+        effects.create!("account_thresholds_updated", source_account, details)
+      end
 
       unless scop.set_flags.nil? && scop.clear_flags.nil?
         effects.create!("account_flags_updated", source_account, {
