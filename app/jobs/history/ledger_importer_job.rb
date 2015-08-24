@@ -69,10 +69,6 @@ class History::LedgerImporterJob < ApplicationJob
       max_fee:           sctx.fee_paid,
       fee_paid:          sctx.fee_paid,
       operation_count:   sctx.operations.size,
-      # TODO: uncomment when low card system is fixed
-      # result_code:       sctx.result_code.value,
-      # result_code_s:     sctx.result_code_s,
-      # TODO: remove the below when low card system is fixed
       transaction_status_id: -1,
     })
 
@@ -171,10 +167,6 @@ class History::LedgerImporterJob < ApplicationJob
 
         hop.details.merge!(asset_details(offer.selling, "selling_"))
         hop.details.merge!(asset_details(offer.buying, "buying_"))
-
-        # import into an trading API
-        #   TODO
-
       when Stellar::OperationType.create_passive_offer
         offer = op.body.create_passive_offer_op!
 
@@ -188,11 +180,6 @@ class History::LedgerImporterJob < ApplicationJob
 
         hop.details.merge!(asset_details(offer.selling, "selling_"))
         hop.details.merge!(asset_details(offer.buying, "buying_"))
-
-        # import into an trading API
-        #   TODO
-
-
       when Stellar::OperationType.set_options
         sop = op.body.set_options_op!
         hop.details = {}
@@ -201,7 +188,6 @@ class History::LedgerImporterJob < ApplicationJob
           hop.details["inflation_dest"] = Stellar::Convert.pk_to_address(sop.inflation_dest)
         end
 
-        #TODO: set/clear flags
         parsed = Stellar::AccountFlags.parse_mask(sop.set_flags || 0)
         if parsed.any?
           hop.details["set_flags"] = parsed.map(&:value)
@@ -364,10 +350,11 @@ class History::LedgerImporterJob < ApplicationJob
 
       effects.create!("account_credited", scop.destination, dest_details)
       effects.create!("account_debited", source_account, source_details)
+      # TODO: import trades
     when Stellar::OperationType.manage_offer
-      # TODO
+      # TODO: import trades
     when Stellar::OperationType.create_passive_offer
-      # TODO
+      # TODO: import trades
     when Stellar::OperationType.set_options
       scop = scop.body.set_options_op!
       # TODO: if signer present, add the signer* effects
