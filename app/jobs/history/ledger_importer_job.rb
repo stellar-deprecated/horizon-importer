@@ -166,12 +166,11 @@ class History::LedgerImporterJob < ApplicationJob
           "price"    => {
             "n" => offer.price.n,
             "d" => offer.price.d,
-          }
+          },
         }
 
-        #TODO
-        # import into history api:
-        #   - order book info
+        hop.details.merge!(asset_details(offer.selling, "selling_"))
+        hop.details.merge!(asset_details(offer.buying, "buying_"))
 
         # import into an trading API
         #   TODO
@@ -187,9 +186,11 @@ class History::LedgerImporterJob < ApplicationJob
           }
         }
 
-        #TODO
-        # import into history api:
-        #   - order book info
+        hop.details.merge!(asset_details(offer.selling, "selling_"))
+        hop.details.merge!(asset_details(offer.buying, "buying_"))
+
+        # import into an trading API
+        #   TODO
 
 
       when Stellar::OperationType.set_options
