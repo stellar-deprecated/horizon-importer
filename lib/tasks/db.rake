@@ -75,7 +75,7 @@ namespace :db do
   end
 
   def run_scenario(path)
-    sql = `bundle exec scc -r #{path}`
+    sql = `bundle exec scc -r #{path} --dump-root-db`
 
     unless $?.success?
       puts "failed while running #{path}:"
