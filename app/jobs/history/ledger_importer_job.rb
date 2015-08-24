@@ -3,7 +3,8 @@
 # stellar_core database and imports them into the history database.
 #
 class History::LedgerImporterJob < ApplicationJob
-  EMPTY_HASH = "0" * 64
+  EMPTY_HASH            = "0" * 64
+  DEFAULT_SIGNER_WEIGHT = 1
 
   def perform(ledger_sequence)
     stellar_core_ledger, stellar_core_transactions = load_stellar_core_data(ledger_sequence)
@@ -333,6 +334,10 @@ class History::LedgerImporterJob < ApplicationJob
         amount: scop.starting_balance
       })
 
+      effects.create!("signer_created", source_account, {
+        public_key: Stellar::Convert.pk_to_address(scop.destination),
+        weight: DEFAULT_SIGNER_WEIGHT,
+      })
     when Stellar::OperationType.payment
       scop = scop.body.payment_op!
       details = { amount: scop.amount }
@@ -383,6 +388,31 @@ class History::LedgerImporterJob < ApplicationJob
       unless scop.set_flags.nil? && scop.clear_flags.nil?
         effects.create!("account_flags_updated", source_account, {
           # TODO: fill in details
+        })
+      end
+
+      if scop.master_weight.present?
+        #TODO: BLOCKED stellar-core: differentiate signer_updated and signer_added
+        #for master signer
+        effect = scop.master_weight == 0 ? "signer_removed" : "signer_updated"
+
+        effects.create!(effect, source_account, {
+          public_key: Stellar::Convert.pk_to_address(source_account),
+          weight: scop.master_weight,
+        })
+      end
+
+      if scop.signer.present?
+        effect = if scop.signer.weight == 0 
+                   "signer_removed"
+                 else
+                   #TODO: BLOCKED stellar-core: distinguish between new signers and updated signers
+                   "signer_created"
+                 end
+
+        effects.create!(effect, source_account, {
+          public_key: Stellar::Convert.pk_to_address(scop.signer.pub_key),
+          weight: scop.signer.weight,
         })
       end
 
