@@ -317,6 +317,8 @@ class History::LedgerImporterJob < ApplicationJob
   def import_history_effects_for_operation(sctx, scop, scresult, hop)
     effects = History::EffectFactory.new(hop)
     source_account = scop.source_account || sctx.source_account
+    op_index = sctx.operations.index(scop)
+    scopm = sctx.meta.operations[op_index]
 
     case hop.type_as_enum
     when Stellar::OperationType.create_account
@@ -381,11 +383,21 @@ class History::LedgerImporterJob < ApplicationJob
 
     when Stellar::OperationType.change_trust
       scop = scop.body.change_trust_op!
-      effect = nil # if a trustline was added in the meta, use trustline_added
-                   # if limit is 0, use trustline_removed
-                   # otherwise trustline_updated
+      effect = if scop.limit == 0
+                 'trustline_removed'
+               else
+                 tlm = scopm.changes.first #TODO: add a less brittle method of finding the trustline entry in the meta
+                 if tlm.type == Stellar::LedgerEntryChangeType.ledger_entry_created
+                   'trustline_created'
+                 else
+                   'trustline_updated'
+                 end
+               end
 
-      # TODO
+      details = asset_details(scop.line)
+      details["limit"] = scop.limit
+
+      effects.create!(effect, source_account, details)
     when Stellar::OperationType.allow_trust
       scop = scop.body.allow_trust_op!
       asset = scop.asset
@@ -410,6 +422,7 @@ class History::LedgerImporterJob < ApplicationJob
 
       effects.create!(effect, source_account, details)
     when Stellar::OperationType.account_merge
+      # BLOCKED on AccountMergeResult updates
       # TODO: account_debited on source account of remaining lumens in source_account
       # TODO: account_credited on destination of remaining lumens in source_account
       effects.create!("account_removed", source_account, source_details)
