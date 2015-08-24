@@ -364,7 +364,6 @@ class History::LedgerImporterJob < ApplicationJob
       # TODO: import trades
     when Stellar::OperationType.set_options
       scop = scop.body.set_options_op!
-      # TODO: if signer present, add the signer* effects
 
       unless scop.home_domain.nil?
         effects.create!("account_home_domain_updated", source_account, {
@@ -385,10 +384,16 @@ class History::LedgerImporterJob < ApplicationJob
         effects.create!("account_thresholds_updated", source_account, details)
       end
 
-      unless scop.set_flags.nil? && scop.clear_flags.nil?
-        effects.create!("account_flags_updated", source_account, {
-          # TODO: fill in details
-        })
+      flag_changes = {}
+      Stellar::AccountFlags.parse_mask(scop.set_flags || 0).each do |af|
+        flag_changes [af.name] = true
+      end
+      Stellar::AccountFlags.parse_mask(scop.clear_flags || 0).each do |af|
+        flag_changes [af.name] = false
+      end
+
+      if flag_changes.any?
+        effects.create!("account_flags_updated", source_account, flag_changes)
       end
 
       if scop.master_weight.present?
