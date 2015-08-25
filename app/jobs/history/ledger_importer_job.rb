@@ -357,11 +357,14 @@ class History::LedgerImporterJob < ApplicationJob
 
       effects.create!("account_credited", scop.destination, dest_details)
       effects.create!("account_debited", source_account, source_details)
-      # TODO: import trades
+
+      make_trades effects, source_account, scresult.success!.offers
     when Stellar::OperationType.manage_offer
-      # TODO: import trades
+      scresult = scresult.tr!.manage_offer_result!.success!
+      make_trades effects, source_account, scresult.offers_claimed
     when Stellar::OperationType.create_passive_offer
-      # TODO: import trades
+      scresult = scresult.tr!.manage_offer_result!.success!
+      make_trades effects, source_account, scresult.offers_claimed
     when Stellar::OperationType.set_options
       scop = scop.body.set_options_op!
 
@@ -508,5 +511,36 @@ class History::LedgerImporterJob < ApplicationJob
   #
   def create_master_history_account!
     History::Account.create!(address: Stellar::KeyPair.master.address, id: 0)
+  end
+
+  # given the provided account and a set of claim_offer_atoms, produce 2 trade
+  # effects (one for the buyer, one for the sellar) for each claim_offer_atom
+  def make_trades(effects, buyer, claim_offer_atoms)
+    claim_offer_atoms.each{|coa| make_trade effects, buyer, coa}
+  end
+
+  def make_trade(effects, buyer, claimed_offer)
+    seller = claimed_offer.offer_owner
+
+    buyer_details = { 
+      "offer_id"      => claimed_offer.offer_id,
+      "seller"        => Stellar::Convert.pk_to_address(seller),
+      "bought_amount" => claimed_offer.amount_claimed,
+      "sold_amount"   => claimed_offer.amount_send,
+    }
+    buyer_details.merge! asset_details(claimed_offer.asset_claimed, "bought_")
+    buyer_details.merge! asset_details(claimed_offer.asset_send, "sold_")
+
+    seller_details = { 
+      "offer_id"      => claimed_offer.offer_id,
+      "seller"        => Stellar::Convert.pk_to_address(buyer),
+      "bought_amount" => claimed_offer.amount_send,
+      "sold_amount"   => claimed_offer.amount_claimed,
+    }
+    seller_details.merge! asset_details(claimed_offer.asset_send, "bought_")
+    seller_details.merge! asset_details(claimed_offer.asset_claimed, "sold_")
+
+    effects.create!("trade", buyer, buyer_details)
+    effects.create!("trade", seller, seller_details)
   end
 end
