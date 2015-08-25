@@ -23,7 +23,7 @@ namespace :db do
   SCENARIO_BASE_PATH = "spec/fixtures/scenarios"
 
   desc "runs testing scenarios, dumping results to tmp/secenarios"
-  task :build_scenarios => :environment do
+  task :build_scenarios => ["db:setup", :environment] do
     Rails.application.eager_load!
 
     raise "This should only be run from RAILS_ENV='test'" unless Rails.env.test?
@@ -75,7 +75,7 @@ namespace :db do
   end
 
   def run_scenario(path)
-    sql = `bundle exec scc -r #{path}`
+    sql = `bundle exec scc -r #{path} --dump-root-db`
 
     unless $?.success?
       puts "failed while running #{path}:"

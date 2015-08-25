@@ -3,7 +3,8 @@
 # stellar_core database and imports them into the history database.
 #
 class History::LedgerImporterJob < ApplicationJob
-  EMPTY_HASH = "0" * 64
+  EMPTY_HASH            = "0" * 64
+  DEFAULT_SIGNER_WEIGHT = 1
 
   def perform(ledger_sequence)
     stellar_core_ledger, stellar_core_transactions = load_stellar_core_data(ledger_sequence)
@@ -69,10 +70,6 @@ class History::LedgerImporterJob < ApplicationJob
       max_fee:           sctx.fee_paid,
       fee_paid:          sctx.fee_paid,
       operation_count:   sctx.operations.size,
-      # TODO: uncomment when low card system is fixed
-      # result_code:       sctx.result_code.value,
-      # result_code_s:     sctx.result_code_s,
-      # TODO: remove the below when low card system is fixed
       transaction_status_id: -1,
     })
 
@@ -166,16 +163,11 @@ class History::LedgerImporterJob < ApplicationJob
           "price"    => {
             "n" => offer.price.n,
             "d" => offer.price.d,
-          }
+          },
         }
 
-        #TODO
-        # import into history api:
-        #   - order book info
-
-        # import into an trading API
-        #   TODO
-
+        hop.details.merge!(asset_details(offer.selling, "selling_"))
+        hop.details.merge!(asset_details(offer.buying, "buying_"))
       when Stellar::OperationType.create_passive_offer
         offer = op.body.create_passive_offer_op!
 
@@ -187,11 +179,8 @@ class History::LedgerImporterJob < ApplicationJob
           }
         }
 
-        #TODO
-        # import into history api:
-        #   - order book info
-
-
+        hop.details.merge!(asset_details(offer.selling, "selling_"))
+        hop.details.merge!(asset_details(offer.buying, "buying_"))
       when Stellar::OperationType.set_options
         sop = op.body.set_options_op!
         hop.details = {}
@@ -200,7 +189,6 @@ class History::LedgerImporterJob < ApplicationJob
           hop.details["inflation_dest"] = Stellar::Convert.pk_to_address(sop.inflation_dest)
         end
 
-        #TODO: set/clear flags
         parsed = Stellar::AccountFlags.parse_mask(sop.set_flags || 0)
         if parsed.any?
           hop.details["set_flags"] = parsed.map(&:value)
@@ -330,6 +318,8 @@ class History::LedgerImporterJob < ApplicationJob
   def import_history_effects_for_operation(sctx, scop, scresult, hop)
     effects = History::EffectFactory.new(hop)
     source_account = scop.source_account || sctx.source_account
+    op_index = sctx.operations.index(scop)
+    scopm = sctx.meta.operations[op_index]
 
     case hop.type_as_enum
     when Stellar::OperationType.create_account
@@ -344,6 +334,10 @@ class History::LedgerImporterJob < ApplicationJob
         amount: scop.starting_balance
       })
 
+      effects.create!("signer_created", source_account, {
+        public_key: Stellar::Convert.pk_to_address(scop.destination),
+        weight: DEFAULT_SIGNER_WEIGHT,
+      })
     when Stellar::OperationType.payment
       scop = scop.body.payment_op!
       details = { amount: scop.amount }
@@ -363,13 +357,16 @@ class History::LedgerImporterJob < ApplicationJob
 
       effects.create!("account_credited", scop.destination, dest_details)
       effects.create!("account_debited", source_account, source_details)
+
+      make_trades effects, source_account, scresult.success!.offers
     when Stellar::OperationType.manage_offer
-      # TODO
+      scresult = scresult.tr!.manage_offer_result!.success!
+      make_trades effects, source_account, scresult.offers_claimed
     when Stellar::OperationType.create_passive_offer
-      # TODO
+      scresult = scresult.tr!.manage_offer_result!.success!
+      make_trades effects, source_account, scresult.offers_claimed
     when Stellar::OperationType.set_options
       scop = scop.body.set_options_op!
-      # TODO: if signer present, add the signer* effects
 
       unless scop.home_domain.nil?
         effects.create!("account_home_domain_updated", source_account, {
@@ -377,27 +374,73 @@ class History::LedgerImporterJob < ApplicationJob
         })
       end
 
-      # unless scop.thresholds.nil?
-      #   effects.create!("account_thresholds_updated", source_account, {
-      #     # TODO: fill in details
-      #   })
-      #
-      #   # TODO: import signer_* effects for master key
-      # end
+      thresholds_changed = scop.low_threshold.present? ||
+                           scop.med_threshold.present? ||
+                           scop.high_threshold.present?
 
-      unless scop.set_flags.nil? && scop.clear_flags.nil?
-        effects.create!("account_flags_updated", source_account, {
-          # TODO: fill in details
+
+      if thresholds_changed
+        details = {}
+        details["low_threshold"]  = scop.low_threshold  if scop.low_threshold.present?
+        details["med_threshold"]  = scop.med_threshold  if scop.med_threshold.present?
+        details["high_threshold"] = scop.high_threshold if scop.high_threshold.present?
+        effects.create!("account_thresholds_updated", source_account, details)
+      end
+
+      flag_changes = {}
+      Stellar::AccountFlags.parse_mask(scop.set_flags || 0).each do |af|
+        flag_changes [af.name] = true
+      end
+      Stellar::AccountFlags.parse_mask(scop.clear_flags || 0).each do |af|
+        flag_changes [af.name] = false
+      end
+
+      if flag_changes.any?
+        effects.create!("account_flags_updated", source_account, flag_changes)
+      end
+
+      if scop.master_weight.present?
+        #TODO: BLOCKED stellar-core: differentiate signer_updated and signer_added
+        #for master signer
+        effect = scop.master_weight == 0 ? "signer_removed" : "signer_updated"
+
+        effects.create!(effect, source_account, {
+          public_key: Stellar::Convert.pk_to_address(source_account),
+          weight: scop.master_weight,
+        })
+      end
+
+      if scop.signer.present?
+        effect = if scop.signer.weight == 0 
+                   "signer_removed"
+                 else
+                   #TODO: BLOCKED stellar-core: distinguish between new signers and updated signers
+                   "signer_created"
+                 end
+
+        effects.create!(effect, source_account, {
+          public_key: Stellar::Convert.pk_to_address(scop.signer.pub_key),
+          weight: scop.signer.weight,
         })
       end
 
     when Stellar::OperationType.change_trust
       scop = scop.body.change_trust_op!
-      effect = nil # if a trustline was added in the meta, use trustline_added
-                   # if limit is 0, use trustline_removed
-                   # otherwise trustline_updated
+      effect = if scop.limit == 0
+                 'trustline_removed'
+               else
+                 tlm = scopm.changes.first #TODO: add a less brittle method of finding the trustline entry in the meta
+                 if tlm.type == Stellar::LedgerEntryChangeType.ledger_entry_created
+                   'trustline_created'
+                 else
+                   'trustline_updated'
+                 end
+               end
 
-      # TODO
+      details = asset_details(scop.line)
+      details["limit"] = scop.limit
+
+      effects.create!(effect, source_account, details)
     when Stellar::OperationType.allow_trust
       scop = scop.body.allow_trust_op!
       asset = scop.asset
@@ -422,6 +465,7 @@ class History::LedgerImporterJob < ApplicationJob
 
       effects.create!(effect, source_account, details)
     when Stellar::OperationType.account_merge
+      # BLOCKED on AccountMergeResult updates
       # TODO: account_debited on source account of remaining lumens in source_account
       # TODO: account_credited on destination of remaining lumens in source_account
       effects.create!("account_removed", source_account, source_details)
@@ -467,5 +511,36 @@ class History::LedgerImporterJob < ApplicationJob
   #
   def create_master_history_account!
     History::Account.create!(address: Stellar::KeyPair.master.address, id: 0)
+  end
+
+  # given the provided account and a set of claim_offer_atoms, produce 2 trade
+  # effects (one for the buyer, one for the sellar) for each claim_offer_atom
+  def make_trades(effects, buyer, claim_offer_atoms)
+    claim_offer_atoms.each{|coa| make_trade effects, buyer, coa}
+  end
+
+  def make_trade(effects, buyer, claimed_offer)
+    seller = claimed_offer.offer_owner
+
+    buyer_details = { 
+      "offer_id"      => claimed_offer.offer_id,
+      "seller"        => Stellar::Convert.pk_to_address(seller),
+      "bought_amount" => claimed_offer.amount_claimed,
+      "sold_amount"   => claimed_offer.amount_send,
+    }
+    buyer_details.merge! asset_details(claimed_offer.asset_claimed, "bought_")
+    buyer_details.merge! asset_details(claimed_offer.asset_send, "sold_")
+
+    seller_details = { 
+      "offer_id"      => claimed_offer.offer_id,
+      "seller"        => Stellar::Convert.pk_to_address(buyer),
+      "bought_amount" => claimed_offer.amount_send,
+      "sold_amount"   => claimed_offer.amount_claimed,
+    }
+    seller_details.merge! asset_details(claimed_offer.asset_send, "bought_")
+    seller_details.merge! asset_details(claimed_offer.asset_claimed, "sold_")
+
+    effects.create!("trade", buyer, buyer_details)
+    effects.create!("trade", seller, seller_details)
   end
 end

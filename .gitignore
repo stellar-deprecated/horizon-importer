@@ -23,5 +23,5 @@ doc/generated/
 .yardoc/
 .DS_Store
 *sync-conflict*
-
+*.swp
 NOTES

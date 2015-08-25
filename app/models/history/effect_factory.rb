@@ -21,11 +21,11 @@ class History::EffectFactory
       first
 
     heff = History::Effect.create!({
-      history_account_id: hacc.id,
-      history_operation_id: @history_operation.id,
-      order: @current_index,
-      type: History::Effect::BY_NAME[type_name],
-      details: details,
+      history_account_id:    hacc.id,
+      history_operation_id:  @history_operation.id,
+      order:                 @current_index,
+      type:                  History::Effect::BY_NAME.fetch(type_name),
+      details:               details,
     })
     @current_index += 1
     @results << heff
