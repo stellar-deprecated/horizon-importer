@@ -62,15 +62,18 @@ class History::LedgerImporterJob < ApplicationJob
 
   def import_history_transaction(sctx)
     htx = History::Transaction.create!({
-      transaction_hash:  sctx.txid,
-      ledger_sequence:   sctx.ledgerseq,
-      application_order: sctx.txindex,
-      account:           sctx.submitting_address,
-      account_sequence:  sctx.submitting_sequence,
-      max_fee:           sctx.fee_paid,
-      fee_paid:          sctx.fee_paid,
-      operation_count:   sctx.operations.size,
-      transaction_status_id: -1,
+      transaction_hash:       sctx.txid,
+      ledger_sequence:        sctx.ledgerseq,
+      application_order:      sctx.txindex,
+      account:                sctx.submitting_address,
+      account_sequence:       sctx.submitting_sequence,
+      max_fee:                sctx.fee_paid,
+      fee_paid:               sctx.fee_paid,
+      operation_count:        sctx.operations.size,
+      tx_envelope:            sctx.txbody,
+      tx_result:              sctx.txresult,
+      tx_meta:                sctx.txmeta,
+      transaction_status_id:  -1,
     })
 
     sctx.participant_addresses.each do |addr|
