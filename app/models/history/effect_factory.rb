@@ -20,16 +20,12 @@ class History::EffectFactory
       where(address: Stellar::Convert.pk_to_address(account_public_key)).
       first
 
-    type = History::Effect::BY_NAME[type_name]
-
-    raise "Invalid type_name: #{type_name}" if type.blank?
-
     heff = History::Effect.create!({
-      history_account_id: hacc.id,
-      history_operation_id: @history_operation.id,
-      order: @current_index,
-      type: type,
-      details: details,
+      history_account_id:    hacc.id,
+      history_operation_id:  @history_operation.id,
+      order:                 @current_index,
+      type:                  History::Effect::BY_NAME.fetch(type_name),
+      details:               details,
     })
     @current_index += 1
     @results << heff
