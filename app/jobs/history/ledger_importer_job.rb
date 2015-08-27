@@ -531,7 +531,7 @@ class History::LedgerImporterJob < ApplicationJob
   #
   def create_master_history_account!
     return if History::Account.where(id:0).any?
-    History::Account.find_or_create!(address: Stellar::KeyPair.master.address, id: 0)
+    History::Account.create!(address: Stellar::KeyPair.master.address, id: 0)
   end
 
   # given the provided account and a set of claim_offer_atoms, produce 2 trade
