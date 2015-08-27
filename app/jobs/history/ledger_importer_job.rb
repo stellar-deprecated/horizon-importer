@@ -3,6 +3,15 @@
 # stellar_core database and imports them into the history database.
 #
 class History::LedgerImporterJob < ApplicationJob
+
+  # To allow for updated importer code, we version every history_ledger imported into the horizon by recording the
+  # constant below with the new record.  
+  #
+  # IMPORTANT: bump this number up if you ever change the behavior of the importer, so that the reimport system
+  # can detect the change and update older imported ledgers.
+  VERSION = 1 
+
+
   EMPTY_HASH            = "0" * 64
   DEFAULT_SIGNER_WEIGHT = 1
 
@@ -25,15 +34,23 @@ class History::LedgerImporterJob < ApplicationJob
           History::Ledger.validate_previous_ledger_hash!(stellar_core_ledger.prevhash, stellar_core_ledger.ledgerseq)
         end
 
-        #TODO: don't error out when uniqueness validation fails,
-        # instead emit a warning with the error summary
+        # clear out any existing imported data for this ledger, allowing us to re-import the data if necessary
+        found = History::Ledger.where(sequence: stellar_core_ledger.ledgerseq).first
+
+        if found.present?
+          found.transactions.each(&:destroy)
+          found.accounts.each(&:destroy)
+          found.destroy
+        end
+
         result = History::Ledger.create!({
           sequence:             stellar_core_ledger.ledgerseq,
           ledger_hash:          stellar_core_ledger.ledgerhash,
           previous_ledger_hash: (stellar_core_ledger.prevhash unless first_ledger),
           closed_at:            Time.at(stellar_core_ledger.closetime),
           transaction_count:    stellar_core_transactions.length,
-          operation_count:      stellar_core_transactions.map(&:operation_count).sum
+          operation_count:      stellar_core_transactions.map(&:operation_count).sum,
+          importer_version:     VERSION,
         })
 
         stellar_core_transactions.each do |sctx|
@@ -513,6 +530,7 @@ class History::LedgerImporterJob < ApplicationJob
   # a new account in some transaction's metadata.
   #
   def create_master_history_account!
+    return if History::Account.where(id:0).any?
     History::Account.create!(address: Stellar::KeyPair.master.address, id: 0)
   end
 

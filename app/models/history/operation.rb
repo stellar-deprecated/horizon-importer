@@ -13,6 +13,18 @@ class History::Operation < History::Base
   scope :before_token,      ->(cursor) { where('id < ?', cursor) }
   scope :after_token,       ->(cursor) { where('id > ?', cursor) }
 
+  has_many :participants, {
+    class_name:  "History::OperationParticipant", 
+    foreign_key: "history_operation_id",
+    dependent:   :delete_all,
+  }
+
+  has_many :effects, {
+    class_name:  "History::Effect", 
+    foreign_key: "history_operation_id",
+    dependent:   :delete_all,
+  }
+
   def type_as_enum
     Stellar::OperationType.by_value[type]
   end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150825180131) do
+ActiveRecord::Schema.define(version: 20150825223417) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -46,11 +46,13 @@ ActiveRecord::Schema.define(version: 20150825180131) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "id",                   limit: 8
+    t.integer  "importer_version",                default: 1, null: false
   end
 
   add_index "history_ledgers", ["closed_at"], name: "index_history_ledgers_on_closed_at", using: :btree
   add_index "history_ledgers", ["id"], name: "hs_ledger_by_id", unique: true, using: :btree
   add_index "history_ledgers", ["id"], name: "index_history_ledgers_on_id", unique: true, using: :btree
+  add_index "history_ledgers", ["importer_version"], name: "index_history_ledgers_on_importer_version", using: :btree
   add_index "history_ledgers", ["ledger_hash"], name: "index_history_ledgers_on_ledger_hash", unique: true, using: :btree
   add_index "history_ledgers", ["previous_ledger_hash"], name: "index_history_ledgers_on_previous_ledger_hash", unique: true, using: :btree
   add_index "history_ledgers", ["sequence"], name: "index_history_ledgers_on_sequence", unique: true, using: :btree

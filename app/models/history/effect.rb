@@ -46,4 +46,6 @@ class History::Effect < History::Base
     uniqueness: {scope: [:history_account_id, :history_operation_id]},
     numericality: true
 
+
+  belongs_to :operation, class_name: "History::Operation", foreign_key: "history_operation_id"
 end
