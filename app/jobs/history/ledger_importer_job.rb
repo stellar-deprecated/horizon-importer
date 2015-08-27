@@ -3,6 +3,15 @@
 # stellar_core database and imports them into the history database.
 #
 class History::LedgerImporterJob < ApplicationJob
+
+  # To allow for updated importer code, we version every history_ledger imported into the horizon by recording the
+  # constant below with the new record.  
+  #
+  # IMPORTANT: bump this number up if you ever change the behavior of the importer, so that the reimport system
+  # can detect the change and update older imported ledgers.
+  VERSION = 1 
+
+
   EMPTY_HASH            = "0" * 64
   DEFAULT_SIGNER_WEIGHT = 1
 
@@ -33,7 +42,8 @@ class History::LedgerImporterJob < ApplicationJob
           previous_ledger_hash: (stellar_core_ledger.prevhash unless first_ledger),
           closed_at:            Time.at(stellar_core_ledger.closetime),
           transaction_count:    stellar_core_transactions.length,
-          operation_count:      stellar_core_transactions.map(&:operation_count).sum
+          operation_count:      stellar_core_transactions.map(&:operation_count).sum,
+          importer_version:     VERSION,
         })
 
         stellar_core_transactions.each do |sctx|
