@@ -1,5 +1,7 @@
 class History::Ledger < History::Base
 
+  self.primary_key = "id"
+
   validates :sequence, {
     presence: true, 
     numericality: {greater_than_or_equal_to: 1}, 
@@ -68,10 +70,28 @@ class History::Ledger < History::Base
     order(:sequence).last
   end
 
+  def transactions
+    return [] if self.sequence.blank?
+    
+    History::Transaction.where(id: total_order_range)
+  end
+
+  def accounts
+    return [] if self.sequence.blank?
+    
+    History::Account.where(id: total_order_range)
+  end
+
   private
   def make_id
     return if self.sequence.blank?
     self.id = TotalOrderId.make(self.sequence)
+  end
+
+  def total_order_range
+    start = TotalOrderId.make(self.sequence)
+    finish = TotalOrderId.make(self.sequence + 1)
+    start...finish
   end
 
 end

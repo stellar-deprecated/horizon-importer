@@ -13,7 +13,14 @@ class History::Transaction < History::Base
   has_many :participants, {
     class_name: "History::TransactionParticipant", 
     foreign_key: :transaction_hash, 
-    primary_key: :transaction_hash, 
+    primary_key: :transaction_hash,
+    dependent:   :delete_all,
+  }
+
+  has_many :operations, {
+    class_name:  "History::Operation", 
+    foreign_key: "transaction_id",
+    dependent:   :destroy,
   }
 
   scope :for_account, ->(account_id) {

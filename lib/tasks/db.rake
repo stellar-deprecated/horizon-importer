@@ -11,6 +11,27 @@ namespace :db do
     end
   end
 
+  desc "updates imported ledger data that is out of date"
+  task :batch_update_history => :environment do
+    scope = History::Ledger.
+      where("importer_version < ?", History::LedgerImporterJob::VERSION).
+      order("id ASC")
+
+    updated = 0
+
+    loop do
+      to_update = scope.first(1000)
+      break if to_update.empty?
+
+      to_update.each do |hl|
+        History::LedgerImporterJob.new.perform(hl.sequence)
+        updated += 1
+      end
+    end
+
+    puts "#{updated} records updated"
+  end
+
   desc "clears all history tables"
   task :clear_history => :environment do
     Rails.application.eager_load!

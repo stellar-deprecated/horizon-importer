@@ -34,8 +34,15 @@ class History::LedgerImporterJob < ApplicationJob
           History::Ledger.validate_previous_ledger_hash!(stellar_core_ledger.prevhash, stellar_core_ledger.ledgerseq)
         end
 
-        #TODO: don't error out when uniqueness validation fails,
-        # instead emit a warning with the error summary
+        # clear out any existing imported data for this ledger, allowing us to re-import the data if necessary
+        found = History::Ledger.where(sequence: stellar_core_ledger.ledgerseq).first
+
+        if found.present?
+          found.transactions.each(&:destroy)
+          found.accounts.each(&:destroy)
+          found.destroy
+        end
+
         result = History::Ledger.create!({
           sequence:             stellar_core_ledger.ledgerseq,
           ledger_hash:          stellar_core_ledger.ledgerhash,
@@ -523,7 +530,8 @@ class History::LedgerImporterJob < ApplicationJob
   # a new account in some transaction's metadata.
   #
   def create_master_history_account!
-    History::Account.create!(address: Stellar::KeyPair.master.address, id: 0)
+    return if History::Account.where(id:0).any?
+    History::Account.find_or_create!(address: Stellar::KeyPair.master.address, id: 0)
   end
 
   # given the provided account and a set of claim_offer_atoms, produce 2 trade
