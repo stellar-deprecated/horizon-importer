@@ -123,7 +123,8 @@ class History::LedgerImporterJob < ApplicationJob
   def import_history_operations(sctx, htx)
     hops = []
 
-    sctx.operations_with_results.each_with_index do |op_and_r, application_order|
+    sctx.operations_with_results.each_with_index do |op_and_r, i|
+      application_order = i + 1
       op, result = *op_and_r
 
       source_account = op.source_account || sctx.source_account
