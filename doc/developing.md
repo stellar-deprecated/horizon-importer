@@ -10,7 +10,7 @@ This project is a Ruby on Rails project.
 - ruby 2.2 or later
 - bundler - (http://bundler.io/)
 - libsodium
-- postgresql
+- postgresql 9.4 or later (jsonb support is required)
 
 ## Installing Prerequisites on OS X
 
