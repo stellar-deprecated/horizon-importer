@@ -62,16 +62,27 @@ class StellarCore::Transaction < StellarCore::Base
   end
 
   def participants
-    # get all entries with type of "account"
+    results = []
     all_changes = meta.changes + meta.operations.flat_map(&:changes)
-    account_entries = all_changes.
-      select{|e| e.value.type == Stellar::LedgerEntryType.account }
+    all_changes.each do |change|
+      data = case change.type
+             when Stellar::LedgerEntryChangeType.ledger_entry_created
+               change.created!.data
+             when Stellar::LedgerEntryChangeType.ledger_entry_updated
+               change.updated!.data
+             when Stellar::LedgerEntryChangeType.ledger_entry_removed
+               change.removed!
+             else
+               raise "Unknown ledger entry change type: #{change.type}"
+             end
 
-    # extract the account id from each (both live and dead
-    # entries expose it through `account_id`)
-    account_entries
-      .map{|e| e.value.account!.account_id}
-      .uniq
+
+      next unless data.type == Stellar::LedgerEntryType.account
+
+      results << data.account!.account_id
+    end
+
+    results.uniq
   end
   memoize :participants
 
