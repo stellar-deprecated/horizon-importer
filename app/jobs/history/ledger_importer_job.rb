@@ -486,10 +486,12 @@ class History::LedgerImporterJob < ApplicationJob
 
       effects.create!(effect, source_account, details)
     when Stellar::OperationType.account_merge
-      # BLOCKED on AccountMergeResult updates
-      # TODO: account_debited on source account of remaining lumens in source_account
-      # TODO: account_credited on destination of remaining lumens in source_account
-      effects.create!("account_removed", source_account, source_details)
+      destination = scop.body.destination!
+      scresult = scresult.tr!.account_merge_result!
+      details = { amount: scresult.source_account_balance!, asset_type: "native" }
+      effects.create!("account_debited", source_account, details)
+      effects.create!("account_credited", destination, details)
+      effects.create!("account_removed", source_account, {})
     when Stellar::OperationType.inflation
       payouts = scresult.tr!.inflation_result!.payouts!
 
