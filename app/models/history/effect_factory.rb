@@ -9,7 +9,7 @@ class History::EffectFactory
   attr_reader :results
 
   def initialize(history_operation)
-    @current_index = 0
+    @current_index = 1
     @history_operation = history_operation
     @results = []
   end
