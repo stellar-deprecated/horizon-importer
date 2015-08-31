@@ -542,25 +542,25 @@ class History::LedgerImporterJob < ApplicationJob
   end
 
   def make_trade(effects, buyer, claimed_offer)
-    seller = claimed_offer.offer_owner
+    seller = claimed_offer.seller_id
 
     buyer_details = { 
       "offer_id"      => claimed_offer.offer_id,
       "seller"        => Stellar::Convert.pk_to_address(seller),
-      "bought_amount" => claimed_offer.amount_claimed,
-      "sold_amount"   => claimed_offer.amount_send,
+      "bought_amount" => claimed_offer.amount_sold,
+      "sold_amount"   => claimed_offer.amount_bought,
     }
-    buyer_details.merge! asset_details(claimed_offer.asset_claimed, "bought_")
-    buyer_details.merge! asset_details(claimed_offer.asset_send, "sold_")
+    buyer_details.merge! asset_details(claimed_offer.asset_sold, "bought_")
+    buyer_details.merge! asset_details(claimed_offer.asset_bought, "sold_")
 
     seller_details = { 
       "offer_id"      => claimed_offer.offer_id,
       "seller"        => Stellar::Convert.pk_to_address(buyer),
-      "bought_amount" => claimed_offer.amount_send,
-      "sold_amount"   => claimed_offer.amount_claimed,
+      "bought_amount" => claimed_offer.amount_bought,
+      "sold_amount"   => claimed_offer.amount_sold,
     }
-    seller_details.merge! asset_details(claimed_offer.asset_send, "bought_")
-    seller_details.merge! asset_details(claimed_offer.asset_claimed, "sold_")
+    seller_details.merge! asset_details(claimed_offer.asset_bought, "bought_")
+    seller_details.merge! asset_details(claimed_offer.asset_sold, "sold_")
 
     effects.create!("trade", buyer, buyer_details)
     effects.create!("trade", seller, seller_details)
