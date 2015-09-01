@@ -15,7 +15,7 @@ class History::LedgerImporterJob < ApplicationJob
 
 
   EMPTY_HASH            = "0" * 64
-  DEFAULT_SIGNER_WEIGHT = 1
+  DEFAULT_SIGNER_WEIGHT = 2
 
   def perform(ledger_sequence)
     stellar_core_ledger, stellar_core_transactions = load_stellar_core_data(ledger_sequence)
