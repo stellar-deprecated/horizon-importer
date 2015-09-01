@@ -355,7 +355,7 @@ class History::LedgerImporterJob < ApplicationJob
         amount: scop.starting_balance
       })
 
-      effects.create!("signer_created", source_account, {
+      effects.create!("signer_created", scop.destination, {
         public_key: Stellar::Convert.pk_to_address(scop.destination),
         weight: DEFAULT_SIGNER_WEIGHT,
       })
