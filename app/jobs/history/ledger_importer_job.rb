@@ -183,7 +183,8 @@ class History::LedgerImporterJob < ApplicationJob
         hop.details = {
           "offer_id" => offer.offer_id,
           "amount"   => as_amount(offer.amount),
-          "price"    => {
+          "price" => price_string(offer.price),
+          "price_r"    => {
             "n" => offer.price.n,
             "d" => offer.price.d,
           },
@@ -196,7 +197,8 @@ class History::LedgerImporterJob < ApplicationJob
 
         hop.details = {
           "amount"    => as_amount(offer.amount),
-          "price"     => {
+          "price" => price_string(offer.price),
+          "price_r"     => {
             "n" => offer.price.n,
             "d" => offer.price.d,
           }
@@ -571,6 +573,10 @@ class History::LedgerImporterJob < ApplicationJob
   end
 
   def as_amount(raw_amount)
-    (BigDecimal.new(raw_amount) / BigDecimal.new(Stellar::ONE)).to_s 
+    (BigDecimal.new(raw_amount) / BigDecimal.new(Stellar::ONE)).round(7, :truncate).to_s("F") 
+  end
+
+  def price_string(price)
+    (BigDecimal.new(price.n) / BigDecimal.new(price.d)).round(7, :truncate).to_s("F") 
   end
 end
