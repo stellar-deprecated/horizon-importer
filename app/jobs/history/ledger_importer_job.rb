@@ -1,3 +1,5 @@
+require 'bigdecimal'
+
 #
 # Takes the ledger header and transaction set of the requested sequence from the
 # stellar_core database and imports them into the history database.
@@ -13,7 +15,7 @@ class History::LedgerImporterJob < ApplicationJob
 
 
   EMPTY_HASH            = "0" * 64
-  DEFAULT_SIGNER_WEIGHT = 1
+  DEFAULT_SIGNER_WEIGHT = 2
 
   def perform(ledger_sequence)
     stellar_core_ledger, stellar_core_transactions = load_stellar_core_data(ledger_sequence)
@@ -84,8 +86,8 @@ class History::LedgerImporterJob < ApplicationJob
       application_order:      sctx.txindex,
       account:                sctx.submitting_address,
       account_sequence:       sctx.submitting_sequence,
-      max_fee:                sctx.fee_paid,
-      fee_paid:               sctx.fee_paid,
+      max_fee:                as_amount(sctx.fee_paid),
+      fee_paid:               as_amount(sctx.fee_paid),
       operation_count:        sctx.operations.size,
       tx_envelope:            sctx.txbody,
       tx_result:              sctx.txresult,
@@ -146,7 +148,7 @@ class History::LedgerImporterJob < ApplicationJob
         hop.details = {
           "funder"           => Stellar::Convert.pk_to_address(source_account),
           "account"          => Stellar::Convert.pk_to_address(op.destination),
-          "starting_balance" => op.starting_balance,
+          "starting_balance" => as_amount(op.starting_balance),
         }
       when Stellar::OperationType.payment
         payment = op.body.payment_op!
@@ -154,7 +156,7 @@ class History::LedgerImporterJob < ApplicationJob
         hop.details = {
           "from"   => Stellar::Convert.pk_to_address(source_account),
           "to"     => Stellar::Convert.pk_to_address(payment.destination),
-          "amount" => payment.amount,
+          "amount" => as_amount(payment.amount),
         }
         hop.details.merge! asset_details(payment.asset)
 
@@ -167,8 +169,8 @@ class History::LedgerImporterJob < ApplicationJob
         hop.details = {
           "from"          => Stellar::Convert.pk_to_address(source_account),
           "to"            => Stellar::Convert.pk_to_address(payment.destination),
-          "amount"        => payment.dest_amount,
-          "source_amount" => result.send_amount
+          "amount"        => as_amount(payment.dest_amount),
+          "source_amount" => as_amount(result.send_amount),
         }
 
         hop.details.merge! asset_details(payment.dest_asset)
@@ -180,8 +182,9 @@ class History::LedgerImporterJob < ApplicationJob
 
         hop.details = {
           "offer_id" => offer.offer_id,
-          "amount"   => offer.amount,
-          "price"    => {
+          "amount"   => as_amount(offer.amount),
+          "price" => price_string(offer.price),
+          "price_r"    => {
             "n" => offer.price.n,
             "d" => offer.price.d,
           },
@@ -193,8 +196,9 @@ class History::LedgerImporterJob < ApplicationJob
         offer = op.body.create_passive_offer_op!
 
         hop.details = {
-          "amount"    => offer.amount,
-          "price"     => {
+          "amount"    => as_amount(offer.amount),
+          "price" => price_string(offer.price),
+          "price_r"     => {
             "n" => offer.price.n,
             "d" => offer.price.d,
           }
@@ -255,7 +259,7 @@ class History::LedgerImporterJob < ApplicationJob
 
         hop.details = {
           "trustor" => Stellar::Convert.pk_to_address(source_account),
-          "limit"   => ctop.limit
+          "limit"   => as_amount(ctop.limit),
         }
         hop.details.merge! asset_details(asset)
         hop.details["trustee"] = hop.details["asset_issuer"]
@@ -347,12 +351,12 @@ class History::LedgerImporterJob < ApplicationJob
       scop = scop.body.create_account_op!
 
       effects.create!("account_created", scop.destination, {
-        starting_balance: scop.starting_balance,
+        starting_balance: as_amount(scop.starting_balance),
       })
 
       effects.create!("account_debited", source_account, {
         asset_type: "native",
-        amount: scop.starting_balance
+        amount: as_amount(scop.starting_balance)
       })
 
       effects.create!("signer_created", scop.destination, {
@@ -361,19 +365,19 @@ class History::LedgerImporterJob < ApplicationJob
       })
     when Stellar::OperationType.payment
       scop = scop.body.payment_op!
-      details = { amount: scop.amount }
+      details = { amount: as_amount(scop.amount) }
       details.merge!  asset_details(scop.asset)
       effects.create!("account_credited", scop.destination, details)
       effects.create!("account_debited", source_account, details)
     when Stellar::OperationType.path_payment
       scop = scop.body.path_payment_op!
 
-      dest_details = { amount: scop.dest_amount }
+      dest_details = { amount: as_amount(scop.dest_amount) }
       dest_details.merge!  asset_details(scop.dest_asset)
       effects.create!("account_credited", scop.destination, dest_details)
 
       scresult = scresult.tr!.path_payment_result!
-      source_details = { amount: scresult.send_amount }
+      source_details = { amount: as_amount(scresult.send_amount) }
       source_details.merge!  asset_details(scop.send_asset)
 
       effects.create!("account_credited", scop.destination, dest_details)
@@ -459,7 +463,7 @@ class History::LedgerImporterJob < ApplicationJob
                end
 
       details = asset_details(scop.line)
-      details["limit"] = scop.limit
+      details["limit"] = as_amount(scop.limit)
 
       effects.create!(effect, source_account, details)
     when Stellar::OperationType.allow_trust
@@ -488,7 +492,7 @@ class History::LedgerImporterJob < ApplicationJob
     when Stellar::OperationType.account_merge
       destination = scop.body.destination!
       scresult = scresult.tr!.account_merge_result!
-      details = { amount: scresult.source_account_balance!, asset_type: "native" }
+      details = { amount: as_amount(scresult.source_account_balance!), asset_type: "native" }
       effects.create!("account_debited", source_account, details)
       effects.create!("account_credited", destination, details)
       effects.create!("account_removed", source_account, {})
@@ -496,7 +500,7 @@ class History::LedgerImporterJob < ApplicationJob
       payouts = scresult.tr!.inflation_result!.payouts!
 
       payouts.each do |payout|
-        details = { amount: payout.amount, asset_type: "native" }
+        details = { amount: as_amount(payout.amount), asset_type: "native" }
         effects.create!("account_credited", payout.destination, details)
       end
     else
@@ -549,8 +553,8 @@ class History::LedgerImporterJob < ApplicationJob
     buyer_details = { 
       "offer_id"      => claimed_offer.offer_id,
       "seller"        => Stellar::Convert.pk_to_address(seller),
-      "bought_amount" => claimed_offer.amount_sold,
-      "sold_amount"   => claimed_offer.amount_bought,
+      "bought_amount" => as_amount(claimed_offer.amount_sold),
+      "sold_amount"   => as_amount(claimed_offer.amount_bought),
     }
     buyer_details.merge! asset_details(claimed_offer.asset_sold, "bought_")
     buyer_details.merge! asset_details(claimed_offer.asset_bought, "sold_")
@@ -558,13 +562,21 @@ class History::LedgerImporterJob < ApplicationJob
     seller_details = { 
       "offer_id"      => claimed_offer.offer_id,
       "seller"        => Stellar::Convert.pk_to_address(buyer),
-      "bought_amount" => claimed_offer.amount_bought,
-      "sold_amount"   => claimed_offer.amount_sold,
+      "bought_amount" => as_amount(claimed_offer.amount_bought),
+      "sold_amount"   => as_amount(claimed_offer.amount_sold),
     }
     seller_details.merge! asset_details(claimed_offer.asset_bought, "bought_")
     seller_details.merge! asset_details(claimed_offer.asset_sold, "sold_")
 
     effects.create!("trade", buyer, buyer_details)
     effects.create!("trade", seller, seller_details)
+  end
+
+  def as_amount(raw_amount)
+    (BigDecimal.new(raw_amount) / BigDecimal.new(Stellar::ONE)).round(7, :truncate).to_s("F") 
+  end
+
+  def price_string(price)
+    (BigDecimal.new(price.n) / BigDecimal.new(price.d)).round(7, :truncate).to_s("F") 
   end
 end
