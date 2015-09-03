@@ -1,9 +1,9 @@
 # Horizon Importer
 
-[![Build Status](https://travis-ci.org/stellar/horizon.svg)](https://travis-ci.org/stellar/horizon)
-[![Code Climate](https://codeclimate.com/github/stellar/horizon/badges/gpa.svg)](https://codeclimate.com/github/stellar/horizon)
+[![Build Status](https://travis-ci.org/stellar/horizon-importer.svg)](https://travis-ci.org/stellar/horizon-importer)
+[![Code Climate](https://codeclimate.com/github/stellar/horizon-importer/badges/gpa.svg)](https://codeclimate.com/github/stellar/horizon-importer)
 
-Horizon Importer imports transaction data into a history database on behalf of the [Horizon API Server](http://github.com/stellar/go-horizon).  
+Horizon Importer imports transaction data into a history database on behalf of the [Horizon API Server](http://github.com/stellar/horizon).  
 
 Originally, horizon was written in ruby before it was decided to port it to go.  This project is the remnants of that original ruby codebase, and until the go port is complete, this project still handles:
 
