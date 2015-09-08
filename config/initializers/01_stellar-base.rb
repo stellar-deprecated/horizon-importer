@@ -11,3 +11,5 @@
 # be able to initialize rails to the point where rake tasks can run.
 # 
 require 'stellar-base'
+
+Stellar.default_network = ENV["NETWORK_PASSPHRASE"]
