@@ -27,4 +27,4 @@ doc/generated/
 NOTES
 
 # Ignore horizon sql files (they not used by horizon proper)
-/spec/fixtures/scenarios/*.history.sql
+/spec/fixtures/scenarios/*-horizon.sql
