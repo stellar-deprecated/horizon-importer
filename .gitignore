@@ -25,3 +25,6 @@ doc/generated/
 *sync-conflict*
 *.swp
 NOTES
+
+# Ignore horizon sql files (they not used by horizon proper)
+/spec/fixtures/scenarios/*.history.sql
