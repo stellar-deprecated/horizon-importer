@@ -39,7 +39,7 @@ class Friendbot
       account:          @keypair,
       destination:      destination,
       sequence:         @sequence + 1,
-      starting_balance: 1000_000000
+      starting_balance: 10000 * Stellar::ONE
     })
 
     b64 = tx.to_envelope(@keypair).to_xdr(:base64)
