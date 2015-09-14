@@ -4,15 +4,21 @@ namespace :db do
   task :rebuild_history => ["db:clear_history", "db:batch_import_history"]
 
   desc "imports as many un-imported ledgers as possible"
-  task :batch_import_history => :environment do
+  task :batch_import_history => :environment_without_importer do
     # TODO: include activerecord-stream for better scalability
     StellarCore::LedgerHeader.order("ledgerseq ASC").all.each do |header|
       History::LedgerImporterJob.new.perform(header.sequence)
     end
   end
 
+  desc "loads environment, but ensures that the ledger poller actor does not start up"
+  task :environment_without_importer do
+    ENV["IMPORT_HISTORY"] = "false"
+    Rake::Task["environment"].invoke 
+  end
+
   desc "updates imported ledger data that is out of date"
-  task :batch_update_history => :environment do
+  task :batch_update_history => :environment_without_importer do
     scope = History::Ledger.
       where("importer_version < ?", History::LedgerImporterJob::VERSION).
       order("id ASC")
@@ -33,7 +39,7 @@ namespace :db do
   end
 
   desc "clears all history tables"
-  task :clear_history => :environment do
+  task :clear_history => :environment_without_importer do
     Rails.application.eager_load!
     History::Base.transaction do
       History::Base.descendants.each(&:delete_all)
@@ -44,7 +50,7 @@ namespace :db do
   SCENARIO_BASE_PATH = "spec/fixtures/scenarios"
 
   desc "runs testing scenarios, dumping results to tmp/secenarios"
-  task :build_scenarios => ["db:setup", :environment] do
+  task :build_scenarios => ["db:setup", :environment_without_importer] do
     Rails.application.eager_load!
 
     raise "This should only be run from RAILS_ENV='test'" unless Rails.env.test?
@@ -57,7 +63,7 @@ namespace :db do
   end
 
   desc "loads a testing scenario"
-  task :load_scenario => :environment do
+  task :load_scenario => :environment_without_importer do
     Rails.application.eager_load!
 
     scenario_name = ENV["SCENARIO"]
