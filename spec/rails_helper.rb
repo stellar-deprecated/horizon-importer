@@ -16,8 +16,10 @@ RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
 
   config.before(:suite) do
-    FactoryGirl.lint
+    DatabaseCleaner.logger = Rails.logger
     DatabaseCleaner.strategy = :truncation
+    DatabaseCleaner.clean_with(:truncation)
+    FactoryGirl.lint
     DatabaseCleaner.clean_with(:truncation)
   end
 
