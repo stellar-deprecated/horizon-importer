@@ -90,7 +90,7 @@ class History::LedgerImporterJob < ApplicationJob
       fee_paid:               as_amount(sctx.fee_paid),
       operation_count:        sctx.operations.size,
       tx_envelope:            sctx.txbody,
-      tx_result:              sctx.txresult,
+      tx_result:              sctx.txresult_without_pair,
       tx_meta:                sctx.txmeta,
       transaction_status_id:  -1,
     })

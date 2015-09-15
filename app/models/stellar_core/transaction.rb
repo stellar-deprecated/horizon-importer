@@ -108,4 +108,8 @@ class StellarCore::Transaction < StellarCore::Base
   memoize def operations_with_results
     operations.zip(operation_results)
   end
+
+  def txresult_without_pair
+    Stellar::Convert.to_base64 result.to_xdr
+  end
 end
