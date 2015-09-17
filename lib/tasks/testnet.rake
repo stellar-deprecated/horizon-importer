@@ -14,7 +14,7 @@ namespace :testnet do
       account:          source,
       destination:      destination,
       sequence:         sequence + 1,
-      starting_balance: 10_000_000 * Stellar::ONE,
+      starting_balance: 10_000_000 ,
     })
 
     base64 = tx.to_envelope(source).to_xdr(:base64)
