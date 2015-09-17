@@ -32,7 +32,7 @@ class StellarCore::Transaction < StellarCore::Base
 
   def meta
     raw_meta = Stellar::Convert.from_base64(self.txmeta)
-    Stellar::TransactionMeta.from_xdr(raw_meta).v0!
+    Stellar::TransactionMeta.from_xdr(raw_meta)
   end
   memoize :meta
 
@@ -63,7 +63,7 @@ class StellarCore::Transaction < StellarCore::Base
 
   def participants
     results = []
-    all_changes = meta.changes + meta.operations.flat_map(&:changes)
+    all_changes = meta.operations!.flat_map(&:changes)
     all_changes.each do |change|
       data = case change.type
              when Stellar::LedgerEntryChangeType.ledger_entry_created

@@ -344,7 +344,7 @@ class History::LedgerImporterJob < ApplicationJob
     effects = History::EffectFactory.new(hop)
     source_account = scop.source_account || sctx.source_account
     op_index = sctx.operations.index(scop)
-    scopm = sctx.meta.operations[op_index]
+    scopm = sctx.meta.operations![op_index]
 
     case hop.type_as_enum
     when Stellar::OperationType.create_account

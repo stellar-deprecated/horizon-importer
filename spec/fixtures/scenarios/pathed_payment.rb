@@ -9,12 +9,12 @@ account :scott,  FactoryGirl.create(:scott_key_pair)
 account :andrew, FactoryGirl.create(:andrew_key_pair)
 account :bartek, FactoryGirl.create(:bartek_key_pair)
 
-create_account :usd_gateway, :master, 1000_000000
-create_account :eur_gateway, :master, 1000_000000
+create_account :usd_gateway, :master, 100
+create_account :eur_gateway, :master, 100
 
-create_account :andrew, :master, 1000_000000
-create_account :bartek, :master, 1000_000000
-create_account :scott, :master, 1000_000000
+create_account :andrew, :master, 100
+create_account :bartek, :master, 100
+create_account :scott, :master, 100
 
 close_ledger
 
@@ -25,14 +25,14 @@ trust :andrew, :eur_gateway, "EUR"
 
 close_ledger
 
-payment :usd_gateway, :scott,  ["USD", :usd_gateway, 1000_000000]
-payment :usd_gateway, :andrew, ["USD", :usd_gateway, 200_000000]
-payment :eur_gateway, :andrew, ["EUR", :eur_gateway, 200_000000]
-payment :eur_gateway, :bartek, ["EUR", :eur_gateway, 1000_000000]
+payment :usd_gateway, :scott,  ["USD", :usd_gateway, 100]
+payment :usd_gateway, :andrew, ["USD", :usd_gateway, 20]
+payment :eur_gateway, :andrew, ["EUR", :eur_gateway, 20]
+payment :eur_gateway, :bartek, ["EUR", :eur_gateway, 100]
 
 close_ledger
 
-offer :andrew, {buy:["USD", :usd_gateway], with:["EUR", :eur_gateway]}, 200_000000, 1.0
+offer :andrew, {buy:["USD", :usd_gateway], with:["EUR", :eur_gateway]}, 20, 1.0
 
 close_ledger
 
