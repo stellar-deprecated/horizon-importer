@@ -92,7 +92,7 @@ class History::LedgerImporterJob < ApplicationJob
       tx_envelope:            sctx.txbody,
       tx_result:              sctx.txresult_without_pair,
       tx_meta:                sctx.txmeta,
-      transaction_status_id:  -1,
+      tx_fee_meta:            sctx.fee_meta.xdr,
     })
 
     sctx.participant_addresses.each do |addr|

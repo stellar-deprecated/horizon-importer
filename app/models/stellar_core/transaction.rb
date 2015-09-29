@@ -7,6 +7,12 @@ class StellarCore::Transaction < StellarCore::Base
     foreign_key: :ledgerseq,
     primary_key: :ledgerseq,
   }
+  
+  has_one :fee_meta, {
+    class_name: "StellarCore::FeeMeta",
+    foreign_key: "txid",
+    primary_key: "txid",
+  }
 
   delegate :tx,          to: :envelope
   delegate :result,      to: :result_pair

@@ -202,13 +202,13 @@ CREATE TABLE history_transactions (
     max_fee integer NOT NULL,
     fee_paid integer NOT NULL,
     operation_count integer NOT NULL,
-    transaction_status_id integer NOT NULL,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     id bigint,
-    tx_envelope text,
-    tx_result text,
-    tx_meta text
+    tx_envelope text NOT NULL,
+    tx_result text NOT NULL,
+    tx_meta text NOT NULL,
+    tx_fee_meta text NOT NULL
 );
 
 
@@ -217,7 +217,7 @@ CREATE TABLE history_transactions (
 --
 
 CREATE TABLE schema_migrations (
-    version character varying NOT NULL
+    version character varying(255) NOT NULL
 );
 
 
@@ -285,13 +285,6 @@ CREATE INDEX by_hash ON history_transactions USING btree (transaction_hash);
 --
 
 CREATE INDEX by_ledger ON history_transactions USING btree (ledger_sequence, application_order);
-
-
---
--- Name: by_status; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX by_status ON history_transactions USING btree (transaction_status_id);
 
 
 --
@@ -479,4 +472,6 @@ INSERT INTO schema_migrations (version) VALUES ('20150825180131');
 INSERT INTO schema_migrations (version) VALUES ('20150825223417');
 
 INSERT INTO schema_migrations (version) VALUES ('20150902224148');
+
+INSERT INTO schema_migrations (version) VALUES ('20150929205440');
 
