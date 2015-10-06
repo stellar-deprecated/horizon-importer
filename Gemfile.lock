@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/bkeepers/dotenv.git
-  revision: e13bf8a877e2237b1c91c66c775f88bbcaafe314
+  revision: 8006812f122efe09319e691fda4b1dd4a7ff6889
   specs:
     dotenv (2.0.2)
     dotenv-rails (2.0.2)
@@ -9,7 +9,7 @@ GIT
 
 GIT
   remote: git://github.com/stellar/stellar_core_commander.git
-  revision: 3cf3a37cb99286ed4d6e39cc78b03710201aa0a5
+  revision: 65001ef09effe36896956eb73c348c8b236678df
   specs:
     stellar_core_commander (0.0.12)
       activesupport (>= 4.0.0)
@@ -113,7 +113,7 @@ GEM
       rspec (>= 2.99.0, < 4.0)
     hitimes (1.2.3)
     i18n (0.7.0)
-    jbuilder (2.3.1)
+    jbuilder (2.3.2)
       activesupport (>= 3.0.0, < 5)
       multi_json (~> 1.2)
     json (1.8.3)
@@ -151,13 +151,13 @@ GEM
     oat (0.4.6)
       activesupport
     pg (0.18.3)
-    pry (0.10.1)
+    pry (0.10.2)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
     pry-rails (0.3.4)
       pry (>= 0.9.10)
-    puma (2.13.4)
+    puma (2.14.0)
     rack (1.6.4)
     rack-attack (4.3.0)
       rack
@@ -223,7 +223,7 @@ GEM
     sdoc (0.4.1)
       json (~> 1.7, >= 1.7.7)
       rdoc (~> 4.0)
-    sentry-raven (0.15.0)
+    sentry-raven (0.15.2)
       faraday (>= 0.7.6)
     sequel (4.21.0)
     shellany (0.0.1)
@@ -235,20 +235,20 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
     slop (3.6.0)
-    sprockets (3.3.4)
-      rack (~> 1.0)
+    sprockets (3.3.5)
+      rack (> 1, < 3)
     sprockets-rails (2.3.3)
       actionpack (>= 3.0)
       activesupport (>= 3.0)
       sprockets (>= 2.8, < 4.0)
     sqlite3 (1.3.10)
-    stellar-base (0.6.1)
+    stellar-base (0.7.0)
       activesupport (~> 4)
       base32
       digest-crc
       rbnacl
       rbnacl-libsodium (~> 1.0.3)
-      xdr (>= 0.0.4)
+      xdr (~> 1.0.0)
     sucker_punch (1.5.1)
       celluloid (= 0.16.0)
     thor (0.19.1)
@@ -262,7 +262,7 @@ GEM
     webmock (1.21.0)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
-    xdr (0.1.0)
+    xdr (1.0.0)
       activemodel (~> 4)
       activesupport (~> 4)
       backports (~> 3.6)
@@ -301,7 +301,7 @@ DEPENDENCIES
   rspec-rails
   sdoc (~> 0.4.0)
   sentry-raven
-  shoulda-matchers
+  shoulda-matchers (= 2.8.0)
   simplecov
   sqlite3
   stellar-base

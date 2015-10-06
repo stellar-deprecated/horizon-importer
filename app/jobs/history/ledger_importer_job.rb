@@ -11,7 +11,7 @@ class History::LedgerImporterJob < ApplicationJob
   #
   # IMPORTANT: bump this number up if you ever change the behavior of the importer, so that the reimport system
   # can detect the change and update older imported ledgers.
-  VERSION = 1 
+  VERSION = 2 
 
 
   EMPTY_HASH            = "0" * 64
@@ -173,10 +173,12 @@ class History::LedgerImporterJob < ApplicationJob
           "to"            => Stellar::Convert.pk_to_address(payment.destination),
           "amount"        => as_amount(payment.dest_amount),
           "source_amount" => as_amount(result.send_amount),
+          "source_max"    => as_amount(payment.send_max)
         }
 
         hop.details.merge! asset_details(payment.dest_asset)
-        hop.details.merge! asset_details(payment.send_asset, "send_")
+        hop.details.merge! asset_details(payment.send_asset, "source_")
+        hop.details["path"] = payment.path.map{|a| asset_details(a)}
 
         participant_addresses << hop.details["to"]
       when Stellar::OperationType.manage_offer
@@ -539,8 +541,8 @@ class History::LedgerImporterJob < ApplicationJob
   # a new account in some transaction's metadata.
   #
   def create_master_history_account!
-    return if History::Account.where(id:0).any?
-    History::Account.create!(address: Stellar::KeyPair.master.address, id: 0)
+    return if History::Account.where(id:1).any?
+    History::Account.create!(address: Stellar::KeyPair.master.address, id: 1)
   end
 
   # given the provided account and a set of claim_offer_atoms, produce 2 trade
