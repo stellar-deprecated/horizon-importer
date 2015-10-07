@@ -123,7 +123,8 @@ CREATE TABLE history_operations (
     transaction_id bigint NOT NULL,
     application_order integer NOT NULL,
     type integer NOT NULL,
-    details jsonb
+    details jsonb,
+    source_account character varying(64) DEFAULT ''::character varying NOT NULL
 );
 
 
@@ -208,7 +209,11 @@ CREATE TABLE history_transactions (
     tx_envelope text NOT NULL,
     tx_result text NOT NULL,
     tx_meta text NOT NULL,
-    tx_fee_meta text NOT NULL
+    tx_fee_meta text NOT NULL,
+    signatures character varying(96)[] DEFAULT '{}'::character varying[] NOT NULL,
+    memo_type character varying DEFAULT 'none'::character varying NOT NULL,
+    memo character varying,
+    time_bounds int8range
 );
 
 
@@ -474,4 +479,6 @@ INSERT INTO schema_migrations (version) VALUES ('20150825223417');
 INSERT INTO schema_migrations (version) VALUES ('20150902224148');
 
 INSERT INTO schema_migrations (version) VALUES ('20150929205440');
+
+INSERT INTO schema_migrations (version) VALUES ('20151006205250');
 

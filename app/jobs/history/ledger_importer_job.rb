@@ -81,18 +81,22 @@ class History::LedgerImporterJob < ApplicationJob
 
   def import_history_transaction(sctx)
     htx = History::Transaction.create!({
-      transaction_hash:       sctx.txid,
-      ledger_sequence:        sctx.ledgerseq,
-      application_order:      sctx.txindex,
-      account:                sctx.submitting_address,
-      account_sequence:       sctx.submitting_sequence,
-      max_fee:                as_amount(sctx.fee_paid),
-      fee_paid:               as_amount(sctx.fee_paid),
-      operation_count:        sctx.operations.size,
-      tx_envelope:            sctx.txbody,
-      tx_result:              sctx.txresult_without_pair,
-      tx_meta:                sctx.txmeta,
-      tx_fee_meta:            sctx.fee_meta.xdr,
+      transaction_hash:   sctx.txid,
+      ledger_sequence:    sctx.ledgerseq,
+      application_order:  sctx.txindex,
+      account:            sctx.submitting_address,
+      account_sequence:   sctx.submitting_sequence,
+      max_fee:            as_amount(sctx.fee_paid),
+      fee_paid:           as_amount(sctx.fee_paid),
+      operation_count:    sctx.operations.size,
+      tx_envelope:        sctx.txbody,
+      tx_result:          sctx.txresult_without_pair,
+      tx_meta:            sctx.txmeta,
+      tx_fee_meta:        sctx.fee_meta.xdr,
+      signatures:         sctx.signatures,
+      time_bounds:        sctx.time_bounds,
+      memo_type:          sctx.memo_type,
+      memo:               sctx.memo,
     })
 
     sctx.participant_addresses.each do |addr|
@@ -132,13 +136,15 @@ class History::LedgerImporterJob < ApplicationJob
       op, result = *op_and_r
 
       source_account = op.source_account || sctx.source_account
-      participant_addresses = [Stellar::Convert.pk_to_address(source_account)]
+      source_address = Stellar::Convert.pk_to_address(source_account) 
+      participant_addresses = [source_address]
 
       hop = History::Operation.new({
-        transaction_id:    htx.id,
-        application_order: application_order,
-        type:              op.body.type.value,
-        details:           {},
+        transaction_id:     htx.id,
+        application_order:  application_order,
+        type:               op.body.type.value,
+        source_account:     source_address,
+        details:            {},
       })
 
 
