@@ -11,7 +11,7 @@ class History::LedgerImporterJob < ApplicationJob
   #
   # IMPORTANT: bump this number up if you ever change the behavior of the importer, so that the reimport system
   # can detect the change and update older imported ledgers.
-  VERSION = 1 
+  VERSION = 2 
 
 
   EMPTY_HASH            = "0" * 64
@@ -81,18 +81,22 @@ class History::LedgerImporterJob < ApplicationJob
 
   def import_history_transaction(sctx)
     htx = History::Transaction.create!({
-      transaction_hash:       sctx.txid,
-      ledger_sequence:        sctx.ledgerseq,
-      application_order:      sctx.txindex,
-      account:                sctx.submitting_address,
-      account_sequence:       sctx.submitting_sequence,
-      max_fee:                as_amount(sctx.fee_paid),
-      fee_paid:               as_amount(sctx.fee_paid),
-      operation_count:        sctx.operations.size,
-      tx_envelope:            sctx.txbody,
-      tx_result:              sctx.txresult_without_pair,
-      tx_meta:                sctx.txmeta,
-      tx_fee_meta:            sctx.fee_meta.xdr,
+      transaction_hash:   sctx.txid,
+      ledger_sequence:    sctx.ledgerseq,
+      application_order:  sctx.txindex,
+      account:            sctx.submitting_address,
+      account_sequence:   sctx.submitting_sequence,
+      max_fee:            as_amount(sctx.fee_paid),
+      fee_paid:           as_amount(sctx.fee_paid),
+      operation_count:    sctx.operations.size,
+      tx_envelope:        sctx.txbody,
+      tx_result:          sctx.txresult_without_pair,
+      tx_meta:            sctx.txmeta,
+      tx_fee_meta:        sctx.fee_meta.xdr,
+      signatures:         sctx.signatures,
+      time_bounds:        sctx.time_bounds,
+      memo_type:          sctx.memo_type,
+      memo:               sctx.memo,
     })
 
     sctx.participant_addresses.each do |addr|
@@ -132,13 +136,15 @@ class History::LedgerImporterJob < ApplicationJob
       op, result = *op_and_r
 
       source_account = op.source_account || sctx.source_account
-      participant_addresses = [Stellar::Convert.pk_to_address(source_account)]
+      source_address = Stellar::Convert.pk_to_address(source_account) 
+      participant_addresses = [source_address]
 
       hop = History::Operation.new({
-        transaction_id:    htx.id,
-        application_order: application_order,
-        type:              op.body.type.value,
-        details:           {},
+        transaction_id:     htx.id,
+        application_order:  application_order,
+        type:               op.body.type.value,
+        source_account:     source_address,
+        details:            {},
       })
 
 
@@ -173,10 +179,12 @@ class History::LedgerImporterJob < ApplicationJob
           "to"            => Stellar::Convert.pk_to_address(payment.destination),
           "amount"        => as_amount(payment.dest_amount),
           "source_amount" => as_amount(result.send_amount),
+          "source_max"    => as_amount(payment.send_max)
         }
 
         hop.details.merge! asset_details(payment.dest_asset)
-        hop.details.merge! asset_details(payment.send_asset, "send_")
+        hop.details.merge! asset_details(payment.send_asset, "source_")
+        hop.details["path"] = payment.path.map{|a| asset_details(a)}
 
         participant_addresses << hop.details["to"]
       when Stellar::OperationType.manage_offer
@@ -539,8 +547,8 @@ class History::LedgerImporterJob < ApplicationJob
   # a new account in some transaction's metadata.
   #
   def create_master_history_account!
-    return if History::Account.where(id:0).any?
-    History::Account.create!(address: Stellar::KeyPair.master.address, id: 0)
+    return if History::Account.where(id:1).any?
+    History::Account.create!(address: Stellar::KeyPair.master.address, id: 1)
   end
 
   # given the provided account and a set of claim_offer_atoms, produce 2 trade

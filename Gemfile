@@ -46,7 +46,7 @@ gem 'dotenv-rails', github: "bkeepers/dotenv"
 group :test, :development do
   gem 'rspec-rails'
   gem 'pry-rails'
-  gem 'shoulda-matchers'
+  gem 'shoulda-matchers', "= 2.8.0"
   gem 'guard'
   gem 'guard-rspec'
   gem 'factory_girl_rails'

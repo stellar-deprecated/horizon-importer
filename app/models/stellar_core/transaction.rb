@@ -118,4 +118,41 @@ class StellarCore::Transaction < StellarCore::Base
   def txresult_without_pair
     Stellar::Convert.to_base64 result.to_xdr
   end
+
+  def signatures
+    envelope.signatures.map{|s| Stellar::Convert.to_base64(s.signature)}
+  end
+
+  def memo_type
+    type = envelope.tx.memo.type
+    case type
+    when Stellar::MemoType.memo_none ;    "none"
+    when Stellar::MemoType.memo_text ;    "text"
+    when Stellar::MemoType.memo_id ;      "id"
+    when Stellar::MemoType.memo_hash ;    "hash"
+    when Stellar::MemoType.memo_return ;  "return"
+    else
+      raise "Unknown memo type: #{type}"
+    end
+  end
+
+  def memo
+    case memo_type
+    when "none" ;    nil
+    when "text" ;    envelope.tx.memo.text!
+    when "id" ;      envelope.tx.memo.id!.to_s
+    when "hash" ;    Stellar::Convert.to_base64(envelope.tx.memo.hash!)
+    when "return" ;  Stellar::Convert.to_base64(envelope.tx.memo.ret_hash!)
+    else
+      raise "Unknown memo type: #{type}"
+    end
+  end
+
+  def time_bounds
+    tb = envelope.tx.time_bounds
+    return nil if tb.blank?
+
+    tb.min_time..tb.max_time
+  end
+
 end
