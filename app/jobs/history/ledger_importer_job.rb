@@ -115,8 +115,10 @@ class History::LedgerImporterJob < ApplicationJob
       destination_pk      = pop.destination
       destination_address = Stellar::Convert.pk_to_address(destination_pk)
       id                  = TotalOrderId.make(sctx.ledgerseq, sctx.txindex, i+1)
-
-      haccs << History::Account.create!(address: destination_address, id: id)
+  
+      unless History::Account.where(address: destination_address).any? 
+        haccs << History::Account.create!(address: destination_address, id: id)
+      end
     end
 
     haccs
