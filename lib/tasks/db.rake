@@ -5,9 +5,18 @@ namespace :db do
 
   desc "imports as many un-imported ledgers as possible"
   task :batch_import_history => :environment_without_importer do
-    # TODO: include activerecord-stream for better scalability
-    StellarCore::LedgerHeader.order("ledgerseq ASC").all.each do |header|
-      History::LedgerImporterJob.new.perform(header.sequence)
+
+    loop do
+      last_ledger = History::Ledger.maximum(:sequence) || 0
+      new_ledgers = StellarCore::LedgerHeader.
+        where("ledgerseq > ?", last_ledger).
+        order("ledgerseq ASC").
+        limit(100).
+        to_a
+
+      break unless new_ledgers.any?
+
+      new_ledgers.each{|h| History::LedgerImporterJob.new.perform(h.sequence)}
     end
   end
 
