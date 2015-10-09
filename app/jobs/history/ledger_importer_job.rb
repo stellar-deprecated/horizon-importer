@@ -17,7 +17,7 @@ class History::LedgerImporterJob < ApplicationJob
   EMPTY_HASH            = "0" * 64
   DEFAULT_SIGNER_WEIGHT = 2
 
-  def perform(ledger_sequence)
+  def perform(ledger_sequence, rebuild_allowed=false)
     stellar_core_ledger, stellar_core_transactions = load_stellar_core_data(ledger_sequence)
 
     if stellar_core_ledger.blank?
@@ -40,6 +40,7 @@ class History::LedgerImporterJob < ApplicationJob
         found = History::Ledger.where(sequence: stellar_core_ledger.ledgerseq).first
 
         if found.present?
+          return unless rebuild_allowed
           found.transactions.each(&:destroy)
           found.accounts.each(&:destroy)
           found.destroy

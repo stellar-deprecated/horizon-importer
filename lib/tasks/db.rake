@@ -39,7 +39,7 @@ namespace :db do
       break if to_update.empty?
 
       to_update.each do |hl|
-        History::LedgerImporterJob.new.perform(hl.sequence)
+        History::LedgerImporterJob.new.perform(hl.sequence, true)
         updated += 1
       end
     end
