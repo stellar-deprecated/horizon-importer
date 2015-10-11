@@ -222,7 +222,7 @@ CREATE TABLE history_transactions (
 --
 
 CREATE TABLE schema_migrations (
-    version character varying(255) NOT NULL
+    version character varying NOT NULL
 );
 
 
@@ -325,6 +325,13 @@ CREATE UNIQUE INDEX hs_ledger_by_id ON history_ledgers USING btree (id);
 --
 
 CREATE UNIQUE INDEX hs_transaction_by_id ON history_transactions USING btree (id);
+
+
+--
+-- Name: index_history_accounts_on_address; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_history_accounts_on_address ON history_accounts USING btree (address);
 
 
 --
@@ -481,4 +488,6 @@ INSERT INTO schema_migrations (version) VALUES ('20150902224148');
 INSERT INTO schema_migrations (version) VALUES ('20150929205440');
 
 INSERT INTO schema_migrations (version) VALUES ('20151006205250');
+
+INSERT INTO schema_migrations (version) VALUES ('20151011210811');
 
