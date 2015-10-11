@@ -10,6 +10,12 @@ class History::LedgerPoller
   include Celluloid
 
   def initialize
-    every(1.second){ History::LedgerCheckerJob.new.async.perform }
+    after(1.second){ current_actor.async.tick }
+  end
+
+  def tick
+    History::LedgerCheckerJob.new.perform
+  ensure
+    after(1.second){ current_actor.async.tick }
   end
 end

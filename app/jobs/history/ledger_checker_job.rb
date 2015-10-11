@@ -11,14 +11,16 @@ class History::LedgerCheckerJob < ApplicationJob
     
     with_db(:history) do 
       with_db(:stellar_core) do 
-        last_imported = History::Ledger.last_imported_ledger.try(:sequence) || 0
-      
-        # ensure the next ledger is in the stellar_core db
-        next_ledger = last_imported + 1
-        core_ledger = StellarCore::LedgerHeader.at_sequence(next_ledger)
-        return if core_ledger.blank?
+        loop do
+          last_imported = History::Ledger.last_imported_ledger.try(:sequence) || 0
+        
+          # ensure the next ledger is in the stellar_core db
+          next_ledger = last_imported + 1
+          core_ledger = StellarCore::LedgerHeader.at_sequence(next_ledger)
+          return if core_ledger.blank?
 
-        History::LedgerImporterJob.new.async.perform(next_ledger)
+          History::LedgerImporterJob.new.perform(next_ledger)
+        end
       end
     end
   end
