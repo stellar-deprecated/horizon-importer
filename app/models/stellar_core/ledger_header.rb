@@ -4,7 +4,7 @@ class StellarCore::LedgerHeader < StellarCore::Base
 
   alias_attribute :sequence, :ledgerseq
 
-  has_many :transactions, {
+  has_many :transactions, -> { order("txindex ASC") }, {
     class_name: "StellarCore::Transaction", 
     foreign_key: :ledgerseq, 
     primary_key: :ledgerseq,
