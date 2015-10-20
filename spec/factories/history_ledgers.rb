@@ -7,6 +7,11 @@ FactoryGirl.define do
     transaction_count 0
     operation_count   0
     closed_at         { Time.now }
+    total_coins       0
+    fee_pool          0
+    base_fee          0
+    base_reserve      0
+    max_tx_set_size   0
 
     # TODO: add ability to specify transactions
     # and random transaction defaults
