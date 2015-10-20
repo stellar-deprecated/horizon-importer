@@ -80,7 +80,12 @@ CREATE TABLE history_ledgers (
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     id bigint,
-    importer_version integer DEFAULT 1 NOT NULL
+    importer_version integer DEFAULT 1 NOT NULL,
+    total_coins bigint,
+    fee_pool bigint,
+    base_fee integer,
+    base_reserve integer,
+    max_tx_set_size integer
 );
 
 
@@ -222,7 +227,7 @@ CREATE TABLE history_transactions (
 --
 
 CREATE TABLE schema_migrations (
-    version character varying NOT NULL
+    version character varying(255) NOT NULL
 );
 
 
@@ -490,4 +495,6 @@ INSERT INTO schema_migrations (version) VALUES ('20150929205440');
 INSERT INTO schema_migrations (version) VALUES ('20151006205250');
 
 INSERT INTO schema_migrations (version) VALUES ('20151011210811');
+
+INSERT INTO schema_migrations (version) VALUES ('20151020211921');
 
