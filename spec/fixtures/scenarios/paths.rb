@@ -49,16 +49,18 @@ payment :gateway, :trader,  ["33", :gateway, 5000]
 
 close_ledger
 
-offer :trader, {buy:["USD", :gateway], with:["EUR", :gateway]}, 10, 1.0
+offer :trader, {for:["USD", :gateway], sell:["EUR", :gateway]}, 10, 0.5
+offer :gateway, {for:["USD", :gateway], sell:["EUR", :gateway]}, 10, 1.0
+offer :gateway, {for:["USD", :gateway], sell:["EUR", :gateway]}, 10, 0.5
 
-offer :trader, {buy:["USD", :gateway], with:["1", :gateway]}, 20, 1.0
-offer :trader, {buy:["1", :gateway], with:["EUR", :gateway]}, 20, 1.0
+offer :trader, {for:["USD", :gateway], sell:["1", :gateway]}, 20, 1.0
+offer :trader, {for:["1", :gateway], sell:["EUR", :gateway]}, 20, 1.0
 
-offer :trader, {buy:["USD", :gateway], with:["21", :gateway]}, 30, 1.0
-offer :trader, {buy:["21", :gateway], with:["22", :gateway]}, 30, 1.0
-offer :trader, {buy:["22", :gateway], with:["EUR", :gateway]}, 30, 1.0
+offer :trader, {for:["USD", :gateway], sell:["21", :gateway]}, 30, 1.0
+offer :trader, {for:["21", :gateway], sell:["22", :gateway]}, 30, 1.0
+offer :trader, {for:["22", :gateway], sell:["EUR", :gateway]}, 30, 1.0
 
-offer :trader, {buy:["USD", :gateway], with:["31", :gateway]}, 40, 1.0
-offer :trader, {buy:["31", :gateway], with:["32", :gateway]}, 40, 1.0
-offer :trader, {buy:["32", :gateway], with:["33", :gateway]}, 40, 1.0
-offer :trader, {buy:["33", :gateway], with:["EUR", :gateway]}, 40, 1.0
+offer :trader, {for:["USD", :gateway], sell:["31", :gateway]}, 40, 2.0
+offer :trader, {for:["31", :gateway], sell:["32", :gateway]}, 40, 2.0
+offer :trader, {for:["32", :gateway], sell:["33", :gateway]}, 40, 2.0
+offer :trader, {for:["33", :gateway], sell:["EUR", :gateway]}, 40, 2.0
