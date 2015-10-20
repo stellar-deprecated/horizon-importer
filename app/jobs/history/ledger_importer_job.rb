@@ -11,11 +11,11 @@ class History::LedgerImporterJob < ApplicationJob
   #
   # IMPORTANT: bump this number up if you ever change the behavior of the importer, so that the reimport system
   # can detect the change and update older imported ledgers.
-  VERSION = 2 
+  VERSION = 3 
 
 
   EMPTY_HASH            = "0" * 64
-  DEFAULT_SIGNER_WEIGHT = 2
+  DEFAULT_SIGNER_WEIGHT = 1
 
   def perform(ledger_sequence, rebuild_allowed=false)
     stellar_core_ledger, stellar_core_transactions = load_stellar_core_data(ledger_sequence)
@@ -54,6 +54,11 @@ class History::LedgerImporterJob < ApplicationJob
           transaction_count:    stellar_core_transactions.length,
           operation_count:      stellar_core_transactions.map(&:operation_count).sum,
           importer_version:     VERSION,
+          total_coins:          stellar_core_ledger.total_coins,
+          fee_pool:             stellar_core_ledger.fee_pool,
+          base_fee:             stellar_core_ledger.base_fee,
+          base_reserve:         stellar_core_ledger.base_reserve,
+          max_tx_set_size:      stellar_core_ledger.max_tx_set_size,
         })
 
         stellar_core_transactions.each do |sctx|

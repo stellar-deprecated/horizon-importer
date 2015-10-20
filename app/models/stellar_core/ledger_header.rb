@@ -15,4 +15,15 @@ class StellarCore::LedgerHeader < StellarCore::Base
   def self.at_sequence(sequence)
     where(ledgerseq:sequence).first
   end
+
+
+  memoize def xdr
+    Stellar::LedgerHeader.from_xdr(self.data, 'base64') 
+  end
+
+  delegate :total_coins, to: :xdr
+  delegate :fee_pool, to: :xdr
+  delegate :base_fee, to: :xdr
+  delegate :base_reserve, to: :xdr
+  delegate :max_tx_set_size, to: :xdr
 end
