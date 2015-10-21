@@ -205,7 +205,6 @@ CREATE TABLE history_transactions (
     application_order integer NOT NULL,
     account character varying(64) NOT NULL,
     account_sequence bigint NOT NULL,
-    max_fee integer NOT NULL,
     fee_paid integer NOT NULL,
     operation_count integer NOT NULL,
     created_at timestamp without time zone,
@@ -499,4 +498,6 @@ INSERT INTO schema_migrations (version) VALUES ('20151011210811');
 INSERT INTO schema_migrations (version) VALUES ('20151020211921');
 
 INSERT INTO schema_migrations (version) VALUES ('20151020225251');
+
+INSERT INTO schema_migrations (version) VALUES ('20151020235257');
 
