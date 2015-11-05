@@ -139,7 +139,7 @@ class StellarCore::Transaction < StellarCore::Base
   def memo
     case memo_type
     when "none" ;    nil
-    when "text" ;    envelope.tx.memo.text!
+    when "text" ;    envelope.tx.memo.text!.force_encoding(Encoding::UTF_8).scrub
     when "id" ;      envelope.tx.memo.id!.to_s
     when "hash" ;    Stellar::Convert.to_base64(envelope.tx.memo.hash!)
     when "return" ;  Stellar::Convert.to_base64(envelope.tx.memo.ret_hash!)
