@@ -6,4 +6,9 @@ class StellarCore::FeeMeta < StellarCore::Base
   def xdr
     self.txchanges
   end
+
+  def changes
+    Stellar::LedgerEntryChanges.from_xdr(xdr, 'base64')
+  end
+
 end

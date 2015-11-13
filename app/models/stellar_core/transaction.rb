@@ -70,6 +70,7 @@ class StellarCore::Transaction < StellarCore::Base
   def participants
     results = []
     all_changes = meta.operations!.flat_map(&:changes)
+    all_changes += fee_meta.changes
     all_changes.each do |change|
       data = case change.type
              when Stellar::LedgerEntryChangeType.ledger_entry_created
