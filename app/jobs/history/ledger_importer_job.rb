@@ -7,11 +7,11 @@ require 'bigdecimal'
 class History::LedgerImporterJob < ApplicationJob
 
   # To allow for updated importer code, we version every history_ledger imported into the horizon by recording the
-  # constant below with the new record.  
+  # constant below with the new record.
   #
   # IMPORTANT: bump this number up if you ever change the behavior of the importer, so that the reimport system
   # can detect the change and update older imported ledgers.
-  VERSION = 4 
+  VERSION = 4
 
 
   EMPTY_HASH            = "0" * 64
@@ -124,8 +124,8 @@ class History::LedgerImporterJob < ApplicationJob
       destination_pk      = pop.destination
       destination_address = Stellar::Convert.pk_to_address(destination_pk)
       id                  = TotalOrderId.make(sctx.ledgerseq, sctx.txindex, i+1)
-  
-      unless History::Account.where(address: destination_address).any? 
+
+      unless History::Account.where(address: destination_address).any?
         haccs << History::Account.create!(address: destination_address, id: id)
       end
     end
@@ -141,7 +141,7 @@ class History::LedgerImporterJob < ApplicationJob
       op, result = *op_and_r
 
       source_account = op.source_account || sctx.source_account
-      source_address = Stellar::Convert.pk_to_address(source_account) 
+      source_address = Stellar::Convert.pk_to_address(source_account)
       participant_addresses = [source_address]
 
       hop = History::Operation.new({
@@ -451,7 +451,7 @@ class History::LedgerImporterJob < ApplicationJob
       end
 
       if scop.signer.present?
-        effect = if scop.signer.weight == 0 
+        effect = if scop.signer.weight == 0
                    "signer_removed"
                  else
                    #TODO: BLOCKED stellar-core: distinguish between new signers and updated signers
@@ -470,7 +470,9 @@ class History::LedgerImporterJob < ApplicationJob
                  'trustline_removed'
                else
                  tlm = scopm.changes.first #TODO: add a less brittle method of finding the trustline entry in the meta
-                 if tlm.type == Stellar::LedgerEntryChangeType.ledger_entry_created
+                 if tlm.blank?
+                   'trustline_updated'
+                 elsif tlm.type == Stellar::LedgerEntryChangeType.ledger_entry_created
                    'trustline_created'
                  else
                    'trustline_updated'
@@ -565,7 +567,7 @@ class History::LedgerImporterJob < ApplicationJob
   def make_trade(effects, buyer, claimed_offer)
     seller = claimed_offer.seller_id
 
-    buyer_details = { 
+    buyer_details = {
       "offer_id"      => claimed_offer.offer_id,
       "seller"        => Stellar::Convert.pk_to_address(seller),
       "bought_amount" => as_amount(claimed_offer.amount_sold),
@@ -574,7 +576,7 @@ class History::LedgerImporterJob < ApplicationJob
     buyer_details.merge! asset_details(claimed_offer.asset_sold, "bought_")
     buyer_details.merge! asset_details(claimed_offer.asset_bought, "sold_")
 
-    seller_details = { 
+    seller_details = {
       "offer_id"      => claimed_offer.offer_id,
       "seller"        => Stellar::Convert.pk_to_address(buyer),
       "bought_amount" => as_amount(claimed_offer.amount_bought),
@@ -588,10 +590,10 @@ class History::LedgerImporterJob < ApplicationJob
   end
 
   def as_amount(raw_amount)
-    (BigDecimal.new(raw_amount) / BigDecimal.new(Stellar::ONE)).round(7, :truncate).to_s("F") 
+    (BigDecimal.new(raw_amount) / BigDecimal.new(Stellar::ONE)).round(7, :truncate).to_s("F")
   end
 
   def price_string(price)
-    (BigDecimal.new(price.n) / BigDecimal.new(price.d)).round(7, :truncate).to_s("F") 
+    (BigDecimal.new(price.n) / BigDecimal.new(price.d)).round(7, :truncate).to_s("F")
   end
 end
