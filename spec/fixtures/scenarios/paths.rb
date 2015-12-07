@@ -64,3 +64,5 @@ offer :trader, {for:["USD", :gateway], sell:["31", :gateway]}, 40, 2.0
 offer :trader, {for:["31", :gateway], sell:["32", :gateway]}, 40, 2.0
 offer :trader, {for:["32", :gateway], sell:["33", :gateway]}, 40, 2.0
 offer :trader, {for:["33", :gateway], sell:["EUR", :gateway]}, 40, 2.0
+
+offer :gateway, {for:["USD", :gateway], sell: :native}, 1000, 0.1
