@@ -7,7 +7,7 @@ class StellarCore::Transaction < StellarCore::Base
     foreign_key: :ledgerseq,
     primary_key: :ledgerseq,
   }
-  
+
   has_one :fee_meta, {
     class_name: "StellarCore::FeeMeta",
     foreign_key: "txid",
@@ -79,6 +79,8 @@ class StellarCore::Transaction < StellarCore::Base
                change.updated!.data
              when Stellar::LedgerEntryChangeType.ledger_entry_removed
                change.removed!
+             when Stellar::LedgerEntryChangeType.ledger_entry_state
+               next # "state" entries are not needed to calculate participants
              else
                raise "Unknown ledger entry change type: #{change.type}"
              end
