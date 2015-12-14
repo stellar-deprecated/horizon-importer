@@ -68,33 +68,9 @@ class StellarCore::Transaction < StellarCore::Base
   end
 
   def participants
-    results = []
-    all_changes = meta.operations!.flat_map(&:changes)
-    all_changes += fee_meta.changes
-    all_changes.each do |change|
-      data = case change.type
-             when Stellar::LedgerEntryChangeType.ledger_entry_created
-               change.created!.data
-             when Stellar::LedgerEntryChangeType.ledger_entry_updated
-               change.updated!.data
-             when Stellar::LedgerEntryChangeType.ledger_entry_removed
-               change.removed!
-             when Stellar::LedgerEntryChangeType.ledger_entry_state
-               next # "state" entries are not needed to calculate participants
-             else
-               raise "Unknown ledger entry change type: #{change.type}"
-             end
-
-
-      next unless data.type == Stellar::LedgerEntryType.account
-
-      results << data.account!.account_id
-    end
-
-    results.uniq
+    StellarCore::ParticipantFinder.from_tx(self)
   end
   memoize :participants
-
 
   def participant_addresses
     participants.map{|a| Stellar::Convert.pk_to_address(a)}
