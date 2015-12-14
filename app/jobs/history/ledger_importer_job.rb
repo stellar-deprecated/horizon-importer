@@ -11,7 +11,7 @@ class History::LedgerImporterJob < ApplicationJob
   #
   # IMPORTANT: bump this number up if you ever change the behavior of the importer, so that the reimport system
   # can detect the change and update older imported ledgers.
-  VERSION = 4
+  VERSION = 5
 
 
   EMPTY_HASH            = "0" * 64
