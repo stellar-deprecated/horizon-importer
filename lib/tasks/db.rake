@@ -23,14 +23,14 @@ namespace :db do
   desc "loads environment, but ensures that the ledger poller actor does not start up"
   task :environment_without_importer do
     ENV["IMPORT_HISTORY"] = "false"
-    Rake::Task["environment"].invoke 
+    Rake::Task["environment"].invoke
   end
 
   desc "updates imported ledger data that is out of date"
   task :batch_update_history => :environment_without_importer do
     scope = History::Ledger.
       where("importer_version < ?", History::LedgerImporterJob::VERSION).
-      order("id ASC")
+      order("id DESC")
 
     updated = 0
 
