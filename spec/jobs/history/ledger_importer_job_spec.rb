@@ -91,7 +91,7 @@ RSpec.describe History::LedgerImporterJob, "importing path_payment operations", 
   end
 
   it "sets `amount`" do
-    expect(op.details["amount"]).to eq("10.0")
+    expect(op.details["amount"]).to eq("10.0000000")
   end
 end
 
@@ -109,7 +109,7 @@ RSpec.describe History::LedgerImporterJob, "importing change_trust operations", 
   end
 
   it "sets `limit`" do
-    expect(op.details["limit"]).to eq("4000.0")
+    expect(op.details["limit"]).to eq("4000.0000000")
   end
 end
 

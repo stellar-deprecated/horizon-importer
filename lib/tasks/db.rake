@@ -67,6 +67,7 @@ namespace :db do
     scenarios = Dir["#{SCENARIO_BASE_PATH}/**/*.rb"]
 
     scenarios.each do |path|
+      next if File.basename(path) == "_common_accounts.rb"
       load_scenario path
     end
   end
