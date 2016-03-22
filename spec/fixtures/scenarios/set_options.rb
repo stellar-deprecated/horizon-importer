@@ -1,15 +1,12 @@
-require 'factory_girl'
-FactoryGirl.find_definitions
+run_recipe File.dirname(__FILE__) + "/_common_accounts.rb"
 
 use_manual_close
 
-account :scott,  FactoryGirl.create(:scott_key_pair)
-account :bartek, FactoryGirl.create(:bartek_key_pair)
 create_account :scott
 create_account :bartek
 
 close_ledger
-kp = FactoryGirl.create(:usd_gateway_key_pair)
+kp = Stellar::KeyPair.from_seed("SB2XGZC7M5QXIZLXMF4SAIBAEAQCAIBAEAQCAIBAEAQCAIBAEAQCBV6K")
 
 set_inflation_dest :scott, :bartek                ; close_ledger
 set_flags :scott, [:auth_required_flag]           ; close_ledger

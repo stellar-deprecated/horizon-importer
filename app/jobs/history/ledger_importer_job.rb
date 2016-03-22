@@ -389,7 +389,6 @@ class History::LedgerImporterJob < ApplicationJob
 
       dest_details = { amount: as_amount(scop.dest_amount) }
       dest_details.merge!  asset_details(scop.dest_asset)
-      effects.create!("account_credited", scop.destination, dest_details)
 
       scresult = scresult.tr!.path_payment_result!
       source_details = { amount: as_amount(scresult.send_amount) }
@@ -590,10 +589,16 @@ class History::LedgerImporterJob < ApplicationJob
   end
 
   def as_amount(raw_amount)
-    (BigDecimal.new(raw_amount) / BigDecimal.new(Stellar::ONE)).round(7, :truncate).to_s("F")
+    raw = (BigDecimal.new(raw_amount) / BigDecimal.new(Stellar::ONE)).round(7, :truncate).to_s("F")
+    l, r = *raw.split(".", 2)
+    r = r.ljust(7, '0')
+    "#{l}.#{r}"
   end
 
   def price_string(price)
-    (BigDecimal.new(price.n) / BigDecimal.new(price.d)).round(7, :truncate).to_s("F")
+    raw = (BigDecimal.new(price.n) / BigDecimal.new(price.d)).round(7, :truncate).to_s("F")
+    l, r = *raw.split(".", 2)
+    r = r.ljust(7, '0')
+    "#{l}.#{r}"
   end
 end
