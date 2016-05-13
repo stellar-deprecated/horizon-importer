@@ -1,3 +1,7 @@
+## This project is not in active development anymore. Please use https://github.com/stellar/horizon
+
+---
+
 # Horizon Importer
 
 [![Build Status](https://travis-ci.org/stellar/horizon-importer.svg)](https://travis-ci.org/stellar/horizon-importer)
